@@ -1,0 +1,6 @@
+Name,Value,Description
+pk_auto,17.11,$/hr
+op_auto,17,$/hr
+sut,26.82,$/hr
+mut,40.48,$/hr
+calib_factor,2,VOT values above are multiplied by this factor. Calibrated to match base year 540 counts.

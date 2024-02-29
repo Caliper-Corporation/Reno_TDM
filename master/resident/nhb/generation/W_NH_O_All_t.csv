@@ -1,0 +1,6 @@
+term,estimated_as,estimate,std.error,statistic,p.value
+W_HB_O_All_walkbike,W_HB_O_All_walkbike,0.34469,0.013968853,24.67580233,0
+W_HB_O_All_lb,W_HB_O_All_lb,0.96983,0.049811772,19.46983218,0
+W_HB_W_All_hov2,W_HB_W_All_hov,0.01624,0.008437033,1.924312573,0.05438
+W_HB_W_All_hov3,W_HB_W_All_hov,0.01624,0.008437033,1.924312573,0.05438
+r_sq,NA,0.02954,NA,NA,NA

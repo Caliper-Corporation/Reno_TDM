@@ -1,0 +1,13 @@
+Cluster,ClusterName,Theta,ASC,IC,Calibrated_DeltaASC,Calibrated_DeltaIC
+1,RTP,0.982,-1.29,0,0.27,0
+2,Raleigh,0.756,0.46,0.499,0,0
+3,Cary,0.738,0,0.32,0.525,0
+4,Garner,0.701,0,0,0,0
+5,Durham,0.949,-0.813,0.477,0,-0.126
+6,ChapelHill,1,0,0,0.17,0
+7,SouthernDurham,0.76,-0.353,0.564,0.25,0
+81,Northwest,0.803,0,0.428,-1.964,-0.109
+82,Northeast,0.865,-0.697,0.836,0,0
+83,Southeast,0.853,-0.804,0.976,0,0
+84,South,0.873,-0.735,0.593,-0.386,0
+85,Southwest,0.949,0,0.652,0.137,0

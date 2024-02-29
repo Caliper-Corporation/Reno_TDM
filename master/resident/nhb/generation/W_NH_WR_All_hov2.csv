@@ -1,0 +1,5 @@
+term,estimated_as,estimate,std.error,statistic,p.value
+W_HB_O_All_hov2,W_HB_O_All_hov,0.01348,0.006615046,2.037057147,0.04171
+W_HB_O_All_hov3,W_HB_O_All_hov,0.01348,0.006615046,2.037057147,0.04171
+W_HB_O_All_sov,W_HB_O_All_sov,0.03399,0.004216325,8.06112371,0
+r_sq,NA,0.43219,NA,NA,NA
