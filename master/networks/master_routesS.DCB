@@ -1,9 +1,9 @@
 
 40,codepage=65001
-"STOP_ID",I,1,4,0,9,0,,"","",,"Sum",
-"Pickup",S,5,2,0,3,0,,"","Pickup Type|0 = Regularly Scheduled Pickup|1 = No Pickup Available|2 = Must Phone Agency to Arrange Pickup|3 = Must Coordinate with Driver to Arrange Pickup",,"Sum",
-"Dropoff",S,7,2,0,3,0,,"","Dropoff Type|0 = Regularly Scheduled Drop Off|1 = No Drop Off Available|2 = Must Phone Agency to Arrange Drop Off|3 = Must Coordinate with Driver to Arrange Drop Off",,"Sum",
-"Service",C,9,20,0,20,0,,"","Service ID|Identifies a Set of Dates When Service is Available",,"Copy",
-"Length",R,29,8,0,10,6,,"","Segment Length",,"Sum",
-"Sequence",S,37,2,0,5,0,,"","Sequence from stop_times.txt",,"Sum",
-"Timepoint",S,39,2,0,5,0,,"","Timepoint from stop_times.txt",,"Sum",
+"STOP_ID",I,1,4,0,8,0,,"","",,"Sum",
+"Pickup",S,5,2,0,2,0,,"","",,"Sum",
+"Dropoff",S,7,2,0,2,0,,"","",,"Sum",
+"Service",C,9,20,0,20,0,,"","",,"Copy",
+"Length",R,29,8,0,8,6,,"","",,"Sum",
+"Sequence",S,37,2,0,2,0,,"","",,"Sum",
+"Timepoint",S,39,2,0,2,0,,"","",,"Sum",
