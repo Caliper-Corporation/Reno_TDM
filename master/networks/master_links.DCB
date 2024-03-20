@@ -1,5 +1,5 @@
 RTC Master Network
-861,codepage=1252
+865,codepage=1252
 "ID",I,1,4,0,4,0,,"","",,"Sum",
 "StreetName",C,5,50,0,50,0,,"","Name of street/roadway represented by the polyline.",,"Copy",
 "StreetName2",C,55,50,0,50,0,,"","",,"Copy",
@@ -126,3 +126,4 @@ RTC Master Network
 "AB_PTime_20",R,846,8,0,12,4,,"","",,"Copy",
 "count_sid_lc",I,854,4,0,10,0,,"","Count Station ID as tagged by the Load Counts macro",,"Copy",
 "count_vol_lc",I,858,4,0,10,0,,"","Count ID as tagged by the Load Counts macro",,"Copy",
+"truck_count",I,862,4,0,10,0,,"","",,"Sum",
