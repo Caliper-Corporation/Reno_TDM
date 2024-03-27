@@ -1,15 +1,15 @@
 {
     "Model": {
         "Description": [
-            "Triangle Regional Model Gen2"
+            "RTC Washoe County Model"
         ],
         "Author": "Caliper Corporation",
         "Version": "1.0.0",
-        "Name": "trmg2.model",
-        "Scenarios": "trmg2.scenarios",
-        "Parameters": ["src\\flow_chart\\trmg2.parameters"],
+        "Name": "rtcwc.model",
+        "Scenarios": "rtcwc.scenarios",
+        "Parameters": ["src\\flow_chart\\rtcwc.parameters"],
         "Styles": ["src\\flow_chart\\common.styles"],
-        "Plugins": ["src\\flow_chart\\trmg2_plugin_macros.rsc"],
-        "Menus": ["src\\flow_chart\\trmg2_menu.rsc"]
+        "Plugins": ["src\\flow_chart\\rtcwc_plugin_macros.rsc"],
+        "Menus": ["src\\flow_chart\\rtcwc_menu.rsc"]
     }
 }
