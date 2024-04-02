@@ -240,11 +240,7 @@ Macro "Calculate NM Interaction Terms" (Args)
     a_fields = {
         "HH",
         "K12",
-        "StudGQ_NCSU",
-        "StudGQ_UNC",
-        "StudGQ_DUKE",
-        "StudGQ_NCCU",
-        "CollegeOn",
+        "College",
         "Retail",
         "TotalEmp"
     }

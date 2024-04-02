@@ -52,7 +52,6 @@ EndMacro
 
 
 Macro "Model.OnStepStart" (Args,Result)
-Body:
 
 EndMacro
 

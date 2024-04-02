@@ -63,8 +63,8 @@
     
     Section = "Population Synthesis|Input"
     
-        Args.[PUMS HH Seed] = { "Type":"File" , "Value":"%Input Folder%\\resident\\population_synthesis\\HHSeed_PUMS_TRM.bin", "Description":"PUMS household seed table." }
-        Args.[PUMS Person Seed] = { "Type":"File" , "Value":"%Input Folder%\\resident\\population_synthesis\\PersonSeed_PUMS_TRM.bin", "Description":"PUMS person seed table." }
+        Args.[PUMS HH Seed] = { "Type":"File" , "Value":"%Input Folder%\\resident\\population_synthesis\\HHSeed_PUMS.bin", "Description":"PUMS household seed table." }
+        Args.[PUMS Person Seed] = { "Type":"File" , "Value":"%Input Folder%\\resident\\population_synthesis\\PersonSeed_PUMS.bin", "Description":"PUMS person seed table." }
         Args.IncomeCurves = { "Type":"File" , "Value":"%Input Folder%\\resident\\disagg_model\\income_curves.csv", "Description":"Disaggregate income curves." }
         Args.SizeCurves = { "Type":"File" , "Value":"%Input Folder%\\resident\\disagg_model\\size_curves.csv", "Description":"Disaggregate household size curves." }
         Args.WorkerCurves = { "Type":"File" , "Value":"%Input Folder%\\resident\\disagg_model\\worker_curves.csv", "Description":"Disaggregate worker curves." }
