@@ -19,10 +19,6 @@ UCO_NCSU_AM,Prod_UCO_NCSU_AM,Attr_UCO_NCSU_AM,Production,Length (Skim),5,1.15,0.
 UCO_NCSU_MD,Prod_UCO_NCSU_MD,Attr_UCO_NCSU_MD,Production,Length (Skim),5,1.15,0.1
 UCO_NCSU_PM,Prod_UCO_NCSU_PM,Attr_UCO_NCSU_PM,Production,Length (Skim),5,1.15,0.1
 UCO_NCSU_NT,Prod_UCO_NCSU_NT,Attr_UCO_NCSU_NT,Production,Length (Skim),5,1.15,0.1
-UCC_NCSU_AM,Prod_UCC_NCSU_AM,Attr_UCC_NCSU_AM,Production,Length (Skim),5,1.15,0.1
-UCC_NCSU_MD,Prod_UCC_NCSU_MD,Attr_UCC_NCSU_MD,Production,Length (Skim),5,1.15,0.1
-UCC_NCSU_PM,Prod_UCC_NCSU_PM,Attr_UCC_NCSU_PM,Production,Length (Skim),5,1.15,0.1
-UCC_NCSU_NT,Prod_UCC_NCSU_NT,Attr_UCC_NCSU_NT,Production,Length (Skim),5,1.15,0.1
 UC1_NCSU_AM,Prod_UC1_NCSU_AM,Attr_UC1_NCSU_AM,Production,Length (Skim),5,1.15,0.1
 UC1_NCSU_MD,Prod_UC1_NCSU_MD,Attr_UC1_NCSU_MD,Production,Length (Skim),5,1.15,0.1
 UC1_NCSU_PM,Prod_UC1_NCSU_PM,Attr_UC1_NCSU_PM,Production,Length (Skim),5,1.15,0.1
@@ -47,10 +43,6 @@ UCO_UNC_AM,Prod_UCO_UNC_AM,Attr_UCO_UNC_AM,Production,Length (Skim),5,1.15,0.1
 UCO_UNC_MD,Prod_UCO_UNC_MD,Attr_UCO_UNC_MD,Production,Length (Skim),5,1.15,0.1
 UCO_UNC_PM,Prod_UCO_UNC_PM,Attr_UCO_UNC_PM,Production,Length (Skim),5,1.15,0.1
 UCO_UNC_NT,Prod_UCO_UNC_NT,Attr_UCO_UNC_NT,Production,Length (Skim),5,1.15,0.1
-UCC_UNC_AM,Prod_UCC_UNC_AM,Attr_UCC_UNC_AM,Production,Length (Skim),5,1.15,0.1
-UCC_UNC_MD,Prod_UCC_UNC_MD,Attr_UCC_UNC_MD,Production,Length (Skim),5,1.15,0.1
-UCC_UNC_PM,Prod_UCC_UNC_PM,Attr_UCC_UNC_PM,Production,Length (Skim),5,1.15,0.1
-UCC_UNC_NT,Prod_UCC_UNC_NT,Attr_UCC_UNC_NT,Production,Length (Skim),5,1.15,0.1
 UC1_UNC_AM,Prod_UC1_UNC_AM,Attr_UC1_UNC_AM,Production,Length (Skim),5,1.15,0.1
 UC1_UNC_MD,Prod_UC1_UNC_MD,Attr_UC1_UNC_MD,Production,Length (Skim),5,1.15,0.1
 UC1_UNC_PM,Prod_UC1_UNC_PM,Attr_UC1_UNC_PM,Production,Length (Skim),5,1.15,0.1
@@ -75,10 +67,6 @@ UCO_DUKE_AM,Prod_UCO_DUKE_AM,Attr_UCO_DUKE_AM,Production,Length (Skim),5,1.15,0.
 UCO_DUKE_MD,Prod_UCO_DUKE_MD,Attr_UCO_DUKE_MD,Production,Length (Skim),5,1.15,0.1
 UCO_DUKE_PM,Prod_UCO_DUKE_PM,Attr_UCO_DUKE_PM,Production,Length (Skim),5,1.15,0.1
 UCO_DUKE_NT,Prod_UCO_DUKE_NT,Attr_UCO_DUKE_NT,Production,Length (Skim),5,1.15,0.1
-UCC_DUKE_AM,Prod_UCC_DUKE_AM,Attr_UCC_DUKE_AM,Production,Length (Skim),5,1.15,0.1
-UCC_DUKE_MD,Prod_UCC_DUKE_MD,Attr_UCC_DUKE_MD,Production,Length (Skim),5,1.15,0.1
-UCC_DUKE_PM,Prod_UCC_DUKE_PM,Attr_UCC_DUKE_PM,Production,Length (Skim),5,1.15,0.1
-UCC_DUKE_NT,Prod_UCC_DUKE_NT,Attr_UCC_DUKE_NT,Production,Length (Skim),5,1.15,0.1
 UC1_DUKE_AM,Prod_UC1_DUKE_AM,Attr_UC1_DUKE_AM,Production,Length (Skim),5,1.15,0.1
 UC1_DUKE_MD,Prod_UC1_DUKE_MD,Attr_UC1_DUKE_MD,Production,Length (Skim),5,1.15,0.1
 UC1_DUKE_PM,Prod_UC1_DUKE_PM,Attr_UC1_DUKE_PM,Production,Length (Skim),5,1.15,0.1
@@ -103,10 +91,6 @@ UCO_NCCU_AM,Prod_UCO_NCCU_AM,Attr_UCO_NCCU_AM,Production,Length (Skim),5,1.15,0.
 UCO_NCCU_MD,Prod_UCO_NCCU_MD,Attr_UCO_NCCU_MD,Production,Length (Skim),5,1.15,0.1
 UCO_NCCU_PM,Prod_UCO_NCCU_PM,Attr_UCO_NCCU_PM,Production,Length (Skim),5,1.15,0.1
 UCO_NCCU_NT,Prod_UCO_NCCU_NT,Attr_UCO_NCCU_NT,Production,Length (Skim),5,1.15,0.1
-UCC_NCCU_AM,Prod_UCC_NCCU_AM,Attr_UCC_NCCU_AM,Production,Length (Skim),5,1.15,0.1
-UCC_NCCU_MD,Prod_UCC_NCCU_MD,Attr_UCC_NCCU_MD,Production,Length (Skim),5,1.15,0.1
-UCC_NCCU_PM,Prod_UCC_NCCU_PM,Attr_UCC_NCCU_PM,Production,Length (Skim),5,1.15,0.1
-UCC_NCCU_NT,Prod_UCC_NCCU_NT,Attr_UCC_NCCU_NT,Production,Length (Skim),5,1.15,0.1
 UC1_NCCU_AM,Prod_UC1_NCCU_AM,Attr_UC1_NCCU_AM,Production,Length (Skim),5,1.15,0.1
 UC1_NCCU_MD,Prod_UC1_NCCU_MD,Attr_UC1_NCCU_MD,Production,Length (Skim),5,1.15,0.1
 UC1_NCCU_PM,Prod_UC1_NCCU_PM,Attr_UC1_NCCU_PM,Production,Length (Skim),5,1.15,0.1

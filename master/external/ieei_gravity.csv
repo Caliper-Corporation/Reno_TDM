@@ -5,5 +5,3 @@ IEEI_AUTO,IEEI_AUTO_PROD,IEEI_ATTR,Production,FFTime,IEEI_Distance = 'Medium',5,
 IEEI_TRK,IEEI_TRK_PROD,IEEI_ATTR,Production,FFTime,IEEI_Distance = 'Medium',5,0.6,0.1
 IEEI_AUTO,IEEI_AUTO_PROD,IEEI_ATTR,Production,FFTime,IEEI_Distance = 'Short',5,1.3,0.1
 IEEI_TRK,IEEI_TRK_PROD,IEEI_ATTR,Production,FFTime,IEEI_Distance = 'Short',5,1.3,0.1
-IEEI_AUTO,IEEI_AUTO_PROD,IEEI_ATTR,Production,FFTime,IEEI_Distance = 'Very Short',5,1.6,0.2
-IEEI_TRK,IEEI_TRK_PROD,IEEI_TRK,Production,FFTime,IEEI_Distance = 'Very Short',5,1.6,0.2
