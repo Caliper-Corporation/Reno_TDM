@@ -105,7 +105,7 @@ Data:
     Out({ Args.[SE] })
 EndMacro
 
-
+/*
 Macro "Parking Probabilities" (Args,Result)
     Attributes = {
         {"Class", {"GISDK"}},
@@ -118,7 +118,7 @@ Data:
     Out({ Args.[Parking DC Util Matrix] })
     Out({ Args.[Parking Logsums Table] })
 EndMacro
-
+*/
 
 Macro "Mode Probabilities" (Args,Result)
     Attributes = {
@@ -715,13 +715,14 @@ Macro "Home-based Choice Models" (Args,Result)
     }
 Body:
     // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    model = FlowChart({"Parking Probabilities"},{"Application of Probabilities"},"Group steps")
+    //model = FlowChart({"Parking Probabilities"},{"Application of Probabilities"},"Group steps")
+    model = FlowChart({"Mode Probabilities"},{"Application of Probabilities"},"Group steps")
     //
     // Nodes
     //
     // FlowChartNode(model,NodeName,MacroName,UI,Description)
     //
-    FlowChartNode(model,"Parking Probabilities",,,)
+   // FlowChartNode(model,"Parking Probabilities",,,)
     FlowChartNode(model,"Mode Probabilities",,,)
     FlowChartNode(model,"Destination Probabilities",,,)
     FlowChartNode(model,"Application of Probabilities",,,)
@@ -730,7 +731,7 @@ Body:
     //
     // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
     //
-    FlowChartLink(model,"Parking Probabilities","Mode Probabilities",True,,)
+    //FlowChartLink(model,"Parking Probabilities","Mode Probabilities",True,,)
     FlowChartLink(model,"Mode Probabilities","Destination Probabilities",True,,)
     FlowChartLink(model,"Destination Probabilities","Application of Probabilities",True,,)
     Return(model)

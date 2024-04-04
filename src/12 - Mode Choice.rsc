@@ -107,9 +107,12 @@ Macro "Calculate MC" (Args)
             hov_skim = skims_dir + "roadway\\avg_skim_" + period + "_" + tour_type + "_" + homebased + "_hov.mtx"
             
             // Set sources
-            opts.tables = {
+            /*opts.tables = {
                 se: {File: scen_dir + "\\output\\sedata\\scenario_se.bin", IDField: "TAZ"},
                 parking: {File: scen_dir + "\\output\\resident\\parking\\ParkingLogsums.bin", IDField: "TAZ"}
+            }*/
+            opts.tables = {
+                se: {File: scen_dir + "\\output\\sedata\\scenario_se.bin", IDField: "TAZ"}
             }
             opts.matrices = {
                 sov_skim: {File: sov_skim},

@@ -103,7 +103,7 @@ Macro "DC Size Terms" (Args)
 
     // Before calculating the size term fields, create any additional fields
     // needed for that calculation.
-    se_vw = OpenTable("se", "FFB", {se_file})
+    /*se_vw = OpenTable("se", "FFB", {se_file})
     a_fields =  {{
         "Hosp_Service", "Real", 10, 2,,,, 
         "Hospital * Total Service Employment.|Used in OMED dc model"
@@ -116,7 +116,7 @@ Macro "DC Size Terms" (Args)
     )
     output.Hosp_Service = input.Hospital * (input.Service_RateLow + input.Service_RateHigh)
     SetDataVectors(se_vw + "|", output, )
-    CloseView(se_vw)
+    CloseView(se_vw) */
 
     sizeSpec = {DataFile: se_file, CoeffFile: coeff_file}
     RunMacro("Compute Size Terms", sizeSpec)

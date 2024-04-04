@@ -3,25 +3,21 @@ sov,Constant,,-3.401,
 sov,Constant,v0,-99,Auto Availability
 sov,sov_skim.CongTime,,-0.1131,Travel time
 sov,sov_skim.[TollCostSOV (Skim)],,-0.570348,Toll cost
-sov,parking.MC_LS_NonWork.D,,0.5305,Parking
 hov2,Constant,,-3.498,Constant
 hov2,Constant,v0,-99,Auto Availability
 hov2,hov_skim.CongTime,,-0.1131,Travel time
 hov2,hov_skim.[TollCostHOV (Skim)],,-0.570348,Toll cost
 hov2,se.HHSize1Pct.O,,-0.8464,Percent of 1-person HHs
-hov2,parking.MC_LS_NonWork.D,,0.5305,Parking
 hov3,Constant,,-3.49,
 hov3,Constant,v0,-99,Auto Availability
 hov3,hov_skim.CongTime,,-0.1131,Travel time
 hov3,hov_skim.[TollCostHOV (Skim)],,-0.570348,Toll cost
 hov3,se.HHSize1Pct.O,,-0.8464,Percent of 1-person HHs
-hov3,parking.MC_LS_NonWork.D,,0.5305,Parking
 other_auto,Constant,,-6.867,Constant
 other_auto,Constant,v0,1.422,Zero-vehicle households
 other_auto,Constant,vi,1.422,Vehicle Insufficient households
 other_auto,sov_skim.CongTime,,-0.09643,Travel time
 other_auto,sov_skim.[TollCostSOV (Skim)],,-0.486283,Toll cost
-other_auto,parking.MC_LS_NonWork.D,,0.5674,Parking
 auto_pay,Constant,,-1.831,Constant
 auto_pay,Constant,v0,1.51,Zero-vehicle households
 auto_pay,Constant,vi,1.51,Vehicle Insufficient households
