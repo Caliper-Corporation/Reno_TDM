@@ -1,13 +1,22 @@
 Cluster,ClusterName,Theta,ASC,IC,Calibrated_DeltaASC,Calibrated_DeltaIC
-1,RTP,1,-1.11,0,-0.201,0
-2,Raleigh,0.909,0,0,0,0
-3,Cary,0.832,0,0.864,0.21,0
-4,Garner,0.828,0,0.525,0,-0.111
-5,Durham,0.918,0,0.285,0,0
-6,ChapelHill,0.933,0,0.628,0.131,0
-7,SouthernDurham,0.852,0,0.519,0,0
-81,Northwest,0.994,0,0,-0.504,0
-82,Northeast,0.879,0,0.32,0,0
-83,Southeast,0.984,-1.23,0.667,-0.515,0
-84,South,0.909,0,0,0.257,0
-85,Southwest,0.803,0.996,0,0.109,0
+1,Downtown Reno,1,0,0,0,0
+2,University,1,0,0,0,0
+3,Midtown Reno,1,0,0,0,0
+4,West Reno - Northwest Reno,1,0,0,0,0
+5,West Sparks,1,0,0,0,0
+6,Caughlin Ranch - Skyline,1,0,0,0,0
+7,Airport,1,0,0,0,0
+8,Northwest Reno,1,0,0,0,0
+9,Bartley Ranch - Meadowood,1,0,0,0,0
+10,North Reno - Golden Valley,1,0,0,0,0
+11,Hidden Valley - East Reno,1,0,0,0,0
+12,D'Andrea - Vista,1,0,0,0,0
+13,Verdi-Mogul-Somersett,1,0,0,0,0
+14,North Sparks,1,0,0,0,0
+15,Southwest Reno - Galena,1,0,0,0,0
+16,North Valleys,1,0,0,0,0
+17,Virginia City - Geiger Grade,1,0,0,0,0
+18,Mt. Rose Wilderness - Washoe Valley,1,0,0,0,0
+19,Palomina Valley - RSIC,1,0,0,0,0
+20,Rural Reno - Spring Mountain,1,0,0,0,0
+21,East Truckee River Canyon,1,0,0,0,0

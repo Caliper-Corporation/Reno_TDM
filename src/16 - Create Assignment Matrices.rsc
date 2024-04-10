@@ -8,9 +8,9 @@ lost during the conversion.
 Macro "Create Assignment Matrices" (Args)
 
     RunMacro("HB Collapse Auto Modes", Args)
-    RunMacro("HB Apply Parking Probabilities", Args)
+    //RunMacro("HB Apply Parking Probabilities", Args)
     RunMacro("NHB Collapse Auto Modes", Args)
-    RunMacro("NHB Apply Parking Probabilities", Args)
+    //RunMacro("NHB Apply Parking Probabilities", Args)
     RunMacro("HB Directionality", Args)
     RunMacro("Add Airport Trips", Args)
     RunMacro("HB Occupancy", Args)
@@ -50,7 +50,9 @@ Macro "HB Directionality" (Args)
         CopyFile(pa_mtx_file, od_mtx_file)
 
         mtx = CreateObject("Matrix", od_mtx_file)
-
+        if trip_type = "W_HB_EK12_All" then
+                        mtx.AddCores({"sov"})
+                        
         cores = mtx.GetCores()
         t_mtx = mtx.Transpose()
         t_cores = t_mtx.GetCores()

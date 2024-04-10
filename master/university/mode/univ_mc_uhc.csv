@@ -23,17 +23,9 @@ walk,walk_skim.WalkTime,,-0.03,Walk Time
 walk,Constant,,0.75,Constant
 bike,bike_skim.BikeTime,,-0.02,Travel Time
 bike,Constant,,-2.65,Constant
-w_lb,se.UNC_Zones.D,on,2.6,Transit (w_lb) positive utility to UNC Zones for on-campus student
-pnr_lb,se.UNC_Zones.D,on,1.85,Transit (pnr_lb) positive utility to UNC Zones for on-campus student
-w_lb,se.UNC_Zones.D,off,3.1,Transit (w_lb) positive utility to UNC Zones for off-campus student
-pnr_lb,se.UNC_Zones.D,off,3.1,Transit (pnr_lb) positive utility to UNC Zones for off-campus student
-bike,se.UNC_Zones.D,off,1.5,Bike positive utility to UNC Zones for off-campus student
-walk,se.UNC_Zones.D,off,0.65,Walk positive utility to UNC Zones for off-campus student
-w_lb,se.Duke_Zones.D,on,2.1,Transit  (w_lb) positive utility to DUKE Zones for on-campus student
-pnr_lb,se.Duke_Zones.D,on,1.85,Transit (pnr_lb) positive utility to DUKE Zones for on-campus student
-w_lb,se.Duke_Zones.D,off,1.35,Transit  (w_lb) positive utility to DUKE Zones for off-campus student
-pnr_lb,se.Duke_Zones.D,off,1.1,Transit (pnr_lb) positive utility to DUKE Zones for off-campus student
-w_lb,se.NCSU_Zones.D,on,1.85,Transit  (w_lb) positive utility to NCSU Zones for on-campus student
-pnr_lb,se.NCSU_Zones.D,on,1.6,Transit (pnr_lb) positive utility to NCSU Zones for on-campus student
-w_lb,se.NCSU_Zones.D,off,1.1,Transit  (w_lb) positive utility to NCSU Zones for off-campus student
-pnr_lb,se.NCSU_Zones.D,off,0.85,Transit (pnr_lb) positive utility to NCSU Zones for off-campus student
+w_lb,se.UNR_Zones.D,on,2.1,Transit (w_lb) positive utility to UNC Zones for on-campus student
+pnr_lb,se.UNR_Zones.D,on,1.85,Transit (pnr_lb) positive utility to UNC Zones for on-campus student
+w_lb,se.UNR_Zones.D,off,2,Transit (w_lb) positive utility to UNC Zones for off-campus student
+pnr_lb,se.UNR_Zones.D,off,2,Transit (pnr_lb) positive utility to UNC Zones for off-campus student
+bike,se.UNR_Zones.D,off,1.5,Bike positive utility to UNC Zones for off-campus student
+walk,se.UNR_Zones.D,off,0.65,Walk positive utility to UNC Zones for off-campus student

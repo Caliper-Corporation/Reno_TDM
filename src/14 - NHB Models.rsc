@@ -288,7 +288,7 @@ Macro "Evaluate NHB DC"(Args, Spec)
             obj.AddMatrixSource({SourceName: 'skim', File: skimFile})
             obj.AddMatrixSource({SourceName: 'IntraCluster', File: intraClusterMtx})
             obj.AddTableSource({SourceName: 'se', File: se_file, IDField: "TAZ"})
-            obj.AddTableSource({SourceName: 'Parking', File: Args.[Parking Logsums Table], IDField: "TAZ"})
+            //obj.AddTableSource({SourceName: 'Parking', File: Args.[Parking Logsums Table], IDField: "TAZ"})
             obj.AddTableSource({SourceName: 'PA', File: pa_file, IDField: "TAZ"})
 
             // Add primary spec

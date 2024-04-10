@@ -228,7 +228,7 @@ Macro "Calculate Destination Choice" (Args, trip_types)
             se_file = scen_dir + "/output/sedata/scenario_se.bin"
             opts.tables = {
                 se: {File: se_file, IDField: "TAZ"},
-                parking: {File: scen_dir + "/output/resident/parking/ParkingLogsums.bin", IDField: "TAZ"},
+                //parking: {File: scen_dir + "/output/resident/parking/ParkingLogsums.bin", IDField: "TAZ"},
                 sp: {File: sp_file, IDField: "TAZ"}
             }
             opts.cluster_equiv_spec = {File: se_file, ZoneIDField: "TAZ", ClusterIDField: "Cluster"}
