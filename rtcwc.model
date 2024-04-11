@@ -27,7 +27,7 @@ Body:
     FlowChartNode(model,"Home-based Choice Models",,,)
     FlowChartNode(model,"Non-Home-based Models",,,)
     FlowChartNode(model,"Special Market DC & MC",,,)
-    FlowChartNode(model,"Hourly Roadway Assignment",,,)
+    //FlowChartNode(model,"Hourly Roadway Assignment",,,)
     FlowChartNode(model,"Transit Assignment",,,)
     FlowChartNode(model,"Summaries",,,)
     //
@@ -36,7 +36,8 @@ Body:
     // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
     //
     FlowChartLink(model,"Convergence","Skimming",True,,1)
-    FlowChartLink(model,"Convergence","Hourly Roadway Assignment",2,,)
+    //FlowChartLink(model,"Convergence","Hourly Roadway Assignment",2,,)
+    FlowChartLink(model,"Convergence","Transit Assignment",2,,)
     FlowChartLink(model,"Roadway Assignment","Convergence",True,,)
     FlowChartLink(model,"Initial Processsing","Generation Models",True,,)
     FlowChartLink(model,"Generation Models","NonMotorized Models",True,,)
@@ -46,7 +47,7 @@ Body:
     FlowChartLink(model,"Home-based Choice Models","Non-Home-based Models",True,,)
     FlowChartLink(model,"Non-Home-based Models","Special Market DC & MC",True,,)
     FlowChartLink(model,"Special Market DC & MC","Roadway Assignment",True,,)
-    FlowChartLink(model,"Hourly Roadway Assignment","Transit Assignment",True,,)
+    //FlowChartLink(model,"Hourly Roadway Assignment","Transit Assignment",True,,)
     FlowChartLink(model,"Transit Assignment","Summaries",True,,)
     Return(model)
 EndMacro
