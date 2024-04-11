@@ -485,12 +485,13 @@ Macro "Add Externals" (Args)
 
         // Currently treating all external auto as sov, but could split into occupancy classes in future given data
         // ee/ie core names look like "EE_AUTO_AM" or "IEEI_CVMUT_MD"
+        // currently treating all external trucks as MUT
         parts = ParseString(ee_core_name, "_")
         period = parts[3]
         if periods.position(period) = 0 then continue
         if parts[2] = "AUTO" then core_name = "sov"
-        if parts[2] = "CVSUT" then core_name = "SUT"
-        if parts[2] = "CVMUT" then core_name = "MUT"
+        //if parts[2] = "CVSUT" then core_name = "SUT"
+        if parts[2] = "TRK" then core_name = "MUT"
 
         trip_mtx_file = assn_dir + "/od_veh_trips_" + period + ".mtx"
         trip_mtx = CreateObject("Matrix", trip_mtx_file)
