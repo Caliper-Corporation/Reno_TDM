@@ -220,10 +220,20 @@ Macro "Aggregate HB NonMotorized Walk Trips" (Args, trip_types)
     // Add the walk accessibility attractions from the SE bin file, which will
     // be used in the gravity application.
     se_df = CreateObject("df", se_file)
-    se_df.select({"TAZ", "access_walk_attr"})
+    se_df.select({"TAZ", "access_walk_attr", "access_walk"})
     se_df.left_join(per_df, "TAZ", "ZoneID")
 
     se_df.write_bin(nm_dir + "/_agg_nm_trips_daily.bin")
+
+    // Suppress demand for walk trips in zones with no walk accessibility
+    agg_vw = OpenTable("aggnm", "FFB", {nm_dir + "/_agg_nm_trips_daily.bin"})
+    SetView(agg_vw)
+    n = SelectByQuery("Selection", "several", "Select * where access_walk = 0",)
+    v0 = GetDataVector(agg_vw + "|Selection", "access_walk", )
+    for trip_type in trip_types do
+        SetDataVector(agg_vw + "|Selection", trip_type, v0, )
+    end
+
 endmacro
 
 /*

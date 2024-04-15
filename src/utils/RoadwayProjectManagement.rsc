@@ -133,6 +133,7 @@ Macro "Roadway Project Management" (MacroOpts)
     field = attrList[f]
     if field = "position" then continue
     if field = "ID" then continue
+    if field = "year" then continue
 
     if f = 1 then qtype = "several" else qtype = "more"
 
