@@ -113,8 +113,8 @@ Body:
     flowchart = RunMacro("GetFlowChart")
     { drive , path , name , ext } = SplitPath(flowchart.UI)
     rootFolder = drive + path
-    ui_DB = rootFolder + "src\\trmg2.dbd"
-    srcFile = rootFolder + "src\\_TRMCompile.lst"
+    ui_DB = rootFolder + "src\\rtcwc.dbd"
+    srcFile = rootFolder + "src\\_RTCCompile.lst"
     RunMacro("CompileGISDKCode", {Source: srcFile, UIDB: ui_DB, Silent: 0, ErrorMessage: "Error compiling code"})
 
     if lower(GetMapUnits()) <> "miles" then
