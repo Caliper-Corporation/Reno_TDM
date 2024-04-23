@@ -41,7 +41,7 @@ endmacro
 The Gini-Simpson Diversity Index is a measure of mixed use. If a zone only has
 one type of 'thing' (households or specific emp type), it will have a score
 of 0. As the number of different uses increases, the score rises to a max
-of 1. In TRMG2, there are three 'things', which are the three attraction types:
+of 1. In the model, there are three 'things', which are the three attraction types:
   * gs_home_attr
   * gs_work_attr
   * gs_other_attr

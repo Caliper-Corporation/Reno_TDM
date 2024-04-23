@@ -7,7 +7,7 @@ Macro "Model.Attributes" (Args,Result)
         {"Base Scenario Name", "Model"},
         {"ClearLogFiles", 0},
         {"CloseOpenFiles", 1},
-        {"CodeUI", "src\\trmg2.dbd"},
+        {"CodeUI", "src\\ui.dbd"},
         {"DebugMode", 1},
         {"ExpandStages", "Side by Side"},
         {"HideBanner", 0},
@@ -113,7 +113,7 @@ Body:
     flowchart = RunMacro("GetFlowChart")
     { drive , path , name , ext } = SplitPath(flowchart.UI)
     rootFolder = drive + path
-    ui_DB = rootFolder + "src\\rtcwc.dbd"
+    ui_DB = rootFolder + "src\\ui.dbd"
     srcFile = rootFolder + "src\\_RTCCompile.lst"
     RunMacro("CompileGISDKCode", {Source: srcFile, UIDB: ui_DB, Silent: 0, ErrorMessage: "Error compiling code"})
 

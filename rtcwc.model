@@ -190,14 +190,6 @@ Macro "MD Assignment" (Args,Result)
 EndMacro
 
 
-Macro "trmg2.Pins" (Args)
-Body:
-   // Do not modify the following line:
-   Positions = null
-   Return(Positions)
-EndMacro
-
-
 Macro "PM Assignment" (Args,Result)
     Attributes = {
         {"Class", {"GISDK"}},

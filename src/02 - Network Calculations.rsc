@@ -70,7 +70,7 @@ Macro "Is Scenario Created" (Args)
     else do
         MessageBox(
             "This scenario has not been created\n" + 
-            "Use TRMG2 Menu -> Create Scenario",
+            "Use RTCWC Menu -> Create Scenario",
             {Caption: "Scenario not created"}
         )
         return("false")

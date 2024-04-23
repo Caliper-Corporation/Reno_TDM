@@ -1,6 +1,6 @@
 /*
 Dialog box for the merge tool and the macro used to open it from
-the TRMG2 drop down menu.
+the model's drop down menu.
 */
 
 Macro "Open Merge Dbox" (Args)
