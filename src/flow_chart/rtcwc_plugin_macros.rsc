@@ -7,7 +7,7 @@ Macro "Model.Attributes" (Args,Result)
         {"Base Scenario Name", "Model"},
         {"ClearLogFiles", 0},
         {"CloseOpenFiles", 1},
-        {"CodeUI", "src\\trmg2.dbd"},
+        {"CodeUI", "src\\rtcwc.dbd"},
         {"DebugMode", 1},
         {"ExpandStages", "Side by Side"},
         {"HideBanner", 0},
