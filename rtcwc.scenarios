@@ -5,6 +5,6 @@ Scenario "base_2022"
     [Scenario Folder] = "%Scenarios Folder%\\base_2022"
     [Master SE] = "%Master Folder%\\sedata\\se_2022.bin"
     InitCongTimes = "%Input Folder%\\networks\\init_cong_time_2022.bin"
-    FeedbackIterations = 1
+    FeedbackIterations = 5
 EndScenario
     
