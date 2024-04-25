@@ -1,3 +1,6 @@
 *
 !.gitignore
-!base_2020/
+!base_2022/
+!base_2022_test
+!RoadwayProjectList.csv
+!TransitProjectList.csv
