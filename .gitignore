@@ -5,3 +5,6 @@
 .DS_Store
 *.DCC
 .Rproj.user
+.Rhistory
+.RData
+.Ruserdata
