@@ -236,10 +236,7 @@ Macro "Transit Assignment" (Args)
             o.OnOffTable = assn_dir + "/" + name + "_onoff.bin"
             o.TransitLinkFlowsTable = assn_dir + "/" + name + "_linkflow.bin"
             o.WalkFlowTable = assn_dir + "/" + name + "_walkflow.bin"
-            o.DemandMatrix({
-                MatrixFile: mtx_file,
-                Matrix: core_name
-            })
+            o.AddDemandMatrix({Class: "Class1", Matrix: {MatrixFile: mtx_file, Matrix: core_name}})
             o.Run()
         end
     end
