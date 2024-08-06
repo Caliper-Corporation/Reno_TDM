@@ -4,3 +4,4 @@
 *.upx
 .DS_Store
 *.DCC
+.Rproj.user
