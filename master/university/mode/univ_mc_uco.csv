@@ -13,6 +13,4 @@ walk,walk_skim.WalkTime,,-0.03,Walk Time
 walk,Constant,,1.15,Constant
 bike,bike_skim.BikeTime,,-0.02,Travel Time
 bike,Constant,,-2.5,Constant
-w_lb,se.Duke_Zones.O > 0 or se.Duke_Zones.D > 0,,1.1,Transit positive utility from/to DUKE Zones
-w_lb,se.NCSU_Zones.O > 0 or se.NCSU_Zones.D > 0,,0.6,Transit positive utility from/to NCSU Zones
-w_lb,se.UNC_Zones.O > 0 or se.UNC_Zones.D > 0,,1.1,Transit positive utility from/to UNC Zones
+w_lb,se.UNR_Zones.O > 0 or se.UNR_Zones.D > 0,,0.8,Transit positive utility from/to UNC Zones

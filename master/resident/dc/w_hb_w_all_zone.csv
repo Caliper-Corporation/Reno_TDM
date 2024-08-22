@@ -7,7 +7,6 @@ se.w_hbw_size_L.D,v0,0.676,Size term for low income workers
 nz(mc_logsums.TransitComposite),,0.0601,
 intra_cluster.IZ,,0.815,
 sov_skim.CongTime,,-0.0965,
-se.access_hospital_sov.D,,0.195,
 se.access_transit.D,,0.0322,
 se.access_walk.D,v0,0.353,
 sp.hbw.D,,1,Shadow price

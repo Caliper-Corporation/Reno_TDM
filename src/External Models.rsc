@@ -39,8 +39,7 @@ Macro "Convert EE CSV to MTX" (Args)
   opts.[File Name] = ee_mtx_file
   opts.Label = "EE Matrix"
   opts.Tables = {"EE_AUTO_AM", "EE_AUTO_MD", "EE_AUTO_PM", "EE_AUTO_NT",
-                 "EE_CVSUT_AM", "EE_CVSUT_MD", "EE_CVSUT_PM", "EE_CVSUT_NT",
-				 "EE_CVMUT_AM", "EE_CVMUT_MD", "EE_CVMUT_PM", "EE_CVMUT_NT"}
+                 "EE_TRK_AM", "EE_TRK_MD", "EE_TRK_PM", "EE_TRK_NT"}
   row_spec = {nlyr + "|ext", nlyr + ".ID", "externals"}
   
   mtx = CreateMatrix(row_spec, , opts)
@@ -56,8 +55,7 @@ Macro "Convert EE CSV to MTX" (Args)
     "dest_taz",
     null,
     {view + ".auto", view + ".auto", view + ".auto", view + ".auto", 
-	 view + ".cv_sut", view + ".cv_sut", view + ".cv_sut", view + ".cv_sut",
-	 view + ".cv_mut", view + ".cv_mut", view + ".cv_mut", view + ".cv_mut"},
+	 view + ".truck", view + ".truck", view + ".truck", view + ".truck"},
     "Replace",
     opts
   )
@@ -93,28 +91,24 @@ Macro "Calculate EE IPF Marginals" (Args)
       "TAZ", 
       "AWDT",
       "PCT_AUTO_EE",
-      "PCT_CVSUT_EE",
-      "PCT_CVMUT_EE"
+      "PCT_TRK_EE"
     },
     {OptArray: TRUE}
   )
   
   ee_auto_marg = Nz(data.AWDT) * (Nz(data.PCT_AUTO_EE)/100) / 2
-  ee_cv_sut_marg = Nz(data.AWDT) * (Nz(data.PCT_CVSUT_EE)/100) / 2
-  ee_cv_mut_marg = Nz(data.AWDT) * (Nz(data.PCT_CVMUT_EE)/100) / 2
+  ee_trk_marg = Nz(data.AWDT) * (Nz(data.PCT_TRK_EE)/100) / 2
   
   a_fields = {
     {"EE_AUTO_MARG", "Real", 10, 2, , , , "ee auto marginal"},
-    {"EE_CV_SUT_MARG", "Real", 10, 2, , , , "ee cv sut marginal"},
-    {"EE_CV_MUT_MARG", "Real", 10, 2, , , , "ee cv mut marginal"}
+    {"EE_TRK_MARG", "Real", 10, 2, , , , "ee trk marginal"}
   }
   
   RunMacro("Add Fields", {view: se_vw, a_fields: a_fields})
   
   SetView(se_vw)
   SetDataVector(se_vw + "|", "EE_AUTO_MARG", ee_auto_marg, )
-  SetDataVector(se_vw + "|", "EE_CV_SUT_MARG", ee_cv_sut_marg, )
-  SetDataVector(se_vw + "|", "EE_CV_MUT_MARG", ee_cv_mut_marg, )
+  SetDataVector(se_vw + "|", "EE_TRK_MARG", ee_trk_marg, )
   
   CloseView(se_vw)
     
@@ -164,11 +158,9 @@ Macro "IPF EE Seed Table" (Args)
   Opts.Global.Convergence = 0.001
   Opts.Field.[Core Names Used] = core_names
   Opts.Field.[P Core Fields] = {"se.EE_AUTO_MARG_AM", "se.EE_AUTO_MARG_MD", "se.EE_AUTO_MARG_PM", "se.EE_AUTO_MARG_NT" , 
-                                "se.EE_CV_SUT_MARG_AM", "se.EE_CV_SUT_MARG_MD", "se.EE_CV_SUT_MARG_PM", "se.EE_CV_SUT_MARG_NT",
-								"se.EE_CV_MUT_MARG_AM", "se.EE_CV_MUT_MARG_MD", "se.EE_CV_MUT_MARG_PM", "se.EE_CV_MUT_MARG_NT"}
+                                "se.EE_TRK_MARG_AM", "se.EE_TRK_MARG_MD", "se.EE_TRK_MARG_PM", "se.EE_TRK_MARG_NT"}
   Opts.Field.[A Core Fields] = {"se.EE_AUTO_MARG_AM", "se.EE_AUTO_MARG_MD", "se.EE_AUTO_MARG_PM", "se.EE_AUTO_MARG_NT",
-                                "se.EE_CV_SUT_MARG_AM", "se.EE_CV_SUT_MARG_MD", "se.EE_CV_SUT_MARG_PM", "se.EE_CV_SUT_MARG_NT",
-								"se.EE_CV_MUT_MARG_AM", "se.EE_CV_MUT_MARG_MD", "se.EE_CV_MUT_MARG_PM", "se.EE_CV_MUT_MARG_NT"}
+                                "se.EE_TRK_MARG_AM", "se.EE_TRK_MARG_MD", "se.EE_TRK_MARG_PM", "se.EE_TRK_MARG_NT"}
   Opts.Output.[Output Matrix].Label = "EE Trips Matrix"
   Opts.Output.[Output Matrix].[File Name] = ee_mtx_file
   RunMacro("TCB Init")
@@ -251,27 +243,23 @@ Macro "IEEI Productions" (Args)
       "TAZ",
       "AWDT",
       "PCT_AUTO_IEEI",
-      "PCT_CVSUT_IEEI",
-      "PCT_CVMUT_IEEI"
+      "PCT_TRK_IEEI"
     },
     {OptArray: TRUE}
   )
   
   ieei_auto_prod = Nz(data.AWDT) * (Nz(data.PCT_AUTO_IEEI)/100)
-  ieei_cvsut_prod = Nz(data.AWDT) * (Nz(data.PCT_CVSUT_IEEI)/100)
-  ieei_cvmut_prod = Nz(data.AWDT) * (Nz(data.PCT_CVMUT_IEEI)/100)
+  ieei_trk_prod = Nz(data.AWDT) * (Nz(data.PCT_TRK_IEEI)/100)
   
   a_fields = {
     {"IEEI_AUTO_PROD", "Real", 10, 2, , , , "ieei auto productions"},
-    {"IEEI_CVSUT_PROD", "Real", 10, 2, , , , "ieei cv sut productions"},
-    {"IEEI_CVMUT_PROD", "Real", 10, 2, , , , "ieei cv mut productions"}
+    {"IEEI_TRK_PROD", "Real", 10, 2, , , , "ieei trk productions"}
   }
   RunMacro("Add Fields", {view: se_vw, a_fields: a_fields})
   
   SetView(se_vw)
   SetDataVector(se_vw + "|", "IEEI_AUTO_PROD", ieei_auto_prod, )
-  SetDataVector(se_vw + "|", "IEEI_CVSUT_PROD", ieei_cvsut_prod, )
-  SetDataVector(se_vw + "|", "IEEI_CVMUT_PROD", ieei_cvmut_prod, )
+  SetDataVector(se_vw + "|", "IEEI_TRK_PROD", ieei_trk_prod, )
   CloseView(se_vw)
 endmacro
 

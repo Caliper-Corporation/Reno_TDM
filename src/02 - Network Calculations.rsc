@@ -70,7 +70,7 @@ Macro "Is Scenario Created" (Args)
     else do
         MessageBox(
             "This scenario has not been created\n" + 
-            "Use TRMG2 Menu -> Create Scenario",
+            "Use RTCWC Menu -> Create Scenario",
             {Caption: "Scenario not created"}
         )
         return("false")
@@ -131,7 +131,7 @@ Macro "Filter Transit Modes" (Args)
     DeleteRecordsInSet(del_set)
     ExportView(mode_vw + "|", "CSV", Args.TransModeTable, , {"CSV Header": "true"})
     CloseView(mode_vw)
-    DeleteFile(Substitute(Args.TransModeTable, ".csv", ".dcc", ))
+    // DeleteFile(Substitute(Args.TransModeTable, ".csv", ".dcc", ))
     
     // Remove modes from MC parameter files
     RunMacro("Filter Resident HB Transit Modes", Args)
@@ -924,7 +924,7 @@ Macro "Calculate Bus Speeds" (Args)
     for period in periods do
         for dir in dirs do
             v_auto_time = GetDataVector(jv + "|", llyr_specs.(dir + period + "Time"), )
-            v_bosss = GetDataVector(jv + "|", llyr_specs.("BOSSS"), )
+            //v_bosss = GetDataVector(jv + "|", llyr_specs.("BOSSS"), )
             v_auto_speed = v_length / (v_auto_time / 60)
             for mode in modes do
                 v_fac = GetDataVector(jv + "|", eq_specs.(mode + "_fac"), )
@@ -932,9 +932,9 @@ Macro "Calculate Bus Speeds" (Args)
                 // For Bus-On-Shoulder System links (BOSS), busses can travel 
                 // 15 mph faster than auto traffic using the shoulder, but
                 // capped at the speed listed on the link (e.g. 35 mph).
-                v_speed = if v_auto_speed < nz(v_bosss) 
+                /*v_speed = if v_auto_speed < nz(v_bosss) 
                     then min(v_auto_speed + 15, v_bosss) 
-                    else v_speed
+                    else v_speed*/
                 v_time = v_length / v_speed * 60
                 // handle links without auto times (e.g. transit only)
                 v_time = if v_time = null then v_auto_time else v_time
@@ -965,6 +965,11 @@ Macro "Create Link Networks" (Args)
     // Create the auto networks
     // This array could be passed in as an argument to make the function more
     // generic.
+    
+    {map, {nlyr, llyr}} = RunMacro("Create Map", {file: link_dbd})
+        SetLayer(llyr)
+        query = "Select * where TollType = 'Toll'"
+        n = SelectByQuery("sel", "several", query)
     auto_nets = null
     auto_nets.sov.filter = "D = 1 and HOV = 'None'"
     auto_nets.hov.filter = "D = 1"
@@ -996,11 +1001,12 @@ Macro "Create Link Networks" (Args)
             netSetObj.LayerDB = link_dbd
             netSetObj.LoadNetwork(net_file)
             netSetObj.CentroidFilter = "Centroid = 1"
-            netSetObj.LinkTollFilter = "TollType = 'Toll'"
+            if n > 0 then netSetObj.LinkTollFilter = "TollType = 'Toll'"
             netSetObj.SetPenalties({UTurn: -1})
             netSetObj.Run()
         end
     end
+    CloseMap(map)
 
     // Create the non-motorized networks
     nm_nets = null
@@ -1075,7 +1081,7 @@ Macro "Create Route Networks" (Args)
     // during scenario creation, a user might create a new route to test after
     // creating the scenario. This makes sure it 'just works'.
     {map, {rlyr, slyr, , nlyr, llyr}} = RunMacro("Create Map", {file: rts_file})
-    TagRouteStopsWithNode(rlyr,,"Node_ID",.2)
+    TagRouteStopsWithNode(rlyr,,"Node_ID",.25)
     CloseMap(map)
 
     transit_modes = RunMacro("Get Transit Modes", TransModeTable)
@@ -1142,11 +1148,16 @@ Macro "Create Route Networks" (Args)
                 end
                 o.Run()
 
+                length = StringLength(TransModeTable)
+                temp = substring(TransModeTable,1,length-3)
+                info = GetFileInfo(temp + "DCC")
+                if info <> null then deletefile(temp + "DCC")
+
                 // Set transit network settings
                 o = CreateObject("Network.SetPublicPathFinder", {RS: rts_file, NetworkName: file_name})
                 o.UserClasses = {"Class1"}
                 o.CentroidFilter = "Centroid = 1"
-                // o.LinkImpedance = "IVTT"
+                o.LinkImpedance = "LBTime"
                 o.Parameters({
                     MaxTripCost : 240,
                     MaxTransfers : 1,

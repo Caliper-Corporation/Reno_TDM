@@ -1689,11 +1689,17 @@ Uses the mode table to get the transit modes in the model. Exclude "nt"
 */
 
 Macro "Get Transit Modes" (mode_csv)
+    length = StringLength(mode_csv)
+    temp = substring(mode_csv,1,length-3)
+    info = GetFileInfo(temp + "DCC")
+    if info <> null then deletefile(temp + "DCC")
     mode_vw = OpenTable("mode", "CSV", {mode_csv})
     transit_modes = V2A(GetDataVector(mode_vw + "|", "abbr", ))
     pos = transit_modes.position("nt")
     transit_modes = ExcludeArrayElements(transit_modes, pos, 1)
     CloseView(mode_vw)
+    info = GetFileInfo(temp + "DCC")
+    if info <> null then deletefile(temp + "DCC")
     return(transit_modes)
 endmacro
 
@@ -1909,7 +1915,11 @@ Macro "Accessibility Calculator" (MacroOpts)
     // Calculate logsum
     skim = CreateObject("Matrix", skim_file)
     skim.AddCores({"size", "util"})
-    size = GetDataVector(table_vw + "|", out_field + "_attr", )
+    SetView(table_vw)
+    //query1 = "Select * where Type = 'Internal'"
+    //n = SelectByQuery("Internals", "several", query1)
+    //size = GetDataVector(table_vw + "|Internals", out_field + "_attr", {{"Sort Order", {{"TAZ", "Ascending"}}}})
+    size = GetDataVector(table_vw + "|", out_field + "_attr", {{"Sort Order", {{"TAZ", "Ascending"}}}})
     skim.size := size
     skim.util := skim.size * pow(skim.(skim_core), b) * exp(c * skim.(skim_core))
     skim.util := if skim.size = 0 then 0 else skim.util
@@ -1922,7 +1932,8 @@ Macro "Accessibility Calculator" (MacroOpts)
       name + ext + " for more details"
     a_field = {{out_field, "Real", 10, 2, , , , description}}
     RunMacro("Add Fields", {view: table_vw, a_fields: a_field})
-    SetDataVector(table_vw + "|", out_field, logsum, )
+    //SetDataVector(table_vw + "|Internals", out_field, logsum, {{"Sort Order", {{"TAZ", "Ascending"}}}})
+    SetDataVector(table_vw + "|", out_field, logsum, {{"Sort Order", {{"TAZ", "Ascending"}}}})
     skim.DropCores({"size", "util"})
   end
 
@@ -2345,7 +2356,7 @@ Macro "Create Intra Cluster Matrix"(Args)
 
   outMtx = Args.[Output Folder] + "/skims/IntraCluster.mtx"
   // Create empty matrix
-  obj = CreateObject("Matrix") 
+  obj = CreateObject("Matrix", {Empty: True}) 
   obj.SetMatrixOptions({Compressed: 1, DataType: "Short", FileName: outMtx, MatrixLabel: "IntraCluster"})
   opts.RowIds = v2a(vTAZ) 
   opts.ColIds = v2a(vTAZ)

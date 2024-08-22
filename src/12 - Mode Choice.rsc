@@ -107,9 +107,12 @@ Macro "Calculate MC" (Args)
             hov_skim = skims_dir + "roadway\\avg_skim_" + period + "_" + tour_type + "_" + homebased + "_hov.mtx"
             
             // Set sources
-            opts.tables = {
+            /*opts.tables = {
                 se: {File: scen_dir + "\\output\\sedata\\scenario_se.bin", IDField: "TAZ"},
                 parking: {File: scen_dir + "\\output\\resident\\parking\\ParkingLogsums.bin", IDField: "TAZ"}
+            }*/
+            opts.tables = {
+                se: {File: scen_dir + "\\output\\sedata\\scenario_se.bin", IDField: "TAZ"}
             }
             opts.matrices = {
                 sov_skim: {File: sov_skim},
@@ -161,8 +164,7 @@ Macro "Post Process Logsum" (Args)
         for period in periods do
             for segment in segments do
                 mtx_file = ls_dir + "/logsum_" + trip_type + "_" + segment + "_" + period + ".mtx"
-                mtx = CreateObject("Matrix")
-                mtx.LoadMatrix(mtx_file)
+                mtx = CreateObject("Matrix", mtx_file)
                 core_names = mtx._GetCoreNames()
                 if ArrayPosition(core_names, {"nonhh_auto"},) > 0 then do
                     mtx.AddCores({"NonHHAutoComposite"})

@@ -16,7 +16,6 @@ hov3,se.HHSize1Pct.O,,-0.4996,Percent of 1-person HHs
 other_auto,Constant,,-4.305,Constant
 other_auto,sov_skim.CongTime,,-0.1614,Travel time
 other_auto,sov_skim.[TollCostSOV (Skim)],,-0.813918,Toll cost
-other_auto,parking.MC_LS_NonWork.D,,0.3945,Parking
 auto_pay,Constant,,-0.4568,Constant
 auto_pay,hov_skim.CongTime,,-0.08114,Travel time
 auto_pay,se.PKTNCWait.O,,-0.08114,Auto wait time

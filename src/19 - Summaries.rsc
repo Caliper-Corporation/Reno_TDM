@@ -31,13 +31,13 @@ Macro "Other Reports" (Args)
     RunMacro("Summarize Total Mode Shares", Args)
     RunMacro("Summarize Links", Args)
     RunMacro("Congested VMT", Args)
-    RunMacro("Summarize Parking", Args)
-    RunMacro("Transit Summary", Args)
+    //RunMacro("Summarize Parking", Args)
+    //RunMacro("Transit Summary", Args)
     RunMacro("VMT_Delay Summary", Args)
     RunMacro("Congestion Cost Summary", Args)
     RunMacro("Create PA Vehicle Trip Matrices", Args)
     RunMacro("Summarize HH Strata", Args)
-    RunMacro("Aggregate Transit Flow by Route", Args)
+    //RunMacro("Aggregate Transit Flow by Route", Args)
     return(1)
 endmacro
 
@@ -268,7 +268,7 @@ Macro "Create Count Difference Map" (Args)
   opts.vol_field = "Total_Flow_Daily"
   opts.field_suffix = "All"
   RunMacro("Count Difference Map", opts)
-
+/*
   // Create SUT count diff map
   opts = null
   opts.output_file = output_dir +
@@ -290,6 +290,7 @@ Macro "Create Count Difference Map" (Args)
   opts.vol_field = "Total_MUT_Flow_Daily"
   opts.field_suffix = "MUT"
   RunMacro("Count Difference Map", opts)
+  */
 EndMacro
 
 /*
@@ -1209,14 +1210,15 @@ Macro "Summarize Links" (Args)
   {tlyr} = GetDBLayers(taz_dbd)
   tlyr = AddLayer(map, tlyr, taz_dbd, tlyr)
   a_fields =  {
-      {"MPO", "Character", 10, ,,,, "The MPO this link is located in"},
+      //{"MPO", "Character", 10, ,,,, "The MPO this link is located in"},
       {"County", "Character", 10, ,,,, "The county this link is located in"}
   }
   RunMacro("Add Fields", {view: llyr, a_fields: a_fields})
-  TagLayer("Value", llyr + "|", llyr + ".MPO", tlyr + "|", tlyr + ".MPO")
+  //TagLayer("Value", llyr + "|", llyr + ".MPO", tlyr + "|", tlyr + ".MPO")
   TagLayer("Value", llyr + "|", llyr + ".County", tlyr + "|", tlyr + ".County")
   SetLayer(llyr)
-  fields = {"MPO", "County"}
+  //fields = {"MPO", "County"}
+  fields = {"County"}
   for field in fields do
     query = "Select * where " + field + " = null"
     n = SelectByQuery("missing", "several", query)
@@ -1238,7 +1240,8 @@ Macro "Summarize Links" (Args)
     
     // opts.summary_fields = {total + "_Flow_" + period, "Total_VMT_Daily", "Total_VHT_Daily", "Total_Delay_Daily"}
     opts.summary_fields = {total + "_Flow_" + period, total + "_VMT_" + period, total + "_VHT_" + period, total + "_Delay_" + period}
-    grouping_fields = {"AreaType", "MPO", "County"}
+    //grouping_fields = {"AreaType", "MPO", "County"}
+    grouping_fields = {"AreaType", "County"}
     for grouping_field in grouping_fields do
       opts.output_csv = out_dir + "/Link_Summary_by_FT_and_" + grouping_field + "_" + period + ".csv"
       opts.grouping_fields = {"HCMType", grouping_field}
@@ -1302,7 +1305,8 @@ Macro "Congested VMT" (Args)
     opts.summary_fields = opts.summary_fields + {"CongestedVMT_" + period, "Tot_VMT_" + period}
   end
   opts.hwy_dbd = hwy_dbd
-  grouping_fields = {"MPO", "County"}
+  //grouping_fields = {"MPO", "County"}
+  grouping_fields = {"County"}
   for grouping_field in grouping_fields do
     opts.output_csv = out_dir + "/Congested_VMT_by_" + grouping_field + ".csv"
     opts.grouping_fields = {grouping_field}
@@ -1428,7 +1432,8 @@ Macro "VMT_Delay Summary" (Args)
   a_dirs = {"AB", "BA"}
   veh_classes = {"sov", "hov2", "hov3", "CV", "SUT", "MUT"}
   fields = {"Flow", "VMT", "CgVMT", "Delay"}
-  group_fields = {"HCMType", "AreaType", "NCDOTClass", "County", "MPO"}
+  //group_fields = {"HCMType", "AreaType", "NCDOTClass", "County", "MPO"}
+  group_fields = {"HCMType", "AreaType", "County"}
   
   {map, {nlyr, llyr}} = RunMacro("Create Map", {file: hwy_dbd})
 
@@ -1550,7 +1555,8 @@ Macro "VMT_Delay Summary" (Args)
   taz_bin = Substitute(taz_dbd, ".dbd", ".bin",)
   taz = CreateObject("df", taz_bin) // get county info for SE data
   output = null
-  group_fields = {"County", "MPO"}
+  //group_fields = {"County", "MPO"}
+  group_fields = {"County"}
   fields_to_sum = {"HH", "POP"}
   for var in group_fields do 
     df = CreateObject("df", output_dir + "/link_VMT_Delay.csv")
@@ -1558,7 +1564,8 @@ Macro "VMT_Delay Summary" (Args)
     df.summarize("Total_VMT_Daily", "sum")
     
     se = CreateObject("df", se_bin)
-    se.mutate("POP", se.tbl.HH_POP + se.tbl.StudGQ_NCSU + se.tbl.StudGQ_UNC + se.tbl.StudGQ_DUKE + se.tbl.StudGQ_NCCU + se.tbl.CollegeOn)
+    //se.mutate("POP", se.tbl.HH_POP + se.tbl.StudGQ_NCSU + se.tbl.StudGQ_UNC + se.tbl.StudGQ_DUKE + se.tbl.StudGQ_NCCU + se.tbl.CollegeOn)
+    se.mutate("POP", se.tbl.HH_POP + se.tbl.StudGQ_UNR)
     se.left_join(taz, "TAZ", "ID")
     se.group_by(var)
     se.summarize(fields_to_sum, "sum")
@@ -1610,7 +1617,9 @@ Macro "Congestion Cost Summary" (Args)
 	a_dirs = {"AB", "BA"}
 	veh_classes = {"sov", "hov2", "hov3", "CV", "SUT", "MUT"}
 	auto_classes = {"sov", "hov2", "hov3", "CV"}
-	group_fields = {"HCMType", "AreaType", "NCDOTClass", "County", "MPO"}
+	//group_fields = {"HCMType", "AreaType", "NCDOTClass", "County", "MPO"}
+  group_fields = {"HCMType", "AreaType", "County"}
+
 
 	{nLayer, llyr} = GetDBLayers(hwy_dbd)
 	llyr = AddLayerToWorkspace(llyr, hwy_dbd, llyr)

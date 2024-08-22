@@ -103,7 +103,7 @@ Macro "DC Size Terms" (Args)
 
     // Before calculating the size term fields, create any additional fields
     // needed for that calculation.
-    se_vw = OpenTable("se", "FFB", {se_file})
+    /*se_vw = OpenTable("se", "FFB", {se_file})
     a_fields =  {{
         "Hosp_Service", "Real", 10, 2,,,, 
         "Hospital * Total Service Employment.|Used in OMED dc model"
@@ -116,7 +116,7 @@ Macro "DC Size Terms" (Args)
     )
     output.Hosp_Service = input.Hospital * (input.Service_RateLow + input.Service_RateHigh)
     SetDataVectors(se_vw + "|", output, )
-    CloseView(se_vw)
+    CloseView(se_vw) */
 
     sizeSpec = {DataFile: se_file, CoeffFile: coeff_file}
     RunMacro("Compute Size Terms", sizeSpec)
@@ -228,7 +228,7 @@ Macro "Calculate Destination Choice" (Args, trip_types)
             se_file = scen_dir + "/output/sedata/scenario_se.bin"
             opts.tables = {
                 se: {File: se_file, IDField: "TAZ"},
-                parking: {File: scen_dir + "/output/resident/parking/ParkingLogsums.bin", IDField: "TAZ"},
+                //parking: {File: scen_dir + "/output/resident/parking/ParkingLogsums.bin", IDField: "TAZ"},
                 sp: {File: sp_file, IDField: "TAZ"}
             }
             opts.cluster_equiv_spec = {File: se_file, ZoneIDField: "TAZ", ClusterIDField: "Cluster"}

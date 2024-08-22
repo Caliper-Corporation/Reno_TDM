@@ -46,25 +46,16 @@ Macro "University Productions" (Args)
     se_file = Args.SE
     production_rate_file = Args.[Input Folder] + "\\university\\university_production_rates.csv"
 
-    campus_list = {"NCSU", "UNC", "DUKE", "NCCU"}
+    campus_list = {"UNR"}
 
     se_vw = OpenTable("se", "FFB", {se_file})
 
     data = GetDataVectors(
         se_vw + "|",
         {
-            "StudGQ_NCSU",
-            "StudGQ_UNC",
-            "StudGQ_DUKE",
-            "StudGQ_NCCU",
-            "StudOff_NCSU",
-            "StudOff_UNC",
-            "StudOff_DUKE",
-            "StudOff_NCCU",
-            "BuildingS_NCSU",
-            "BuildingS_UNC",
-            "BuildingS_DUKE",
-            "BuildingS_NCCU"
+            "StudGQ_UNR",
+            "StudOff_UNR",
+            "BuildingS_UNR"
         },
         {OptArray: TRUE}
     )
@@ -88,7 +79,7 @@ Macro "University Productions" (Args)
         production_uho_off = data.("StudOff_" + campus) * rate.Prod_Rate_UHO_Off * rate.calib_factor
 
         production_uco = data.("BuildingS_" + campus) * rate.Prod_Rate_UCO * rate.calib_factor
-        production_ucc = data.("BuildingS_" + campus) * rate.Prod_Rate_UCC * rate.calib_factor
+        //production_ucc = data.("BuildingS_" + campus) * rate.Prod_Rate_UCC * rate.calib_factor
         production_uc1 = data.("BuildingS_" + campus) * rate.Prod_Rate_UC1 * rate.calib_factor
 
         a_fields = {
@@ -98,8 +89,8 @@ Macro "University Productions" (Args)
             {"ProdOff_UHO_" + campus, "Real", 10, 2, , , , campus + " UHO OffCampus Students Production"},
 
             {"Prod_UCO_" + campus, "Real", 10, 2, , , , campus + " UCO Production"},
-            {"Prod_UC1_" + campus, "Real", 10, 2, , , , campus + " UC1 Production"},
-            {"Prod_UCC_" + campus, "Real", 10, 2, , , , campus + " UCC Production"}
+            {"Prod_UC1_" + campus, "Real", 10, 2, , , , campus + " UC1 Production"}//,
+            //{"Prod_UCC_" + campus, "Real", 10, 2, , , , campus + " UCC Production"}
         }
         RunMacro("Add Fields", {view: se_vw, a_fields: a_fields})
 
@@ -109,7 +100,7 @@ Macro "University Productions" (Args)
         SetDataVector(se_vw + "|", "ProdOff_UHO_" + campus, production_uho_off, )
         SetDataVector(se_vw + "|", "Prod_UCO_" + campus, production_uco, )
         SetDataVector(se_vw + "|", "Prod_UC1_" + campus, production_uc1, )
-        SetDataVector(se_vw + "|", "Prod_UCC_" + campus, production_ucc, )
+        //SetDataVector(se_vw + "|", "Prod_UCC_" + campus, production_ucc, )
     end
 
     CloseView(se_vw)
@@ -124,21 +115,15 @@ Macro "University Attractions" (Args)
     se_file = Args.SE
     rate_file = Args.[Input Folder] + "\\university\\university_attraction_rates.csv"
 
-    campus_list = {"NCSU", "UNC", "DUKE", "NCCU"}
+    campus_list = {"UNR"}
 
     se_vw = OpenTable("se", "FFB", {se_file})
 
     data = GetDataVectors(
         se_vw + "|",
         {
-            "StudOff_NCSU",
-            "StudOff_UNC",
-            "StudOff_DUKE",
-            "StudOff_NCCU",
-            "BuildingS_NCSU",
-            "BuildingS_UNC",
-            "BuildingS_DUKE",
-            "BuildingS_NCCU",
+            "StudOff_UNR",
+            "BuildingS_UNR",
             "Retail"
         },
         {OptArray: TRUE}
@@ -179,7 +164,7 @@ Macro "University Attractions" (Args)
             uco_coeff.student_off_campus * data.("StudOff_" + campus)
 
         // UCC attractions
-        attraction_ucc = proportion_bldg_sqft_campus
+        //attraction_ucc = proportion_bldg_sqft_campus
 
         // UC1 attractions
         attraction_uc1 = proportion_bldg_sqft_campus
@@ -190,7 +175,7 @@ Macro "University Attractions" (Args)
             {"AttrOn_UHO_" + campus, "Real", 10, 2, , , , campus + " UHO OnCampus Students Attraction"},
             {"AttrOff_UHO_" + campus, "Real", 10, 2, , , , campus + " UHO OffCampus Students Attraction"},
             {"Attr_UCO_" + campus, "Real", 10, 2, , , , campus + " UCO Attraction"},
-            {"Attr_UCC_" + campus, "Real", 10, 2, , , , campus + " UCC Attraction"},
+            //{"Attr_UCC_" + campus, "Real", 10, 2, , , , campus + " UCC Attraction"},
             {"Attr_UC1_" + campus, "Real", 10, 2, , , , campus + " UC1 Attraction"}
         }
         RunMacro("Add Fields", {view: se_vw, a_fields: a_fields})
@@ -200,7 +185,7 @@ Macro "University Attractions" (Args)
         SetDataVector(se_vw + "|", "AttrOn_UHO_" + campus, attraction_uho_on, )
         SetDataVector(se_vw + "|", "AttrOff_UHO_" + campus, attraction_uho_off, )
         SetDataVector(se_vw + "|", "Attr_UCO_" + campus, attraction_uco, )
-        SetDataVector(se_vw + "|", "Attr_UCC_" + campus, attraction_ucc, )
+        //SetDataVector(se_vw + "|", "Attr_UCC_" + campus, attraction_ucc, )
         SetDataVector(se_vw + "|", "Attr_UC1_" + campus, attraction_uc1, )
     end
 
@@ -216,7 +201,7 @@ Macro "University Balance Ps and As" (Args)
     se_vw = OpenTable("se", "FFB", {se_file})
     SetView(se_vw)
 
-    campus_list = {"NCSU", "UNC", "DUKE", "NCCU"}
+    campus_list = {"UNR"}
 
     for c = 1 to campus_list.length do
         campus = campus_list[c]
@@ -226,7 +211,7 @@ Macro "University Balance Ps and As" (Args)
         production_uho_on = GetDataVector(se_vw + "|", "ProdOn_UHO_" + campus, )
         production_uho_off = GetDataVector(se_vw + "|", "ProdOff_UHO_" + campus, )
         production_uco = GetDataVector(se_vw + "|", "Prod_UCO_" + campus, )
-        production_ucc = GetDataVector(se_vw + "|", "Prod_UCC_" + campus, )
+        //production_ucc = GetDataVector(se_vw + "|", "Prod_UCC_" + campus, )
         production_uc1 = GetDataVector(se_vw + "|", "Prod_UC1_" + campus, )
 
         attraction_uhc_on = GetDataVector(se_vw + "|", "AttrOn_UHC_" + campus, )
@@ -234,7 +219,7 @@ Macro "University Balance Ps and As" (Args)
         attraction_uho_on = GetDataVector(se_vw + "|", "AttrOn_UHO_" + campus, )
         attraction_uho_off = GetDataVector(se_vw + "|", "AttrOff_UHO_" + campus, )
         attraction_uco = GetDataVector(se_vw + "|", "Attr_UCO_" + campus, )
-        attraction_ucc = GetDataVector(se_vw + "|", "Attr_UCC_" + campus, )
+        //attraction_ucc = GetDataVector(se_vw + "|", "Attr_UCC_" + campus, )
         attraction_uc1 = GetDataVector(se_vw + "|", "Attr_UC1_" + campus, )
 
         production_uhc_on_total = VectorStatistic(production_uhc_on, "sum", )
@@ -242,7 +227,7 @@ Macro "University Balance Ps and As" (Args)
         production_uho_on_total = VectorStatistic(production_uho_on, "sum", )
         production_uho_off_total = VectorStatistic(production_uho_off, "sum", )
         production_uco_total = VectorStatistic(production_uco, "sum", )
-        production_ucc_total = VectorStatistic(production_ucc, "sum", )
+        //production_ucc_total = VectorStatistic(production_ucc, "sum", )
         production_uc1_total = VectorStatistic(production_uc1, "sum", )
 
         attraction_uhc_on_total = VectorStatistic(attraction_uhc_on, "sum", )
@@ -250,7 +235,7 @@ Macro "University Balance Ps and As" (Args)
         attraction_uho_on_total = VectorStatistic(attraction_uho_on, "sum", )
         attraction_uho_off_total = VectorStatistic(attraction_uho_off, "sum", )
         attraction_uco_total = VectorStatistic(attraction_uco, "sum", )
-        attraction_ucc_total = VectorStatistic(attraction_ucc, "sum", )
+        //attraction_ucc_total = VectorStatistic(attraction_ucc, "sum", )
         attraction_uc1_total = VectorStatistic(attraction_uc1, "sum", )
 
         // balancing to productions
@@ -259,7 +244,7 @@ Macro "University Balance Ps and As" (Args)
         attraction_uho_on = attraction_uho_on * production_uho_on_total/attraction_uho_on_total
         attraction_uho_off = attraction_uho_off * production_uho_off_total/attraction_uho_off_total
         attraction_uco = attraction_uco * production_uco_total/attraction_uco_total
-        attraction_ucc = attraction_ucc * production_ucc_total/attraction_ucc_total
+        //attraction_ucc = attraction_ucc * production_ucc_total/attraction_ucc_total
         attraction_uc1 = attraction_uc1 * production_uc1_total/attraction_uc1_total
 
         SetDataVector(se_vw + "|", "AttrOn_UHC_" + campus, attraction_uhc_on, )
@@ -267,7 +252,7 @@ Macro "University Balance Ps and As" (Args)
         SetDataVector(se_vw + "|", "AttrOn_UHO_" + campus, attraction_uho_on, )
         SetDataVector(se_vw + "|", "AttrOff_UHO_" + campus, attraction_uho_off, )
         SetDataVector(se_vw + "|", "Attr_UCO_" + campus, attraction_uco, )
-        SetDataVector(se_vw + "|", "Attr_UCC_" + campus, attraction_ucc, )
+        //SetDataVector(se_vw + "|", "Attr_UCC_" + campus, attraction_ucc, )
         SetDataVector(se_vw + "|", "Attr_UC1_" + campus, attraction_uc1, )
 
     end
@@ -290,7 +275,7 @@ Macro "University TOD" (Args)
     v_tod = GetDataVector(fac_vw + "|", "tod", )
     v_fac = GetDataVector(fac_vw + "|", "factor", )
 
-    univs = {"NCSU", "UNC", "DUKE", "NCCU"}
+    univs = {"UNR"}
 
     for i = 1 to v_type.length do
         type = v_type[i]
@@ -328,7 +313,7 @@ SE data (because it is a derivative of other zones), calculate it here.
 
 Macro "Mark Univ Zones" (Args)
 
-    univs = {"UNC", "Duke", "NCSU", "NCCU"}
+    univs = {"UNR"}
     se_file = Args.SE
 
     se_vw = Opentable("se", "FFB", {se_file})
@@ -372,11 +357,12 @@ Macro "University Combine Campus" (Args)
     trips_dir = Args.[Output Folder] + "\\university\\"
     periods = Args.periods
 
-    campus_list = {"NCSU", "UNC", "DUKE", "NCCU"}
+    campus_list = {"UNR"}
 
     university_mtx_file = trips_dir + "university_pa_trips.mtx"
 
-    out_core_names = {"UHC_ON", "UHC_OFF", "UHO_ON", "UHO_OFF", "UCO", "UCC", "UC1"}
+    //out_core_names = {"UHC_ON", "UHC_OFF", "UHO_ON", "UHO_OFF", "UCO", "UCC", "UC1"}
+    out_core_names = {"UHC_ON", "UHC_OFF", "UHO_ON", "UHO_OFF", "UCO", "UC1"}
 
     for period in periods do
         out_mtx_file = trips_dir + "university_pa_trips_" + period + ".mtx"
@@ -429,7 +415,9 @@ Macro "University MC Probabilities" (Args)
 
     RunMacro("Create Directory", output_dir)
 
-    trip_types = {"UHC", "UHO", "UCO", "UCC", "UC1"}
+    //trip_types = {"UHC", "UHO", "UCO", "UCC", "UC1"}
+    trip_types = {"UHC", "UHO", "UCO", "UC1"}
+
 
     for trip_type in trip_types do
         trip_type = Lower(trip_type)
@@ -632,7 +620,8 @@ Macro "University Combine Matrices" (Args)
     trips_dir = Args.[Output Folder] + "\\university\\"
     periods = Args.periods
 
-    trip_types = {"UHC_ON", "UHC_OFF", "UHO_ON", "UHO_OFF", "UCO", "UCC", "UC1", "UOO"}
+    //trip_types = {"UHC_ON", "UHC_OFF", "UHO_ON", "UHO_OFF", "UCO", "UCC", "UC1", "UOO"}
+    trip_types = {"UHC_ON", "UHC_OFF", "UHO_ON", "UHO_OFF", "UCO", "UC1", "UOO"}
 
     for period in periods do
         out_mtx_file = trips_dir + "university_pa_modal_trips_" + period + ".mtx"
@@ -708,8 +697,7 @@ Macro "University Directionality" (Args)
         mtx = CreateObject("Matrix", od_matrix_file)
         mtx_core_names = mtx.GetCoreNames()
 
-        t_mtx = CreateObject("Matrix")
-        t_mtx.LoadMatrix(od_transpose_matrix_file)
+        t_mtx = CreateObject("Matrix", od_transpose_matrix_file)
 
         pa_factor = dir_factors.(period)
 
