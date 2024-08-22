@@ -398,21 +398,41 @@ hh_add_tours <- hh_add_strct %>%
 ## Create Trip File
 
 ```{r}
-trip_file <- mark_anchor %>%
-  # Remove the last place for each person. This also removes people who didn't
-  # travel and so only have one place listed.
-  filter(`Activity/Trip_Number` != max(`Activity/Trip_Number`)) %>%
-  group_by(Sample_Number, Person_Number) %>%
+# first remove the mode xfer stops.
+remove_xfers <- mark_anchor %>%
+  filter(Activity_Type_Code != "X")
+
+test <- remove_xfers %>%
+  group_by(Sample_Number, Person_Number, tour_num) %>%
   transmute(
     tour_type = tour_type,
     dep_hr = dep_hr,
     dep_min = dep_min,
+    next_arr_hr = lead(arr_hr),
+    next_arr_min = lead(arr_min)
+  )
+
+trip_file <- remove_xfers %>%
+  # Remove the last place for each person. This also removes people who didn't
+  # travel and so only have one place listed.
+  # filter(`Activity/Trip_Number` != max(`Activity/Trip_Number`)) %>%
+  group_by(Sample_Number, Person_Number) %>%
+  arrange(Sample_Number, Person_Number, `Activity/Trip_Number`) %>%
+  # group_by(tour_id) %>%
+  transmute(
+    tour_type = tour_type,
+    trip_number = lead(`Activity/Trip_Number`),
+    Weight_Factor = Weight_Factor,
+    dep_hr = dep_hr,
+    dep_min = dep_min,
+    next_arr_hr = lead(arr_hr),
+    next_arr_min = lead(arr_min),
     arr_hr = lead(arr_hr),
     arr_min = lead(arr_min),
+    activity_duration = lead(activity_duration),
     mode = lead(mode_model),
     access_mode = lead(Transit_Access),
     egress_mode = lead(Transit_Egress),
-    Persons_on_Trip = lead(Persons_on_Trip),
     HH_Members = lead(HH_Members),
     Non_HH_Members = lead(Non_HH_Members),
     orig_purp = Activity_Type_Code,
@@ -433,13 +453,28 @@ trip_file <- mark_anchor %>%
     p_access_mode = ifelse(pa_format == 1, access_mode, egress_mode),
     p_egress_mode = ifelse(pa_format == 1, egress_mode, access_mode)
   ) %>%
-  # select(-LocationTAZ, -Activity_Type_Code, -mode_model) %>%
+  filter(!is.na(dep_hr) & !is.na(arr_hr)) %>%
   # ID external trips
   mutate(ix_type = case_when(
     is.na(o_taz) & is.na(d_taz) ~ "EE",
     !is.na(o_taz) & !is.na(d_taz) ~ "II",
     TRUE ~ "IX"
   ))
+
+# Add TOD data
+trip_add_tod <- trip_file %>%
+  mutate(
+    trip_dep_mins = dep_hr * 60 + dep_min,
+    trip_arr_mins = arr_hr * 60 + arr_min,
+    midpoint = (trip_arr_mins - trip_dep_mins) / 2 + trip_dep_mins,
+    tod = case_when(
+      trip_dep_mins < 420 ~ "NT",
+      trip_dep_mins < 540 ~ "AM",
+      trip_dep_mins < 900 ~ "MD",
+      trip_dep_mins < 1080 ~ "PM",
+      TRUE ~ "NT",
+    )) %>%
+  select(-trip_dep_mins, trip_arr_mins, midpoint)
 ```
 
 ## Add tour summary to person file
@@ -484,18 +519,6 @@ tour_remove_home <- tour_file %>%
 ## EDA for Non-Mandatory
 
 ```{r}
-# # Add data needed for EDA like skim length and TOD
-# trip_add_tod <- trip_file %>%
-#   mutate(
-#     trip_dep_mins = trip_dep_hr * 60 + trip_dep_min,
-#     tod = case_when(
-#       trip_dep_mins < 390 ~ "EA",
-#       trip_dep_mins < 510 ~ "AM",
-#       trip_dep_mins < 870 ~ "MD",
-#       trip_dep_mins < 1050 ~ "PM",
-#       TRUE ~ "NT",
-#     )) %>%
-#   select(-trip_dep_mins)
 # 
 # skim <- read_csv("data/input/skims/ff_skim.csv")
 # trip_add_skim <- trip_add_tod %>%
@@ -551,7 +574,7 @@ write_csv(hh_add_tours, "data/_private/hh_survey/output/output_households.csv", 
 
 write_csv(tour_remove_home, "data/_private/hh_survey/output/output_tours.csv", na = "")
 write_csv(stops_file, "data/_private/hh_survey/output/output_stops.csv", na = "")
-write_csv(trip_file, "data/_private/hh_survey/output/output_trips.csv", na = "")
+write_csv(trip_add_tod, "data/_private/hh_survey/output/output_trips.csv", na = "")
 # write_csv(eda_df, "data/_private/hh_survey/output/eda.csv", na = "")
 ```
 
