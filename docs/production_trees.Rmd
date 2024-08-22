@@ -1,0 +1,877 @@
+---
+title: "Reno Production Trees"
+output: html_document
+date: "2024-08-22"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+options(dplyr.summarise.inform = FALSE)
+options(scipen = 999)
+
+library(tidyverse)
+library(rpart)
+library(rpart.plot)
+```
+
+```{r, include=FALSE}
+hh <- read_csv("data/_private/hh_survey/output/output_households.csv")
+per <- read_csv("data/_private/hh_survey/output/output_persons.csv") %>%
+  mutate(person_id = paste0(Sample_Number, "_", Person_Number))
+trips <- read_csv("data/_private/hh_survey/output/output_trips.csv") %>%
+  mutate(person_id = paste0(Sample_Number, "_", Person_Number))
+```
+
+```{r}
+# Aggregate counts of trips to persons
+agg_trips <- trips %>%
+  group_by(person_id, purpose) %>%
+  summarize(trips = n()) %>%
+  ungroup() %>%
+  pivot_wider(id_cols = person_id, names_from = purpose, values_from = trips, values_fill = 0)
+
+# Determine which households have kids
+has_kids <- per %>%
+  mutate(
+    is_kid = ifelse(Age < 18, 1, 0),
+    is_senior = ifelse(Age >= 65, 1, 0),
+    is_adult = ifelse(Age >= 18, 1, 0)
+  ) %>%
+  group_by(Sample_Number) %>%
+  summarize(
+    num_kids = sum(is_kid, na.rm = TRUE),
+    num_seniors = sum(is_senior, na.rm = TRUE),
+    num_adults = sum(is_adult, na.rm = TRUE)
+  ) %>%
+  mutate(
+    Kids_Category = ifelse(num_kids > 0, 2, 1),
+    Seniors_Category = ifelse(num_seniors > 0, 2, 1)
+  )
+```
+
+
+```{r}
+# join the three sets of survey info
+joined <- per %>%
+  left_join(hh, by = "Sample_Number") %>%
+  left_join(has_kids, by = "Sample_Number") %>%
+  # set factor fields
+  mutate(
+    Gender = as.factor(Gender),
+    Student_Status = as.factor(Student_Status),
+    Employed = ifelse(Employment == "Yes", "Yes", "No"),
+    Student = Student_Status,
+    Regular_WorkAtHome = ifelse(Workplace_Type_int == 1, "Yes", "No"),
+    WorkIndustry = as.factor(Primary_Industry_int),
+    Inc_Category = case_when(
+      Income_int.x <= 4 ~ 1,
+      Income_int.x <= 9 ~ 2,
+      Income_int.x <= 14 ~ 3,
+      Income_int.x <= 20 ~ 4,
+      Income_int.x <= 24 ~ 5,
+      TRUE ~ 6
+    ),
+    OwnOrRent = as.factor(Rent_or_Own_Residence.x),
+    VehSufficiency = case_when(
+      `Vehicles_Owned/Leased.x` == 0 ~ "v0",
+      `Vehicles_Owned/Leased.x` < num_adults ~ "vi",
+      TRUE ~ "vs"
+    )
+  ) %>%
+  left_join(agg_trips, by = "person_id") %>%
+  mutate(across(HBW:HBH, ~ replace_na(.x, 0))) %>%
+  select(
+    person_id, 
+    # HH variables
+    HHSize = Number_Persons.x, 
+    Vehicles = `Vehicles_Owned/Leased.x`, 
+    Inc_Category,
+    Kids_Category,
+    Seniors_Category,
+    # person variables
+    Gender,
+    Age,
+    # WorkIndustry, 
+    # Student, 
+    Employed,
+    # MoreThanOneJob, 
+    # WorkersEmployed, 
+    VehSufficiency,
+    HBW:HBH,
+    WeightCaliper = `Weight_Factor.x`
+  ) %>%
+  filter(!is.na(WeightCaliper))
+```
+
+```{r}
+rate_list <- list()
+
+create_rule_table <- function(tree, market_segment = NULL) {
+  rules <- rpart.rules(tree, digits = 4)
+  colnames(rules) <- c(
+    "rate",
+    paste0("c", seq(2:ncol(rules) - 1))
+  )
+  
+  result <- rules %>%
+    as_tibble() %>%
+    unite(col = "rule", -rate, sep = " ", na.rm = TRUE) %>%
+    mutate(
+      rate = round(as.numeric(rate), 4),
+      rule = gsub("\\s+", " ", rule),
+      rule = gsub("&", "and", rule),
+      rule = gsub("when ", "", rule, fixed = TRUE),
+      rule = gsub(" or ", ",", rule, fixed = TRUE),
+      rule = str_replace(rule, "(\\w+)\\sis\\s(\\d+\\.*\\d*)\\sto\\s(\\d+\\.*\\d*)", "\\1 >= \\2 and \\1 < \\3"),
+      rule = gsub(" is ", " = ", rule, fixed = TRUE),
+      rate = as.numeric(rate)
+    )
+  
+  if (!is.null(market_segment)) {
+    result <- result %>%
+      mutate(rule = paste0("market_segment = '", market_segment, "' and ", rule))
+  }
+  
+  return(result)
+}
+```
+
+The following analysis shows the affects of estimated decision trees on different
+segments of the population. In general, pre-segmentation of the population
+has a marked impact on the resulting trees, which should serve to improve model
+fit when comparing back to the survey by market segment.
+
+# HBW by Vehicle Sufficiency {.tabset}
+
+The zero-vehicle market is small, and for HBW, the tree is not very interesting.
+The trees for insufficient and sufficient segments do show compelling differences.
+
+## v0
+
+```{r}
+est_tbl <- joined %>%
+  select(
+    HBW, WeightCaliper,
+    HHSize:VehSufficiency
+  ) %>%
+  filter(VehSufficiency == "v0")
+  
+
+tree <- rpart(
+  HBW ~ . - WeightCaliper,
+  data = est_tbl, 
+  method = "anova",
+  maxdepth = 5,
+  cp = .001,
+  minbucket = 30,
+  weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+# tree <- snip.rpart(tree, 2)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+
+rule_tbl <- create_rule_table(tree, "v0")
+rate_tbl <- est_tbl %>%
+  mutate(category = tree$where,) %>%
+  group_by(category) %>%
+  dplyr::summarize(
+    rate = round(weighted.mean(HBW, WeightCaliper), 4),
+    stdev = round(sd(HBW, na.rm = TRUE), 2),
+    samples = n()
+  ) %>%
+  ungroup() %>%
+  mutate(trip_type = "HBW_v0") %>%
+  left_join(rule_tbl, by = "rate") %>%
+  relocate(trip_type:rule, .before = category) %>%
+  arrange(rate)
+rate_list$HBW_v0 <- rate_tbl
+
+# check r^2 at household level
+# check <- joined %>%
+#   mutate(
+#     y = HBW,
+#     y_hat = predict(tree, est_tbl)
+#   ) %>%
+  # group_by(Sample_Number) %>%
+  # summarize(
+  #   y = sum(y),
+  #   y_hat = sum(y_hat)
+  # )
+# r_sq <- round(cor(check$y, check$y_hat)^2, 3)
+# rsq.rpart(tree)
+```
+
+## vi
+
+```{r}
+est_tbl <- joined %>%
+  select(
+    HBW, WeightCaliper,
+    HHSize:VehSufficiency
+  ) %>%
+  filter(VehSufficiency == "vi")
+
+tree <- rpart(
+  HBW ~ . - WeightCaliper,
+  data = est_tbl, 
+  method = "anova",
+  maxdepth = 5,
+  cp = .001,
+  minbucket = 30,
+  weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+tree <- snip.rpart(tree, 31)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+
+rule_tbl <- create_rule_table(tree, "vi")
+rate_tbl <- est_tbl %>%
+  mutate(category = tree$where,) %>%
+  group_by(category) %>%
+  dplyr::summarize(
+    rate = round(weighted.mean(HBW, WeightCaliper), 4),
+    stdev = round(sd(HBW, na.rm = TRUE), 2),
+    samples = n()
+  ) %>%
+  ungroup() %>%
+  mutate(trip_type = "HBW_vi") %>%
+  left_join(rule_tbl, by = "rate") %>%
+  relocate(trip_type:rule, .before = category) %>%
+  arrange(rate)
+rate_list$HBW_vi <- rate_tbl
+```
+
+## vs
+
+```{r}
+est_tbl <- joined %>%
+  select(
+    HBW, WeightCaliper,
+    HHSize:VehSufficiency
+  ) %>%
+  filter(VehSufficiency == "vs")
+
+tree <- rpart(
+  HBW ~ . - WeightCaliper,
+  data = est_tbl, 
+  method = "anova",
+  maxdepth = 5,
+  cp = .001,
+  minbucket = 30,
+  weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+tree <- snip.rpart(tree, 31)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+
+rule_tbl <- create_rule_table(tree, "vs")
+rate_tbl <- est_tbl %>%
+  mutate(category = tree$where,) %>%
+  group_by(category) %>%
+  dplyr::summarize(
+    rate = round(weighted.mean(HBW, WeightCaliper), 4),
+    stdev = round(sd(HBW, na.rm = TRUE), 2),
+    samples = n()
+  ) %>%
+  ungroup() %>%
+  mutate(trip_type = "HBW_vs") %>%
+  left_join(rule_tbl, by = "rate") %>%
+  relocate(trip_type:rule, .before = category) %>%
+  arrange(rate)
+rate_list$HBW_vs <- rate_tbl
+```
+
+# HBS by Vehicle Sufficiency {.tabset}
+
+## v0
+
+```{r}
+est_tbl <- joined %>%
+  select(
+    HBS, WeightCaliper,
+    HHSize:VehSufficiency
+  ) %>%
+  filter(VehSufficiency == "v0")
+  
+
+tree <- rpart(
+  HBS ~ . - WeightCaliper,
+  data = est_tbl, 
+  method = "anova",
+  maxdepth = 1,
+  cp = .001,
+  minbucket = 30,
+  weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+tree <- snip.rpart(tree, 2)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+
+rule_tbl <- create_rule_table(tree, "v0")
+rate_tbl <- est_tbl %>%
+  mutate(category = tree$where,) %>%
+  group_by(category) %>%
+  dplyr::summarize(
+    rate = round(weighted.mean(HBS, WeightCaliper), 4),
+    stdev = round(sd(HBS, na.rm = TRUE), 2),
+    samples = n()
+  ) %>%
+  ungroup() %>%
+  mutate(trip_type = "HBS_v0") %>%
+  left_join(rule_tbl, by = "rate") %>%
+  relocate(trip_type:rule, .before = category) %>%
+  arrange(rate)
+rate_list$HBS_v0 <- rate_tbl
+
+# check r^2 at household level
+# check <- joined %>%
+#   mutate(
+#     y = HBW,
+#     y_hat = predict(tree, est_tbl)
+#   ) %>%
+  # group_by(Sample_Number) %>%
+  # summarize(
+  #   y = sum(y),
+  #   y_hat = sum(y_hat)
+  # )
+# r_sq <- round(cor(check$y, check$y_hat)^2, 3)
+# rsq.rpart(tree)
+```
+
+## vi
+
+```{r}
+est_tbl <- joined %>%
+  select(
+    HBS, WeightCaliper,
+    HHSize:VehSufficiency
+  ) %>%
+  filter(VehSufficiency == "vi")
+  
+
+tree <- rpart(
+  HBS ~ . - WeightCaliper,
+  data = est_tbl, 
+  method = "anova",
+  maxdepth = 5,
+  cp = .001,
+  minbucket = 30,
+  weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+tree <- snip.rpart(tree, 2)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+
+rule_tbl <- create_rule_table(tree, "vi")
+rate_tbl <- est_tbl %>%
+  mutate(category = tree$where,) %>%
+  group_by(category) %>%
+  dplyr::summarize(
+    rate = round(weighted.mean(HBS, WeightCaliper), 4),
+    stdev = round(sd(HBS, na.rm = TRUE), 2),
+    samples = n()
+  ) %>%
+  ungroup() %>%
+  mutate(trip_type = "HBS_vi") %>%
+  left_join(rule_tbl, by = "rate") %>%
+  relocate(trip_type:rule, .before = category) %>%
+  arrange(rate)
+rate_list$HBS_vi <- rate_tbl
+
+# check r^2 at household level
+# check <- joined %>%
+#   mutate(
+#     y = HBW,
+#     y_hat = predict(tree, est_tbl)
+#   ) %>%
+  # group_by(Sample_Number) %>%
+  # summarize(
+  #   y = sum(y),
+  #   y_hat = sum(y_hat)
+  # )
+# r_sq <- round(cor(check$y, check$y_hat)^2, 3)
+# rsq.rpart(tree)
+```
+
+## vs
+
+```{r}
+est_tbl <- joined %>%
+  select(
+    HBS, WeightCaliper,
+    HHSize:VehSufficiency
+  ) %>%
+  filter(VehSufficiency == "vs")
+  
+
+tree <- rpart(
+  HBS ~ . - WeightCaliper,
+  data = est_tbl, 
+  method = "anova",
+  maxdepth = 5,
+  cp = .001,
+  minbucket = 30,
+  weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+tree <- snip.rpart(tree, 2)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+
+rule_tbl <- create_rule_table(tree, "vs")
+rate_tbl <- est_tbl %>%
+  mutate(category = tree$where,) %>%
+  group_by(category) %>%
+  dplyr::summarize(
+    rate = round(weighted.mean(HBS, WeightCaliper), 4),
+    stdev = round(sd(HBS, na.rm = TRUE), 2),
+    samples = n()
+  ) %>%
+  ungroup() %>%
+  mutate(trip_type = "HBS_vs") %>%
+  left_join(rule_tbl, by = "rate") %>%
+  relocate(trip_type:rule, .before = category) %>%
+  arrange(rate)
+rate_list$HBS_vs <- rate_tbl
+
+# check r^2 at household level
+# check <- joined %>%
+#   mutate(
+#     y = HBW,
+#     y_hat = predict(tree, est_tbl)
+#   ) %>%
+  # group_by(Sample_Number) %>%
+  # summarize(
+  #   y = sum(y),
+  #   y_hat = sum(y_hat)
+  # )
+# r_sq <- round(cor(check$y, check$y_hat)^2, 3)
+# rsq.rpart(tree)
+```
+
+# HBO by Vehicle Sufficiency {.tabset}
+
+## v0
+
+```{r}
+est_tbl <- joined %>%
+  select(
+    HBO, WeightCaliper,
+    HHSize:VehSufficiency
+  ) %>%
+  filter(VehSufficiency == "v0")
+  
+
+tree <- rpart(
+  HBO ~ . - WeightCaliper,
+  data = est_tbl, 
+  method = "anova",
+  maxdepth = 5,
+  cp = .001,
+  minbucket = 30,
+  weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+tree <- snip.rpart(tree, 2)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+
+rule_tbl <- create_rule_table(tree, "v0")
+rate_tbl <- est_tbl %>%
+  mutate(category = tree$where,) %>%
+  group_by(category) %>%
+  dplyr::summarize(
+    rate = round(weighted.mean(HBO, WeightCaliper), 4),
+    stdev = round(sd(HBO, na.rm = TRUE), 2),
+    samples = n()
+  ) %>%
+  ungroup() %>%
+  mutate(trip_type = "HBO_v0") %>%
+  left_join(rule_tbl, by = "rate") %>%
+  relocate(trip_type:rule, .before = category) %>%
+  arrange(rate)
+rate_list$HBO_v0 <- rate_tbl
+
+# check r^2 at household level
+# check <- joined %>%
+#   mutate(
+#     y = HBW,
+#     y_hat = predict(tree, est_tbl)
+#   ) %>%
+  # group_by(Sample_Number) %>%
+  # summarize(
+  #   y = sum(y),
+  #   y_hat = sum(y_hat)
+  # )
+# r_sq <- round(cor(check$y, check$y_hat)^2, 3)
+# rsq.rpart(tree)
+```
+
+## vi
+
+```{r}
+est_tbl <- joined %>%
+  select(
+    HBO, WeightCaliper,
+    HHSize:VehSufficiency
+  ) %>%
+  filter(VehSufficiency == "vi")
+  
+
+tree <- rpart(
+  HBO ~ . - WeightCaliper,
+  data = est_tbl, 
+  method = "anova",
+  maxdepth = 4,
+  cp = .001,
+  minbucket = 30,
+  weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+tree <- snip.rpart(tree, 2)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+
+rule_tbl <- create_rule_table(tree, "vi")
+rate_tbl <- est_tbl %>%
+  mutate(category = tree$where,) %>%
+  group_by(category) %>%
+  dplyr::summarize(
+    rate = round(weighted.mean(HBO, WeightCaliper), 4),
+    stdev = round(sd(HBO, na.rm = TRUE), 2),
+    samples = n()
+  ) %>%
+  ungroup() %>%
+  mutate(trip_type = "HBO_vi") %>%
+  left_join(rule_tbl, by = "rate") %>%
+  relocate(trip_type:rule, .before = category) %>%
+  arrange(rate)
+rate_list$HBO_vi <- rate_tbl
+
+# check r^2 at household level
+# check <- joined %>%
+#   mutate(
+#     y = HBW,
+#     y_hat = predict(tree, est_tbl)
+#   ) %>%
+  # group_by(Sample_Number) %>%
+  # summarize(
+  #   y = sum(y),
+  #   y_hat = sum(y_hat)
+  # )
+# r_sq <- round(cor(check$y, check$y_hat)^2, 3)
+# rsq.rpart(tree)
+```
+
+## vs
+
+```{r}
+est_tbl <- joined %>%
+  select(
+    HBO, WeightCaliper,
+    HHSize:VehSufficiency
+  ) %>%
+  filter(VehSufficiency == "vs")
+  
+
+tree <- rpart(
+  HBO ~ . - WeightCaliper,
+  data = est_tbl, 
+  method = "anova",
+  maxdepth = 5,
+  cp = .001,
+  minbucket = 30,
+  weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+tree <- snip.rpart(tree, 2)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+
+rule_tbl <- create_rule_table(tree, "vs")
+rate_tbl <- est_tbl %>%
+  mutate(category = tree$where,) %>%
+  group_by(category) %>%
+  dplyr::summarize(
+    rate = round(weighted.mean(HBO, WeightCaliper), 4),
+    stdev = round(sd(HBO, na.rm = TRUE), 2),
+    samples = n()
+  ) %>%
+  ungroup() %>%
+  mutate(trip_type = "HBO_vs") %>%
+  left_join(rule_tbl, by = "rate") %>%
+  relocate(trip_type:rule, .before = category) %>%
+  arrange(rate)
+rate_list$HBO_vs <- rate_tbl
+
+# check r^2 at household level
+# check <- joined %>%
+#   mutate(
+#     y = HBW,
+#     y_hat = predict(tree, est_tbl)
+#   ) %>%
+  # group_by(Sample_Number) %>%
+  # summarize(
+  #   y = sum(y),
+  #   y_hat = sum(y_hat)
+  # )
+# r_sq <- round(cor(check$y, check$y_hat)^2, 3)
+# rsq.rpart(tree)
+```
+
+# HBSch
+
+```{r}
+est_tbl <- joined %>%
+  select(
+    HBSch, WeightCaliper,
+    HHSize:VehSufficiency
+  )
+  
+
+tree <- rpart(
+  HBSch ~ . - WeightCaliper,
+  data = est_tbl, 
+  method = "anova",
+  maxdepth = 5,
+  cp = .001,
+  minbucket = 30,
+  weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+tree <- snip.rpart(tree, 2)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+
+rule_tbl <- create_rule_table(tree)
+rate_tbl <- est_tbl %>%
+  mutate(category = tree$where,) %>%
+  group_by(category) %>%
+  dplyr::summarize(
+    rate = round(weighted.mean(HBSch, WeightCaliper), 4),
+    stdev = round(sd(HBSch, na.rm = TRUE), 2),
+    samples = n()
+  ) %>%
+  ungroup() %>%
+  mutate(trip_type = "HBSch") %>%
+  left_join(rule_tbl, by = "rate") %>%
+  relocate(trip_type:rule, .before = category) %>%
+  arrange(rate)
+rate_list$HBSch <- rate_tbl
+
+# check r^2 at household level
+# check <- joined %>%
+#   mutate(
+#     y = HBW,
+#     y_hat = predict(tree, est_tbl)
+#   ) %>%
+  # group_by(Sample_Number) %>%
+  # summarize(
+  #   y = sum(y),
+  #   y_hat = sum(y_hat)
+  # )
+# r_sq <- round(cor(check$y, check$y_hat)^2, 3)
+# rsq.rpart(tree)
+```
+
+# HBU
+
+```{r}
+est_tbl <- joined %>%
+  select(
+    HBU, WeightCaliper,
+    HHSize:VehSufficiency
+  )
+
+tree <- rpart(
+  HBU ~ . - WeightCaliper,
+  data = est_tbl, 
+  method = "anova",
+  maxdepth = 4,
+  cp = .001,
+  minbucket = 30,
+  weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+tree <- snip.rpart(tree, 2)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+
+rule_tbl <- create_rule_table(tree)
+rate_tbl <- est_tbl %>%
+  mutate(category = tree$where,) %>%
+  group_by(category) %>%
+  dplyr::summarize(
+    rate = round(weighted.mean(HBU, WeightCaliper), 4),
+    stdev = round(sd(HBU, na.rm = TRUE), 2),
+    samples = n()
+  ) %>%
+  ungroup() %>%
+  mutate(trip_type = "HBU") %>%
+  left_join(rule_tbl, by = "rate") %>%
+  relocate(trip_type:rule, .before = category) %>%
+  arrange(rate)
+rate_list$HBU <- rate_tbl
+
+# check r^2 at household level
+# check <- joined %>%
+#   mutate(
+#     y = HBW,
+#     y_hat = predict(tree, est_tbl)
+#   ) %>%
+  # group_by(Sample_Number) %>%
+  # summarize(
+  #   y = sum(y),
+  #   y_hat = sum(y_hat)
+  # )
+# r_sq <- round(cor(check$y, check$y_hat)^2, 3)
+# rsq.rpart(tree)
+```
+
+# NHBW
+
+```{r}
+est_tbl <- joined %>%
+  select(
+    NHBW, WeightCaliper,
+    HHSize:VehSufficiency
+  )
+
+tree <- rpart(
+  NHBW ~ . - WeightCaliper,
+  data = est_tbl, 
+  method = "anova",
+  maxdepth = 5,
+  cp = .001,
+  minbucket = 30,
+  weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+# tree <- snip.rpart(tree, 2)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+
+rule_tbl <- create_rule_table(tree)
+rate_tbl <- est_tbl %>%
+  mutate(category = tree$where,) %>%
+  group_by(category) %>%
+  dplyr::summarize(
+    rate = round(weighted.mean(NHBW, WeightCaliper), 4),
+    stdev = round(sd(NHBW, na.rm = TRUE), 2),
+    samples = n()
+  ) %>%
+  ungroup() %>%
+  mutate(trip_type = "NHBW") %>%
+  left_join(rule_tbl, by = "rate") %>%
+  relocate(trip_type:rule, .before = category) %>%
+  arrange(rate)
+rate_list$NHBW <- rate_tbl
+
+# check r^2 at household level
+# check <- joined %>%
+#   mutate(
+#     y = HBW,
+#     y_hat = predict(tree, est_tbl)
+#   ) %>%
+  # group_by(Sample_Number) %>%
+  # summarize(
+  #   y = sum(y),
+  #   y_hat = sum(y_hat)
+  # )
+# r_sq <- round(cor(check$y, check$y_hat)^2, 3)
+# rsq.rpart(tree)
+```
+
+# NHBO
+
+```{r}
+est_tbl <- joined %>%
+  select(
+    NHBO, WeightCaliper,
+    HHSize:VehSufficiency
+  )
+
+tree <- rpart(
+  NHBO ~ . - WeightCaliper,
+  data = est_tbl, 
+  method = "anova",
+  maxdepth = 5,
+  cp = .001,
+  minbucket = 30,
+  weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+# tree <- snip.rpart(tree, 2)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+
+rule_tbl <- create_rule_table(tree)
+rate_tbl <- est_tbl %>%
+  mutate(category = tree$where,) %>%
+  group_by(category) %>%
+  dplyr::summarize(
+    rate = round(weighted.mean(NHBO, WeightCaliper), 4),
+    stdev = round(sd(NHBO, na.rm = TRUE), 2),
+    samples = n()
+  ) %>%
+  ungroup() %>%
+  mutate(trip_type = "NHBO") %>%
+  left_join(rule_tbl, by = "rate") %>%
+  relocate(trip_type:rule, .before = category) %>%
+  arrange(rate)
+
+rate_list$NHBO <- rate_tbl
+
+# check r^2 at household level
+# check <- joined %>%
+#   mutate(
+#     y = HBW,
+#     y_hat = predict(tree, est_tbl)
+#   ) %>%
+  # group_by(Sample_Number) %>%
+  # summarize(
+  #   y = sum(y),
+  #   y_hat = sum(y_hat)
+  # )
+# r_sq <- round(cor(check$y, check$y_hat)^2, 3)
+# rsq.rpart(tree)
+```
+
+```{r, eval=FALSE}
+out_df <- bind_rows(rate_list) %>%
+  mutate(
+    rule = gsub("VehSufficiency = v0,vi", "VehSufficiency <> vs", rule, fixed = TRUE),
+    rule = gsub("VehSufficiency = v0,vs", "VehSufficiency <> vi", rule, fixed = TRUE),
+    rule = gsub("VehSufficiency", "market_segment", rule, fixed = TRUE),
+    rule = gsub(" vi", " 'vi'", rule, fixed = TRUE),
+    rule = gsub(" vs", " 'vs'", rule, fixed = TRUE),
+    rule = gsub(" v0", " 'v0'", rule, fixed = TRUE)
+  ) %>%
+  select(-category)
+write_csv(out_df, "production_rates.csv")
+
+# write_csv(
+#   calib_factors,
+#   "../master/resident/generation/calibration_factors.csv"
+# )
+```
