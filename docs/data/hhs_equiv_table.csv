@@ -1,0 +1,255 @@
+﻿VARIABLE,CODE,TEXT,EQUIV
+Income,1,"Less than $9,999","Less than $9,999"
+Income,2,"$10,000 to $14,999","$10,000 to $14,999"
+Income,3,"$15,000 to $19,999","$15,000 to $19,999"
+Income,4,"$20,000 to $24,999","$20,000 to $24,999"
+Income,5,"$25,000 to $29,999","$25,000 to $29,999"
+Income,6,"$30,000 to $34,999","$30,000 to $34,999"
+Income,7,"$35,000 to $39,999","$35,000 to $39,999"
+Income,8,"$40,000 to $44,999","$40,000 to $44,999"
+Income,9,"$45,000 to $49,999","$45,000 to $49,999"
+Income,10,"$50,000 to $54,999","$50,000 to $54,999"
+Income,11,"$55,000 to $59,999","$55,000 to $59,999"
+Income,12,"$60,000 to $64,999","$60,000 to $64,999"
+Income,13,"$65,000 to $69,999","$65,000 to $69,999"
+Income,14,"$70,000 to $74,999","$70,000 to $74,999"
+Income,15,"$75,000 to $79,999","$75,000 to $79,999"
+Income,16,"$80,000 to $84,999","$80,000 to $84,999"
+Income,17,"$85,000 to $89,999","$85,000 to $89,999"
+Income,18,"$90,000 to $94,999","$90,000 to $94,999"
+Income,19,"$95,000 to $99,999","$95,000 to $99,999"
+Income,20,"$100,000 to $104,999","$100,000 to $104,999"
+Income,21,"$105,000 to $114,999","$105,000 to $114,999"
+Income,22,"$115,000 to $124,999","$115,000 to $124,999"
+Income,23,"$125,000 to $134,999","$125,000 to $134,999"
+Income,24,"$135,000 to $149,999","$135,000 to $149,999"
+Income,25,"$150,000 to $199,999","$150,000 to $199,999"
+Income,26,"$200,000 or more","$200,000 or more"
+Income,98,Don’t Know,Dont Know
+Income,99,Refused,Refused
+Relationship,0,Head of Household,Head of Household
+Relationship,1,Husband/Wife/Unmarried Partner,Husband/Wife/Unmarried Partner
+Relationship,2,Mother/Father/In-law,Mother/Father/Inlaw
+Relationship,3,Brother/Sister/In-law,Brother/Sister/Inlaw
+Relationship,4,Grandfather/Grandmother,Grandfather/Grandmother
+Relationship,5,Grandson/Granddaughter,Grandson/Granddaughter
+Relationship,6,Son/Daughter/In-law,Son/Daughter/Inlaw
+Relationship,7,Aunt/Uncle,Aunt/Uncle
+Relationship,8,Other Relative,Other Relative
+Relationship,9,Other Non-Relative,Other NonRelative
+Relationship,10,Household Help,Household Help
+Relationship,98,Don’t Know ,Dont Know 
+Relationship,99,Refused,Refused
+Licensed_Driver,1,Yes,Yes
+Licensed_Driver,2,No,No
+Licensed_Driver,98,Don't Know,Dont Know
+Licensed_Driver,99,Refused,Refused
+Employment,1,Yes,Yes
+Employment,2,No,No
+Employment,98,Don't Know,Dont Know
+Employment,99,Refused,Refused
+Employment_Status,1,Employed full time 30 or more hours per week,Full Time
+Employment_Status,2,Employed part time less than 30 hours per week,Part Time
+Employment_Status,3,Self employed full time 30 or more hours per week,Full Time
+Employment_Status,4,Self employed part time less than 30 hours per week,Part Time
+Employment_Status,98,Don’t Know,Dont Know
+Employment_Status,99,Refused,Refused
+More_than_One_Job,1,Yes,Yes
+More_than_One_Job,2,No,No
+More_than_One_Job,98,Don't Know,Dont Know
+More_than_One_Job,99,Refused,Refused
+Workplace_Type,1,Office (non‐government),Office (nongovernment)
+Workplace_Type,2,Office (government),Office (government)
+Workplace_Type,3,Home Office/Residential Workplace,Home Office/Residential Workplace
+Workplace_Type,4,Casino Hotel,Casino Hotel
+Workplace_Type,5,Hotel/Motel/Campsite (No Casino),Hotel/Motel/Campsite (No Casino)
+Workplace_Type,6,Coworking Space,Coworking Space
+Workplace_Type,7,Industrial Warehouse/Manufacturing,Industrial Warehouse/Manufacturing
+Workplace_Type,8,Medical Offices/Hospital,Medical Offices/Hospital
+Workplace_Type,9,School; Daycare/Preschool,School; Daycare/Preschool
+Workplace_Type,10,School; Elementary,School; Elementary
+Workplace_Type,11,School; Middle/Junior High,School; Middle/Junior High
+Workplace_Type,12,School; High School,School; High School
+Workplace_Type,13,School; College/University/Trade School,School; College/University/Trade School
+Workplace_Type,14,"Restaurant/Fast Food, Café, Bar & Grill","Restaurant/Fast Food, Cafe, Bar & Grill"
+Workplace_Type,15,Convenience/Drug Store/Gas Station,Convenience/Drug Store/Gas Station
+Workplace_Type,16,Grocery Store,Grocery Store
+Workplace_Type,17,Recreational facility/Fitness Club,Recreational facility/Fitness Club
+Workplace_Type,18,Other Retail /Shopping,Other Retail /Shopping
+Workplace_Type,19,"Other Personal Business (i.e. Bank, Automotive Dealer, Beauty Salon, etc.)","Other Personal Business (i.e. Bank, Automotive Dealer, Beauty Salon, etc.)"
+Workplace_Type,20,Outdoor Park/Beach/Sports Field/Open Space,Outdoor Park/Beach/Sports Field/Open Space
+Workplace_Type,22,Airport,Airport
+Workplace_Type,96,Other,Other
+Workplace_Type,98,Don’t Know,Dont Know
+Workplace_Type,99,Refused,Refused
+Home_Office,1,Yes,Yes
+Home_Office,2,No,No
+Home_Office,98,Don't Know,Dont Know
+Home_Office,99,Refused,Refused
+Primary_Occupation,1,Management Occupations,Management Occupations
+Primary_Occupation,2,Business and Financial Operations Occupations,Business and Financial Operations Occupations
+Primary_Occupation,3,Computer and Mathematical Occupations,Computer and Mathematical Occupations
+Primary_Occupation,4,Architecture and Engineering Occupations,Architecture and Engineering Occupations
+Primary_Occupation,5,"Life, Physical, and Social Science Occupations","Life, Physical, and Social Science Occupations"
+Primary_Occupation,6,Community and Social Service Occupations,Community and Social Service Occupations
+Primary_Occupation,7,Legal Occupations,Legal Occupations
+Primary_Occupation,8,Educational Instruction and Library Occupations,Educational Instruction and Library Occupations
+Primary_Occupation,9,"Arts, Design, Entertainment, Sports, and Media Occupations","Arts, Design, Entertainment, Sports, and Media Occupations"
+Primary_Occupation,10,Healthcare Practitioners and Technical Occupations,Healthcare Practitioners and Technical Occupations
+Primary_Occupation,11,Healthcare Support Occupations,Healthcare Support Occupations
+Primary_Occupation,12,Protective Service Occupations,Protective Service Occupations
+Primary_Occupation,13,Food Preparation and Serving Related Occupations,Food Preparation and Serving Related Occupations
+Primary_Occupation,14,Building and Grounds Cleaning and Maintenance Occupations,Building and Grounds Cleaning and Maintenance Occupations
+Primary_Occupation,15,Personal Care and Service Occupations,Personal Care and Service Occupations
+Primary_Occupation,16,Sales and Related Occupations,Sales and Related Occupations
+Primary_Occupation,17,Office and Administrative Support Occupations,Office and Administrative Support Occupations
+Primary_Occupation,18,"Farming, Fishing, and Forestry Occupations","Farming, Fishing, and Forestry Occupations"
+Primary_Occupation,19,Construction and Extraction Occupations,Construction and Extraction Occupations
+Primary_Occupation,20,"Installation, Maintenance, and Repair Occupations","Installation, Maintenance, and Repair Occupations"
+Primary_Occupation,21,Production Occupations,Production Occupations
+Primary_Occupation,22,Transportation and Material Moving Occupations,Transportation and Material Moving Occupations
+Primary_Occupation,23,Military Specific Occupations,Military Specific Occupations
+Primary_Occupation,24,Something else,Something else
+Primary_Occupation,96,Other/Not applicable (unemployed/student/retired),Other/Not applicable (unemployed/student/retired)
+Primary_Occupation,98,Don't Know,Don't Know
+Primary_Occupation,99,Refused,Refused
+Primary_Industry,1,"Agriculture, Forestry, Fishing and Hunting","Agriculture, Forestry, Fishing and Hunting"
+Primary_Industry,2,"Mining, Quarrying, and Oil and Gas Extraction","Mining, Quarrying, and Oil and Gas Extraction"
+Primary_Industry,3,Utilities,Utilities
+Primary_Industry,4,Construction,Construction
+Primary_Industry,5,Wholesale Trade,Wholesale Trade
+Primary_Industry,6,Information,Information
+Primary_Industry,7,Finance and Insurance,Finance and Insurance
+Primary_Industry,8,"Real Estate, Rental and Leasing","Real Estate, Rental and Leasing"
+Primary_Industry,9,"Professional, Scientific and Technical Services","Professional, Scientific and Technical Services"
+Primary_Industry,10,Management Of Companies and Enterprises,Management Of Companies and Enterprises
+Primary_Industry,11,Administration and Support of Waste Management and Remediation Services,Administration and Support of Waste Management and Remediation Services
+Primary_Industry,12,Educational Services,Educational Services
+Primary_Industry,13,Healthcare and Social Assistance,Healthcare and Social Assistance
+Primary_Industry,14,"Arts, Entertainment, and Recreation","Arts, Entertainment, and Recreation"
+Primary_Industry,15,"Casino, Hotel, Food Services and Other Accommodation","Casino, Hotel, Food Services and Other Accommodation"
+Primary_Industry,16,Other Services (Except Public Administration),Other Services (Except Public Administration)
+Primary_Industry,17,Public Administration,Public Administration
+Primary_Industry,18,Manufacturing,Manufacturing
+Primary_Industry,19,Transportation and Warehousing,Transportation and Warehousing
+Primary_Industry,20,Retail Trade,Retail Trade
+Primary_Industry,21,Something else (specify),Something else (specify)
+Student_Status,1,Yes,Yes
+Student_Status,2,No,No
+Student_Status,98,Don't Know,Dont Know
+Student_Status,99,Refused,Refused
+School_Type,1,Daycare / Preschool,Daycare / Preschool
+School_Type,2,Elementary School,Elementary School
+School_Type,3,Middle School/Junior High,Middle School/Junior High
+School_Type,4,High School,High School
+School_Type,5,Post Secondary / College / Trade,Post Secondary / College / Trade
+School_Type,96,Other,Other
+School_Type,98,Don't Know,Dont Know
+School_Type,99,Refused,Refused
+Travel,1,Yes,Yes
+Travel,2,No,No
+Travel,98,Don't Know,Dont Know
+Travel,99,Refused,Refused
+Type_of_Vehicle,1,Motorcycle (includes mopeds),Motorcycle (includes mopeds)
+Type_of_Vehicle,2,Car (includes station wagons),Car (includes station wagons)
+Type_of_Vehicle,3,Van (mini and passenger),Van (mini and passenger)
+Type_of_Vehicle,4,Sport Utility Vehicle,Sport Utility Vehicle
+Type_of_Vehicle,5,Pickup Truck,Pickup Truck
+Type_of_Vehicle,6,Cargo Van,Cargo Van
+Type_of_Vehicle,7,Service Vehicle,Service Vehicle
+Type_of_Vehicle,96,Other,Other
+Type_of_Vehicle,98,Don’t Know,Dont Know
+Type_of_Vehicle,99,Refused,Refused
+Activity_Type_Code,1,Working At Home (For Pay Or Volunteer),H
+Activity_Type_Code,2,Any Other Activities At Home,H
+Activity_Type_Code,3,Work/Doing My Job (At Regular Place Of Employment/Volunteer Location),W
+Activity_Type_Code,4,Work/Doing My Job (At Other Location),W
+Activity_Type_Code,5,"Work Related (Off-Site Meeting, Delivery)",W
+Activity_Type_Code,6,"Attend Child Care (Day Care, Pre-School, After School Care)",Sch
+Activity_Type_Code,7,Attend School (K-12),Sch
+Activity_Type_Code,8,Attend College/University/Trade School,U
+Activity_Type_Code,9,Shopping,Shp
+Activity_Type_Code,10,"Personal Business (laundry, dry cleaning, barber, bank, medical, etc)",PB
+Activity_Type_Code,11,Eat Out,EO
+Activity_Type_Code,12,Gaming,G
+Activity_Type_Code,13,Other Non-Gaming Entertainment Or Recreation,SR
+Activity_Type_Code,14,Civic Or Religious Activities,SR
+Activity_Type_Code,15,Visit With Friends/Relatives,SR
+Activity_Type_Code,16,"Chauffeur Passenger(s) for Uber, Lyft, taxi, limo, etc",X
+Activity_Type_Code,17,"Food/Grocery Delivery for DoorDash, UberEats, Instacart, etc",TNC Driver
+Activity_Type_Code,18,Pick-up/Drop-off Person at Work,PUDO Work
+Activity_Type_Code,19,Pick-up/Drop-off Person at School,PUDO Sch
+Activity_Type_Code,20,Pick-up/Drop-off Person at Day Care,PUDO Sch
+Activity_Type_Code,21,Pick-up/Drop-off Person at Other,PUDO Other
+Activity_Type_Code,22,Change Mode of Travel,X
+Activity_Type_Code,96,"Other, Specify",O
+Activity_Type_Code,98,Don't Know,O
+Activity_Type_Code,99,Refused,O
+Type_of_Place,1,Residential,Residential
+Type_of_Place,2,"Transportation Stop (Bus, Train)","Transportation Stop (Bus, Train)"
+Type_of_Place,3,Office (non‐government),Office (nongovernment)
+Type_of_Place,4,Office (government),Office (government)
+Type_of_Place,5,Home Office/Residential Workplace,Home Office/Residential Workplace
+Type_of_Place,6,Coworking Space,Coworking Space
+Type_of_Place,7,Industrial Warehouse/Manufacturing,Industrial Warehouse/Manufacturing
+Type_of_Place,8,Medical Offices/Hospital,Medical Offices/Hospital
+Type_of_Place,9,School; Daycare/Preschool,School; Daycare/Preschool
+Type_of_Place,10,School; Elementary,School; Elementary
+Type_of_Place,11,School; Middle/Junior High,School; Middle/Junior High
+Type_of_Place,12,School; High School,School; High School
+Type_of_Place,13,School; College/University/Trade School,School; College/University/Trade School
+Type_of_Place,14,"Restaurant/Fast Food, Café, Bar & Grill","Restaurant/Fast Food, Cafe, Bar & Grill"
+Type_of_Place,15,Convenience/Drug Store/Gas Station,Convenience/Drug Store/Gas Station
+Type_of_Place,16,Grocery Store,Grocery Store
+Type_of_Place,17,Recreational facility/Fitness Club,Recreational facility/Fitness Club
+Type_of_Place,18,Other Retail /Shopping,Other Retail /Shopping
+Type_of_Place,19,"Other Personal Business (i.e. Bank, Automotive Dealer, Beauty Salon, etc.)","Other Personal Business (i.e. Bank, Automotive Dealer, Beauty Salon, etc.)"
+Type_of_Place,20,Outdoor Park/Beach/Sports Field/Open Space,Outdoor Park/Beach/Sports Field/Open Space
+Type_of_Place,21,Hotel/Motel/Campsite,Hotel/Motel/Campsite
+Type_of_Place,22,Airport,Airport
+Type_of_Place,96,Other (specify),Other (specify)
+Type_of_Place,98,Don’t Know,Dont Know
+Type_of_Place,99,Refused,Refused
+Mode_of_Travel,1,Walk,walk
+Mode_of_Travel,2,Bike,bike
+Mode_of_Travel,3,Driver (Personal Car/Truck/Van),auto
+Mode_of_Travel,4,Passenger (Personal Car/Truck/Van) ,auto
+Mode_of_Travel,5,Commercial Vehicle,cv
+Mode_of_Travel,6,School Bus,school_bus
+Mode_of_Travel,7,RTC Fixed Route Bus,bus
+Mode_of_Travel,8,RTC FlexRide,flexride
+Mode_of_Travel,9,RTC Vanpool,vanpool
+Mode_of_Travel,10,Taxi/Limo/Rideshare (Uber/Lyft),tnc
+Mode_of_Travel,11,E-Scooter (Bird or Personal),scooter
+Mode_of_Travel,12,Private Bus / Employer Shuttle/ Hotel Shuttle,shuttle
+Mode_of_Travel,96,Other,other
+Mode_of_Travel,98,Don't Know,Dont Know
+Mode_of_Travel,99,Refused,Refused
+Pay_to_Park,1,Yes,Yes
+Pay_to_Park,2,No,No
+Pay_to_Park,98,Don't Know,Dont Know
+Pay_to_Park,99,Refused,Refused
+Transit_Access,1,Walked,w
+Transit_Access,2,Biked,w
+Transit_Access,3,Drove (Personal Car/Truck/Van),pnr
+Transit_Access,4,Passenger (Personal Car/Truck/Van) ,knr
+Transit_Access,5,Commercial Vehicle,pnr
+Transit_Access,6,RTC FlexRide,knr
+Transit_Access,7,RTC Vanpool,knr
+Transit_Access,8,Taxi/Limo/Rideshare (Uber/Lyft),knr
+Transit_Access,9,E-Scooter (Bird or Personal),w
+Transit_Access,96,Other,w
+Transit_Access,98,Don't Know,w
+Transit_Access,99,Refused,w
+Transit_Egress,1,Walked,w
+Transit_Egress,2,Biked,w
+Transit_Egress,3,Drove (Personal Car/Truck/Van),pnr
+Transit_Egress,4,Passenger (Personal Car/Truck/Van) ,knr
+Transit_Egress,5,Commercial Vehicle,pnr
+Transit_Egress,6,RTC FlexRide,knr
+Transit_Egress,7,RTC Vanpool,knr
+Transit_Egress,8,Taxi/Limo/Rideshare (Uber/Lyft),knr
+Transit_Egress,9,E-Scooter (Bird or Personal),w
+Transit_Egress,96,Other,w
+Transit_Egress,98,Don't Know,w
+Transit_Egress,99,Refused,w

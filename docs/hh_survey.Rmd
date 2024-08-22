@@ -46,7 +46,7 @@ loc <- fix_colnames(loc)
 
 ```{r}
 translate_table <- function(df){
-  equiv_tbl <- read_csv("data/_private/hh_survey/input/equiv_table.csv")
+  equiv_tbl <- read_csv("data/hhs_equiv_table.csv")
   
   variables <- unique(equiv_tbl$VARIABLE)
   col_names <- colnames(df)
