@@ -475,6 +475,20 @@ trip_add_tod <- trip_file %>%
       TRUE ~ "NT",
     )) %>%
   select(-trip_dep_mins, trip_arr_mins, midpoint)
+
+# Add skim data
+skim <- read_csv("data/input/skims/congested_skim.csv")
+trip_add_skim <- trip_add_tod %>%
+  left_join(skim, by = c("p_taz" = "From", "a_taz" = "To")) %>%
+  mutate(skim_time = case_when(
+    tod == "AM" ~ AM_900,
+    tod == "MD" ~ MD_1300,
+    tod == "PM" ~ PM_1730,
+    tod == "NT" ~ NT_2200
+  )) %>%
+  select(-c(AM_900:NT_2200)) %>%
+  # remove external trips
+  filter(!is.na(p_taz) & !is.na(a_taz))
 ```
 
 ## Add tour summary to person file
@@ -519,12 +533,6 @@ tour_remove_home <- tour_file %>%
 ## EDA for Non-Mandatory
 
 ```{r}
-# 
-# skim <- read_csv("data/input/skims/ff_skim.csv")
-# trip_add_skim <- trip_add_tod %>%
-#   left_join(skim, by = c("trip_p_taz" = "InternalTAZ", "trip_a_taz" = "InternalTAZ:1")) %>%
-#   rename(skim_time = Time, skim_length = Distance)
-# 
 # # The EDA is going to regress on attraction end employment
 # sedata <- read_csv("data/input/sedata/NewDemographics.csv")
 # temp <- trip_add_skim %>%
@@ -574,7 +582,7 @@ write_csv(hh_add_tours, "data/_private/hh_survey/output/output_households.csv", 
 
 write_csv(tour_remove_home, "data/_private/hh_survey/output/output_tours.csv", na = "")
 write_csv(stops_file, "data/_private/hh_survey/output/output_stops.csv", na = "")
-write_csv(trip_add_tod, "data/_private/hh_survey/output/output_trips.csv", na = "")
+write_csv(trip_add_skim, "data/_private/hh_survey/output/output_trips.csv", na = "")
 # write_csv(eda_df, "data/_private/hh_survey/output/eda.csv", na = "")
 ```
 
