@@ -165,22 +165,22 @@ Activity_Type_Code,2,Any Other Activities At Home,H
 Activity_Type_Code,3,Work/Doing My Job (At Regular Place Of Employment/Volunteer Location),W
 Activity_Type_Code,4,Work/Doing My Job (At Other Location),W
 Activity_Type_Code,5,"Work Related (Off-Site Meeting, Delivery)",W
-Activity_Type_Code,6,"Attend Child Care (Day Care, Pre-School, After School Care)",Sch
-Activity_Type_Code,7,Attend School (K-12),Sch
-Activity_Type_Code,8,Attend College/University/Trade School,U
-Activity_Type_Code,9,Shopping,Shp
-Activity_Type_Code,10,"Personal Business (laundry, dry cleaning, barber, bank, medical, etc)",PB
-Activity_Type_Code,11,Eat Out,EO
-Activity_Type_Code,12,Gaming,G
+Activity_Type_Code,6,"Attend Child Care (Day Care, Pre-School, After School Care)",SCH
+Activity_Type_Code,7,Attend School (K-12),SCH
+Activity_Type_Code,8,Attend College/University/Trade School,O
+Activity_Type_Code,9,Shopping,SHP
+Activity_Type_Code,10,"Personal Business (laundry, dry cleaning, barber, bank, medical, etc)",O
+Activity_Type_Code,11,Eat Out,SR
+Activity_Type_Code,12,Gaming,SR
 Activity_Type_Code,13,Other Non-Gaming Entertainment Or Recreation,SR
 Activity_Type_Code,14,Civic Or Religious Activities,SR
 Activity_Type_Code,15,Visit With Friends/Relatives,SR
 Activity_Type_Code,16,"Chauffeur Passenger(s) for Uber, Lyft, taxi, limo, etc",X
-Activity_Type_Code,17,"Food/Grocery Delivery for DoorDash, UberEats, Instacart, etc",TNC Driver
-Activity_Type_Code,18,Pick-up/Drop-off Person at Work,PUDO Work
-Activity_Type_Code,19,Pick-up/Drop-off Person at School,PUDO Sch
-Activity_Type_Code,20,Pick-up/Drop-off Person at Day Care,PUDO Sch
-Activity_Type_Code,21,Pick-up/Drop-off Person at Other,PUDO Other
+Activity_Type_Code,17,"Food/Grocery Delivery for DoorDash, UberEats, Instacart, etc",O
+Activity_Type_Code,18,Pick-up/Drop-off Person at Work,O
+Activity_Type_Code,19,Pick-up/Drop-off Person at School,O
+Activity_Type_Code,20,Pick-up/Drop-off Person at Day Care,O
+Activity_Type_Code,21,Pick-up/Drop-off Person at Other,O
 Activity_Type_Code,22,Change Mode of Travel,X
 Activity_Type_Code,96,"Other, Specify",O
 Activity_Type_Code,98,Don't Know,O

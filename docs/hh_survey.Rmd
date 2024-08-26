@@ -200,8 +200,8 @@ id_tours <- convert_modes %>%
     tour_type = case_when(
       tour_type == "home" ~ "home",
       "W" %in% Activity_Type_Code ~ "work",
-      "U" %in% Activity_Type_Code ~ "univ",
-      "Sch" %in% Activity_Type_Code ~ "school",
+      # "U" %in% Activity_Type_Code ~ "univ",
+      "SCH" %in% Activity_Type_Code ~ "school",
       any(grepl("PUDO Sch", Activity_Type_Code)) ~ "PUDO_Sch",
       any(grepl("PUDO Work", Activity_Type_Code)) ~ "PUDO_Work",
       any(grepl("PUDO Other", Activity_Type_Code)) ~ "PUDO_Other",
@@ -378,7 +378,7 @@ tours_by_hh <- tour_file %>%
   mutate(WorkersThatDay = ifelse(work > 0, 1, 0)) %>%
   group_by(Sample_Number) %>%
   summarize(across(work:WorkersThatDay, ~ sum(.x))) %>%
-  rename_with(~ paste0(.x, "_tours"), work:univ)
+  rename_with(~ paste0(.x, "_tours"), work:nm)
   
 
 hh_add_tours <- hh_add_strct %>%
@@ -401,16 +401,6 @@ hh_add_tours <- hh_add_strct %>%
 # first remove the mode xfer stops.
 remove_xfers <- mark_anchor %>%
   filter(Activity_Type_Code != "X")
-
-test <- remove_xfers %>%
-  group_by(Sample_Number, Person_Number, tour_num) %>%
-  transmute(
-    tour_type = tour_type,
-    dep_hr = dep_hr,
-    dep_min = dep_min,
-    next_arr_hr = lead(arr_hr),
-    next_arr_min = lead(arr_min)
-  )
 
 trip_file <- remove_xfers %>%
   # Remove the last place for each person. This also removes people who didn't
@@ -447,9 +437,11 @@ trip_file <- remove_xfers %>%
     purpose = case_when(
       p_purp == "H" ~ paste0("HB", a_purp),
       p_purp == "W" | a_purp == "W" ~ "NHBW",
-      p_purp == "Shp" | a_purp == "Shp" ~ "NHBShp",
+      p_purp == "SHP" | a_purp == "SHP" ~ "NHBSHP",
       TRUE ~ "NHBO"
     ),
+    purpose = ifelse(tour_type == "work", paste0("W_", purpose), paste0("N_", purpose)),
+    purpose = ifelse(purpose %in% c("W_HBSHP", "W_HBSR", "W_HBU", "W_HBSCH", "W_NHBSHP"), "W_HBO", purpose),
     p_access_mode = ifelse(pa_format == 1, access_mode, egress_mode),
     p_egress_mode = ifelse(pa_format == 1, egress_mode, access_mode)
   ) %>%
@@ -501,7 +493,7 @@ tours_by_per <- tour_file %>%
     id_cols = Sample_Number:Person_Number, names_from = tour_type, 
     values_from = count, values_fill = 0
   ) %>%
-  rename_with(~ paste0(.x, "_tours"), work:univ)
+  rename_with(~ paste0(.x, "_tours"), work:nm)
 
 per_add_tour_counts <- per_calc_ptypes %>%
   left_join(
@@ -512,8 +504,7 @@ per_add_tour_counts <- per_calc_ptypes %>%
     home_tours = ifelse(is.na(home_tours), 1, 0),
     nm_tours = ifelse(is.na(nm_tours), 0, nm_tours),
     work_tours = ifelse(is.na(work_tours), 0, work_tours),
-    school_tours = ifelse(is.na(school_tours), 0, school_tours),
-    univ_tours = ifelse(is.na(univ_tours), 0, univ_tours)
+    school_tours = ifelse(is.na(school_tours), 0, school_tours)
   )
 ```
 
