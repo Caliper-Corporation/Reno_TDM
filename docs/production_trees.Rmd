@@ -59,7 +59,7 @@ joined <- per %>%
   left_join(has_kids, by = "Sample_Number") %>%
   # set factor fields
   mutate(
-    Gender = ifelse(Gender == 1, 1, 2),
+    Gender = ifelse(Gender == 1, "Male", "Female"),
     Gender = as.factor(Gender),
     Student_Status = as.factor(Student_Status),
     Employed = ifelse(Employment == "Yes", "Yes", "No"),
@@ -646,7 +646,8 @@ rate_list$N_HBSR_vs <- rate_tbl
 est_tbl <- joined %>%
   select(
     N_HBO, WeightCaliper,
-    HHSize:VehSufficiency
+    HHSize:VehSufficiency,
+    -Age
   ) %>%
   filter(VehSufficiency == "v0")
   
@@ -655,7 +656,7 @@ tree <- rpart(
   N_HBO ~ . - WeightCaliper,
   data = est_tbl, 
   method = "anova",
-  maxdepth = 5,
+  maxdepth = 3,
   cp = .001,
   minbucket = 40,
   weights = est_tbl$WeightCaliper
@@ -891,7 +892,7 @@ tree <- rpart(
 
 # Snip to remove specific nodes from the tree
 # summary(tree) # to find node numbers
-# tree <- snip.rpart(tree, 2)
+tree <- snip.rpart(tree, 12)
 rpart.plot(tree, type = 1, under = TRUE, extra = 1)
 
 rule_tbl <- create_rule_table(tree, "v0")
