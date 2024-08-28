@@ -137,6 +137,40 @@ loc_with_taz <- translate_loc %>%
 ## Calculate HHStructure
 
 ```{r}
+# add income midpoint column
+hh_add_incmp <- hh_with_tazs %>%
+  mutate(income_midpt = case_when(
+    Income_int == 1 ~ 5000,
+    Income_int == 2 ~ 12500,
+    Income_int == 3 ~ 17500,
+    Income_int == 4 ~ 22250,
+    Income_int == 5 ~ 27250,
+    Income_int == 6 ~ 32250,
+    Income_int == 7 ~ 37250,
+    Income_int == 8 ~ 40250,
+    Income_int == 9 ~ 47250,
+    Income_int == 10 ~ 50250,
+    Income_int == 11 ~ 57250,
+    Income_int == 12 ~ 60250,
+    Income_int == 13 ~ 67250,
+    Income_int == 14 ~ 70250,
+    Income_int == 15 ~ 77250,
+    Income_int == 16 ~ 80250,
+    Income_int == 17 ~ 87250,
+    Income_int == 18 ~ 90250,
+    Income_int == 19 ~ 97250,
+    Income_int == 20 ~ 102250,
+    Income_int == 21 ~ 110000,
+    Income_int == 22 ~ 120000,
+    Income_int == 23 ~ 130000,
+    Income_int == 24 ~ 140000,
+    Income_int == 25 ~ 175000,
+    Income_int == 26 ~ 200000,
+    TRUE ~ 0
+  )) %>%
+  mutate(income_midpt = ifelse(income_midpt == 0, NA, income_midpt)) %>%
+  relocate(income_midpt, .after = Income)
+
 per_calc_ptypes <- per_with_taz %>%
   mutate(
     WAdult = ifelse(Employment == "Yes" & Age >= 18, 1, 0),
@@ -156,7 +190,7 @@ hhstructure <- per_calc_ptypes %>%
   ) %>%
   mutate(HHStructure = paste0("HH_", WAdults, NWAdults, HHKids))
 
-hh_add_strct <- hh_with_tazs %>%
+hh_add_strct <- hh_add_incmp %>%
   left_join(hhstructure, by = "Sample_Number")
   
 ```
@@ -494,7 +528,7 @@ tours_by_per <- tour_file %>%
 
 per_add_tour_counts <- per_calc_ptypes %>%
   left_join(
-    hh_with_tazs %>% select(-Weight_Factor), by = "Sample_Number"
+    hh_add_incmp %>% select(-Weight_Factor), by = "Sample_Number"
   ) %>%
   left_join(tours_by_per, by = c("Sample_Number", "Person_Number")) %>%
   mutate(
