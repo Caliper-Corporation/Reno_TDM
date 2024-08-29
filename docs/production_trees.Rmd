@@ -19,9 +19,15 @@ library(rpart.plot)
 ```{r, include=FALSE}
 hh <- read_csv("data/_private/hh_survey/output/output_households.csv")
 per <- read_csv("data/_private/hh_survey/output/output_persons.csv") %>%
-  mutate(person_id = paste0(Sample_Number, "_", Person_Number))
+  mutate(
+    person_id = paste0(Sample_Number, "_", Person_Number),
+    is_kid = ifelse(Age < 18, 1, 0),
+    is_senior = ifelse(Age >= 65, 1, 0),
+    is_adult = ifelse(Age >= 18, 1, 0)
+  )
 trips <- read_csv("data/_private/hh_survey/output/output_trips.csv") %>%
   mutate(person_id = paste0(Sample_Number, "_", Person_Number))
+accessibily <- read_csv("data/input/accessibility/accessibilities.csv")
 ```
 
 ```{r}
@@ -34,21 +40,16 @@ agg_trips <- trips %>%
 
 # Determine which households have kids
 has_kids <- per %>%
-  mutate(
-    is_kid = ifelse(Age < 18, 1, 0),
-    is_senior = ifelse(Age >= 65, 1, 0),
-    is_adult = ifelse(Age >= 18, 1, 0)
-  ) %>%
   group_by(Sample_Number) %>%
   summarize(
     num_kids = sum(is_kid, na.rm = TRUE),
     num_seniors = sum(is_senior, na.rm = TRUE),
     num_adults = sum(is_adult, na.rm = TRUE)
-  ) # %>%
-  # mutate(
-  #   Kids_Category = ifelse(num_kids > 0, 2, 1),
-  #   Seniors_Category = ifelse(num_seniors > 0, 2, 1)
-  # )
+  ) %>%
+  mutate(
+    kids_in_hh = ifelse(num_kids > 0, "Yes", "No"),
+    seniors_in_hh = ifelse(num_seniors > 0, "Yes", "No")
+  )
 ```
 
 
@@ -66,7 +67,7 @@ joined <- per %>%
     Student = Student_Status,
     Regular_WorkAtHome = ifelse(Workplace_Type_int == 1, "Yes", "No"),
     WorkIndustry = as.factor(Primary_Industry_int),
-    Inc_Category = case_when(
+    HH_IncCat = case_when(
       Income_int.x <= 4 ~ 1,
       Income_int.x <= 9 ~ 2,
       Income_int.x <= 14 ~ 3,
@@ -74,33 +75,49 @@ joined <- per %>%
       Income_int.x <= 24 ~ 5,
       TRUE ~ 6
     ),
+    Inc_PerCapita = income_midpt.x / Number_Persons.x,
     OwnOrRent = as.factor(Rent_or_Own_Residence.x),
+    # VehSufficiency = case_when(
+    #   `Vehicles_Owned/Leased.x` == 0 ~ "v0",
+    #   `Vehicles_Owned/Leased.x` < num_adults ~ "vi",
+    #   TRUE ~ "vs"
+    # )
     VehSufficiency = case_when(
-      `Vehicles_Owned/Leased.x` == 0 ~ "v0",
-      `Vehicles_Owned/Leased.x` < num_adults ~ "vi",
+      `Vehicles_Available.x` == 0 ~ "v0",
+      `Vehicles_Available.x` < num_adults ~ "vi",
       TRUE ~ "vs"
     )
   ) %>%
   left_join(agg_trips, by = "person_id") %>%
   mutate(across(W_HBW:N_HBH, ~ replace_na(.x, 0))) %>%
+  left_join(accessibily, by = c("HomeTAZ.x" = "TAZ")) %>%
+  mutate(
+    is_kid = ifelse(is_kid == 1, "Yes", "No"),
+    is_adult = ifelse(is_adult == 1, "Yes", "No"),
+    is_senior = ifelse(is_senior == 1, "Yes", "No"),
+  ) %>%
   select(
     person_id, 
     # HH variables
     HHSize = Number_Persons.x, 
     Vehicles = `Vehicles_Owned/Leased.x`, 
-    Inc_Category,
+    HH_IncCat,
+    Inc_PerCapita,
     num_kids,
-    # Kids_Category,
     num_seniors,
-    # Seniors_Category,
+    num_adults,
+    kids_in_hh,
+    seniors_in_hh,
     # person variables
     Gender,
     Age,
-    # WorkIndustry, 
-    # Student, 
+    is_kid,
+    is_adult,
+    is_senior,
     Employed,
-    # MoreThanOneJob, 
-    # WorkersEmployed, 
+    g_access = access_general_sov,
+    t_access = access_transit,
+    w_access = access_walk,
     VehSufficiency,
     W_HBW:N_HBH,
     WeightCaliper = `Weight_Factor.x`
@@ -164,7 +181,7 @@ tree <- rpart(
   method = "anova",
   maxdepth = 5,
   cp = .001,
-  minbucket = 30,
+  minbucket = 40,
   weights = est_tbl$WeightCaliper
 )
 
@@ -226,7 +243,7 @@ tree <- rpart(
 
 # Snip to remove specific nodes from the tree
 # summary(tree) # to find node numbers
-# tree <- snip.rpart(tree, 31)
+tree <- snip.rpart(tree, 30)
 rpart.plot(tree, type = 1, under = TRUE, extra = 1)
 
 rule_tbl <- create_rule_table(tree, "vi")
@@ -263,7 +280,7 @@ tree <- rpart(
   method = "anova",
   maxdepth = 5,
   cp = .001,
-  minbucket = 30,
+  minbucket = 40,
   weights = est_tbl$WeightCaliper
 )
 
@@ -306,7 +323,7 @@ tree <- rpart(
   W_HBO ~ . - WeightCaliper,
   data = est_tbl, 
   method = "anova",
-  maxdepth = 1,
+  maxdepth = 2,
   cp = .001,
   minbucket = 30,
   weights = est_tbl$WeightCaliper
@@ -355,7 +372,7 @@ est_tbl <- joined %>%
   select(
     W_HBO, WeightCaliper,
     HHSize:VehSufficiency,
-    -HHSize
+    -w_access
   ) %>%
   filter(VehSufficiency == "vi")
   
@@ -364,9 +381,9 @@ tree <- rpart(
   W_HBO ~ . - WeightCaliper,
   data = est_tbl, 
   method = "anova",
-  maxdepth = 4,
-  cp = .001,
-  minbucket = 30,
+  maxdepth = 5,
+  cp = .01,
+  minbucket = 40,
   weights = est_tbl$WeightCaliper
 )
 
@@ -422,7 +439,7 @@ tree <- rpart(
   data = est_tbl, 
   method = "anova",
   maxdepth = 5,
-  cp = .001,
+  cp = .01,
   minbucket = 40,
   weights = est_tbl$WeightCaliper
 )
@@ -481,14 +498,14 @@ tree <- rpart(
   data = est_tbl, 
   method = "anova",
   maxdepth = 5,
-  cp = .001,
+  cp = .005,
   minbucket = 40,
   weights = est_tbl$WeightCaliper
 )
 
 # Snip to remove specific nodes from the tree
 # summary(tree) # to find node numbers
-# tree <- snip.rpart(tree, 2)
+tree <- snip.rpart(tree, 4)
 rpart.plot(tree, type = 1, under = TRUE, extra = 1)
 
 rule_tbl <- create_rule_table(tree, "v0")
@@ -529,7 +546,7 @@ est_tbl <- joined %>%
   select(
     N_HBSR, WeightCaliper,
     HHSize:VehSufficiency,
-    -HHSize
+    -t_access
   ) %>%
   filter(VehSufficiency == "vi")
   
@@ -539,14 +556,14 @@ tree <- rpart(
   data = est_tbl, 
   method = "anova",
   maxdepth = 4,
-  cp = .001,
+  cp = .01,
   minbucket = 30,
   weights = est_tbl$WeightCaliper
 )
 
 # Snip to remove specific nodes from the tree
 # summary(tree) # to find node numbers
-# tree <- snip.rpart(tree, 2)
+tree <- snip.rpart(tree, 6)
 rpart.plot(tree, type = 1, under = TRUE, extra = 1)
 
 rule_tbl <- create_rule_table(tree, "vi")
@@ -597,8 +614,8 @@ tree <- rpart(
   data = est_tbl, 
   method = "anova",
   maxdepth = 4,
-  cp = .001,
-  minbucket = 61,
+  cp = .007,
+  minbucket = 40,
   weights = est_tbl$WeightCaliper
 )
 
@@ -646,8 +663,7 @@ rate_list$N_HBSR_vs <- rate_tbl
 est_tbl <- joined %>%
   select(
     N_HBO, WeightCaliper,
-    HHSize:VehSufficiency,
-    -Age
+    HHSize:VehSufficiency
   ) %>%
   filter(VehSufficiency == "v0")
   
@@ -656,9 +672,9 @@ tree <- rpart(
   N_HBO ~ . - WeightCaliper,
   data = est_tbl, 
   method = "anova",
-  maxdepth = 3,
+  maxdepth = 4,
   cp = .001,
-  minbucket = 40,
+  minbucket = 60,
   weights = est_tbl$WeightCaliper
 )
 
@@ -770,7 +786,7 @@ tree <- rpart(
   N_HBO ~ . - WeightCaliper,
   data = est_tbl, 
   method = "anova",
-  maxdepth = 4,
+  maxdepth = 5,
   cp = .001,
   minbucket = 40,
   weights = est_tbl$WeightCaliper
@@ -989,7 +1005,8 @@ rate_list$N_HBSHP_vi <- rate_tbl
 est_tbl <- joined %>%
   select(
     N_HBSHP, WeightCaliper,
-    HHSize:VehSufficiency
+    HHSize:VehSufficiency,
+    -Vehicles, -w_access
   ) %>%
   filter(VehSufficiency == "vs")
   
@@ -998,8 +1015,8 @@ tree <- rpart(
   N_HBSHP ~ . - WeightCaliper,
   data = est_tbl, 
   method = "anova",
-  maxdepth = 4,
-  cp = .001,
+  maxdepth = 5,
+  cp = .01,
   minbucket = 40,
   weights = est_tbl$WeightCaliper
 )
