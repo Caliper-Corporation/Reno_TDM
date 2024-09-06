@@ -2263,6 +2263,7 @@ Macro "Gravity2" (MacroOpts)
     end
     obj.Run()
     // r = obj.GetResult()
+    obj = null
 
     // remove temp fields on se data and close view
     fields_to_drop = SortVector(A2V(fields_to_drop), {Unique: "true"})
@@ -2286,13 +2287,12 @@ Macro "Gravity2" (MacroOpts)
       temp_corenames = temp_mtx.GetCoreNames()
       for corename in temp_corenames do
         if out_corenames.position(corename) = 0 then out_mtx.AddCores({corename})
-        out_core = out_mtx.GetCore(corename)
-        temp_core = temp_mtx.GetCore(corename)
-        out_core := nz(out_core) + nz(temp_core)
+        // out_core = out_mtx.GetCore(corename)
+        // temp_core = temp_mtx.GetCore(corename)
+        out_mtx.(corename) := nz(out_mtx.(corename)) + nz(temp_mtx.(corename))
       end
 
       temp_mtx = null
-      temp_core = null
       DeleteFile(temp_mtx_file)
     end
   end
