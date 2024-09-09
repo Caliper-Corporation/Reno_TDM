@@ -29,7 +29,12 @@ time period. Caliper used the processed household survey to perform the
 analysis.
 
 ```{r read survey, include = FALSE}
-tripTbl <- read_csv("data/_private/hh_survey/output/output_trips.csv")
+tripTbl <- read_csv("data/_private/hh_survey/output/output_trips.csv") %>%
+  mutate(
+    homebased = ifelse(orig_purp == "H" | dest_purp == "H", "HB", "NH"),
+    tour_type = ifelse(tour_type == "work", "W", "N"),
+  ) %>%
+  filter(purpose != "N_HBH")
 ```
 
 # Peak period determination
@@ -425,10 +430,6 @@ avg_tim %>%
   kable_styling(full_width = FALSE)
 ```
 
-```{r}
-knit_exit()
-```
-
 
 # Time of day factors
 With the periods defined, the percent of trips produced by purpose and time of
@@ -452,18 +453,18 @@ period_tbl %>%
 
 ```{r calc_tod_trip_factors}
 tod_factors <- tripTbl %>%
-  filter(tour_type != "H", homebased == "HB") %>%
-  group_by(tod, trip_type) %>%
+  filter(homebased == "HB") %>%
+  group_by(tod, purpose) %>%
   summarise(Trips = sum(Weight_Factor)) %>%
-  group_by(trip_type) %>%
+  group_by(purpose) %>%
   mutate(
     factor = round(Trips / sum(Trips), 3),
     # ensure unity
     temp = ifelse(tod == "NT", 0, factor),
     factor = ifelse(tod == "NT", 1 - sum(temp), factor)
   ) %>%
-  select(trip_type, tod, factor) %>%
-  arrange(trip_type, tod)
+  select(purpose, tod, factor) %>%
+  arrange(purpose, tod)
 
 tod_factors %>%
   ungroup() %>%
@@ -472,7 +473,7 @@ tod_factors %>%
     tod = factor(tod, levels = c("AM", "MD", "PM", "NT"), ordered = TRUE)
   ) %>%
   spread(key = tod, value = factor) %>%
-  rename(`Trip Type` = trip_type) %>%
+  rename(Purpose = purpose) %>%
   kable() %>%
   kable_styling(full_width = FALSE)
 
@@ -487,18 +488,18 @@ tod_factors$Description <- desc
 
 ```{r}
 nhb_tod_factors <- tripTbl %>%
-  filter(tour_type != "H", homebased == "NH") %>%
-  group_by(tod, trip_type) %>%
+  filter(homebased == "NH") %>%
+  group_by(tod, purpose) %>%
   summarise(Trips = sum(Weight_Factor)) %>%
-  group_by(trip_type) %>%
+  group_by(purpose) %>%
   mutate(
     factor = round(Trips / sum(Trips), 3),
     # ensure unity
     temp = ifelse(tod == "NT", 0, factor),
     factor = ifelse(tod == "NT", 1 - sum(temp), factor)
   ) %>%
-  select(trip_type, tod, factor) %>%
-  arrange(trip_type, tod)
+  select(purpose, tod, factor) %>%
+  arrange(purpose, tod)
 
 nhb_tod_factors %>%
   ungroup() %>%
@@ -507,7 +508,7 @@ nhb_tod_factors %>%
     tod = factor(tod, levels = c("AM", "MD", "PM", "NT"), ordered = TRUE)
   ) %>%
   spread(key = tod, value = factor) %>%
-  rename(`Trip Type` = trip_type) %>%
+  rename(Purpose = purpose) %>%
   kable() %>%
   kable_styling(full_width = FALSE)
 ```
@@ -536,23 +537,23 @@ trip type.
 
 ```{r calc_pa_factors}
 direction_tbl <- tripTbl %>%
-  filter(homebased == "HB", tour_type != "H") %>%
-  group_by(trip_type, tod, pa_flag) %>%
+  filter(homebased == "HB") %>%
+  group_by(purpose, tod, pa_format) %>%
   summarize(trips = sum(Weight_Factor)) %>%
   mutate(
     pct = trips / sum(trips),
     tod = factor(tod, levels = c("AM", "MD", "PM", "NT"), ordered = TRUE)
   ) %>%
-  filter(pa_flag == 1) %>%
-  select(-trips, -pa_flag) %>%
+  filter(pa_format == 1) %>%
+  select(-trips, -pa_format) %>%
   rename(pa_fac = pct) %>%
-  arrange(trip_type, tod)
+  arrange(purpose, tod)
 
 direction_tbl %>%
   pivot_wider(
     names_from = "tod", values_from = "pa_fac"
   ) %>%
-  rename(`Trip Type` = trip_type) %>%
+  rename(`Purpose` = purpose) %>%
   kable(digits = 2) %>%
   kable_styling(full_width = FALSE)
 
@@ -560,15 +561,15 @@ direction_tbl %>%
 # Transit only trips don't balance exactly out-vs-in in the survey because people
 # can take other modes to get home.
 trns_dir_tbl <- tripTbl %>%
-  filter(homebased == "HB", tour_type != "H") %>%
-  group_by(tod, pa_flag) %>%
+  filter(homebased == "HB") %>%
+  group_by(tod, pa_format) %>%
   summarize(trips = sum(Weight_Factor)) %>%
   mutate(
     pct = trips / sum(trips),
     tod = factor(tod, levels = c("AM", "MD", "PM", "NT"), ordered = TRUE)
   ) %>%
-  filter(pa_flag == 1) %>%
-  select(-trips, -pa_flag) %>%
+  filter(pa_format == 1) %>%
+  select(-trips, -pa_format) %>%
   rename(pa_fac = pct) %>%
   arrange(tod)
 ```
@@ -577,22 +578,17 @@ By definition, non-home-based trips are the same in either format;
 their PA factors are set to .5. The same treatment is applied to commercial
 vehicles, trucks, and external trips.
 
-Directionality factors are applied after the distribution and modal
-models. At that point, trip types are collapsed due to sample size
-limitations in the household survey. As a result, the factors must be estimated
-using the matching, more-aggregate purposes.
-
 ## Treatment of skims
 
-In the TRMG2, the directionality factors are used to further improve the
+In the model, the directionality factors are used to further improve the
 period-specific skims. The easiest way to explain the improvement is using the PM
 period as an example. 
 
-In the PM period, 95% of home-based work trips in the survey are traveling back
-home. Trip productions estimated by the model are in PA format and, with a
-traditional approach, would see skim times from home to work, which are near
-free-flow speed. This unrealistic representation of travel time would cause
-incorrect mode and destination choices to be predicted.
+In the PM period, 89% of home-based work trips in the survey are traveling back
+home (AP format). Trip productions estimated by the model are in PA format and,
+with a traditional approach, would see skim times from home to work, which are
+not congested in the PM period. This unrealistic representation of travel time
+would cause incorrect mode and destination choices to be predicted.
 
 To properly represent aggregate travel times, the PA and AP directions must be
 combined using a weighted average as shown below:
@@ -611,10 +607,28 @@ For home-based trips in the off-peak, the survey showed that the directionality
 was close enough to 50/50 that the extra complexity was not warranted.
 
 ```{r, include = FALSE}
-skim_facs <- read_csv("../master/resident/tod/directionality_skim_factors.csv")
-```
+skim_facs <- tripTbl %>%
+  mutate(
+    tour_type = ifelse(tod %in% c("MD", "NT"), "All", tour_type),
+    tour_type = ifelse(homebased == "NH", "All", tour_type),
+    homebased = ifelse(homebased == "NH", "NHB", homebased),
+    homebased = ifelse(tod %in% c("MD", "NT"), "All", homebased)
+  ) %>%
+  group_by(tod, homebased, tour_type, pa_format) %>%
+  summarize(trips = sum(Weight_Factor)) %>%
+  mutate(
+    pct = round(trips / sum(trips, na.rm = TRUE), 3),
+    pa_format = ifelse(pa_format == 1, "pa", "ap")
+  ) %>%
+  select(-trips) %>%
+  pivot_wider(names_from = "pa_format", values_from = "pct") %>%
+  mutate(
+    ap = ifelse(tour_type == "All", .5, ap),
+    pa = ifelse(tour_type == "All", .5, pa)
+  ) %>%
+  rename(period = tod) %>%
+  relocate(ap, .after = pa)
 
-```{r}
 skim_facs %>%
   rename(
     Period = period, Homebased = homebased, `Tour Type` = tour_type, 
@@ -641,53 +655,49 @@ factors for HOV3 are shown below.
 
 ```{r calculate veh occ factors}
 hb_hov3_tbl <- tripTbl %>%
-  filter(tour_type != "H", !is.na(mode_final), homebased == "HB") %>%
+  filter(!is.na(mode), homebased == "HB") %>%
   # for this calculation, include large-party auto_pay and oth_auto
   # trips in hov3
-  mutate(mode_final = ifelse(
-    mode_final %in% c("auto_pay", "oth_auto") & party_size >= 3,
-    "hov3", mode_final
-  )) %>%
-  filter(mode_final %in% c("hov3")) %>%
   mutate(
-    party_size = num_hh_members + num_nonhh,
-    mode = mode_final
-  ) %>%
-  group_by(trip_type, tod, mode) %>%
+    party_size = HH_Members + Non_HH_Members,
+    mode = ifelse(
+      mode %in% c("auto_pay", "oth_auto") & party_size >= 3,
+      "hov3", mode
+    )) %>%
+  filter(mode %in% c("hov3")) %>%
+  group_by(purpose, tod, mode) %>%
   mutate(
     Value = round(weighted.mean(party_size, w = Weight_Factor), 3),
     Samples = n(),
   ) %>%
   # Low samples for some rows leads to high factors (e.g. 4.9). If the sample size
   # is low, use the daily average.
-  group_by(trip_type, mode) %>%
+  group_by(purpose, mode) %>%
   mutate(
     daily_value = round(weighted.mean(party_size, w = Weight_Factor), 3),
     Value = ifelse(Samples < 30, daily_value, Value)
   ) %>%
-  group_by(trip_type, tod, mode) %>%
+  group_by(purpose, tod, mode) %>%
   slice(1) %>%
-  select(trip_type, tod, mode, Value, Samples) %>%
+  select(purpose, tod, mode, Value, Samples) %>%
   ungroup() %>%
-  arrange(trip_type, tod, mode) %>%
-  select(trip_type, mode, tod, Value) %>%
+  arrange(purpose, tod, mode) %>%
+  select(purpose, mode, tod, Value) %>%
   filter(mode == "hov3") %>%
   select(-mode) %>%
   rename(hov3 = Value)
 
 nhb_hov3_tbl <- tripTbl %>%
-  filter(tour_type != "H", !is.na(mode_final), homebased == "NH") %>%
+  filter(!is.na(mode), homebased == "NH") %>%
   # for this calculation, include large-party auto_pay and oth_auto
   # trips in hov3
-  mutate(mode_final = ifelse(
-    mode_final %in% c("auto_pay", "oth_auto") & party_size >= 3,
-    "hov3", mode_final
-  )) %>%
-  filter(mode_final %in% c("hov3")) %>%
   mutate(
-    party_size = num_hh_members + num_nonhh,
-    mode = mode_final
-  ) %>%
+    party_size = HH_Members + Non_HH_Members,
+    mode = ifelse(
+      mode %in% c("auto_pay", "oth_auto") & party_size >= 3,
+      "hov3", mode
+    )) %>%
+  filter(mode %in% c("hov3")) %>%
   group_by(tour_type, tod, mode) %>%
   mutate(
     Value = round(weighted.mean(party_size, w = Weight_Factor), 3),
@@ -714,33 +724,32 @@ nhb_hov3_tbl <- tripTbl %>%
 ```{r}
 display_tbl <- hb_hov3_tbl %>%
   mutate(tod = factor(tod, levels = c("AM", "MD", "PM", "NT"), ordered = TRUE)) %>%
-  arrange(trip_type, tod) %>%
+  arrange(purpose, tod) %>%
   rename(
-    `Trip Type` = trip_type,
+    Purpose = purpose,
     Period = tod,
     HOV3 = hov3
   )
 
 display_tbl %>%
-  select(`Trip Type`, Period, HOV3) %>%
+  select(Purpose, Period, HOV3) %>%
   pivot_wider(names_from = Period, values_from = HOV3) %>%
   kable() %>%
   kable_styling(full_width = FALSE)
 ```
 
 Roadway assignment in the model is done by vehicle class (sov, hov2, hov3). As a
-result, "auto pay" and "other modes" must be converted into those classes. The
-table below shows the homebased trip factors calculated from the survey used to
-do this.
+result, TNC must be converted into those classes. The table below shows the
+homebased trip factors calculated from the survey used to do this.
 
 ```{r}
 # Calculate the shares of HB auto_pay and other_auto trips that
 # are sov/hov2/hov3
 hb_oth_shares <- tripTbl %>%
-  filter(tour_type != "H", !is.na(mode_final), homebased == "HB") %>%
-  filter(mode_final %in% c("auto_pay", "other_auto")) %>%
+  filter(!is.na(mode), homebased == "HB") %>%
+  filter(mode %in% c("tnc")) %>%
   mutate(
-    party_size = num_hh_members + num_nonhh,
+    party_size = HH_Members + Non_HH_Members,
     mode2 = case_when(
       party_size == 1 ~ "sov",
       party_size == 2 ~ "hov2",
@@ -748,16 +757,16 @@ hb_oth_shares <- tripTbl %>%
     )
   ) %>%
   select(
-    trip_type, tod, mode_final, mode2, party_size,
+    purpose, tod, mode, mode2, party_size,
     weight = Weight_Factor
   ) %>%
   mutate(
     mode2 = factor(mode2, levels = c("sov", "hov2", "hov3"), ordered = TRUE)
   ) %>%
-  group_by(trip_type, mode2) %>%
+  group_by(purpose, mode2) %>%
   summarize(weight = sum(weight)) %>%
   mutate(pct = weight / sum(weight)) %>%
-  select(trip_type, mode2, pct) %>%
+  select(purpose, mode2, pct) %>%
   pivot_wider(names_from = mode2, values_from = pct) %>%
   replace_na(list("sov" = 0, "hov2" = 0, "hov3" = 0))
 
@@ -771,10 +780,10 @@ non work). They are shown in the table below.
 
 ```{r}
 nhb_oth_shares <- tripTbl %>%
-  filter(tour_type != "H", !is.na(mode_final), homebased == "NH") %>%
-  filter(mode_final %in% c("auto_pay")) %>%
+  filter(tour_type != "H", !is.na(mode), homebased == "NH") %>%
+  filter(mode %in% c("tnc")) %>%
   mutate(
-    party_size = num_hh_members + num_nonhh,
+    party_size = HH_Members + Non_HH_Members,
     mode2 = case_when(
       party_size == 1 ~ "sov",
       party_size == 2 ~ "hov2",
@@ -782,7 +791,7 @@ nhb_oth_shares <- tripTbl %>%
     )
   ) %>%
   select(
-    tour_type, tod, mode_final, mode2, party_size,
+    tour_type, tod, mode, mode2, party_size,
     weight = Weight_Factor
   ) %>%
   mutate(
@@ -1019,11 +1028,11 @@ write_csv(tod_factors, "data/output/tod/time_of_day_factors.csv")
 # Directionality factors
 write_csv(direction_tbl , "data/output/tod/directionality_factors.csv")
 write_csv(trns_dir_tbl , "data/output/tod/directionality_factors_transit.csv")
+write_csv(skim_facs, "data/output/tod/directionality_skim_factors.csv")
 
 # Occupancy factors/shares
 write_csv(hb_hov3_tbl , "data/output/tod/hov3_occ_factors_hb.csv")
 write_csv(nhb_hov3_tbl , "data/output/tod/hov3_occ_factors_nhb.csv")
-
 write_csv(hb_oth_shares , "data/output/tod/other_shares_hb.csv")
 write_csv(nhb_oth_shares , "data/output/tod/other_shares_nhb.csv")
 
