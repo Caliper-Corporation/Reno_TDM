@@ -276,7 +276,7 @@ am_peak_to <- chron(times. = c("9:00:00"))
 # pm_peak_from <- pm_min_from
 # pm_peak_to <- pm_max_to
 pm_peak_from <- chron(times. = c("15:00:00"))
-pm_peak_to <- chron(times. = c("17:30:00"))
+pm_peak_to <- chron(times. = c("18:00:00"))
 ```
 
 ## Final Period Definitions {#final_defs}
