@@ -227,7 +227,8 @@ rate_list$W_HBW_v0 <- rate_tbl
 est_tbl <- joined %>%
   select(
     W_HBW, WeightCaliper,
-    HHSize:VehSufficiency
+    HHSize:VehSufficiency,
+    -w_access, -HHSize
   ) %>%
   filter(VehSufficiency == "vi")
 
@@ -243,7 +244,7 @@ tree <- rpart(
 
 # Snip to remove specific nodes from the tree
 # summary(tree) # to find node numbers
-tree <- snip.rpart(tree, 30)
+tree <- snip.rpart(tree, 6)
 rpart.plot(tree, type = 1, under = TRUE, extra = 1)
 
 rule_tbl <- create_rule_table(tree, "vi")
@@ -269,9 +270,10 @@ rate_list$W_HBW_vi <- rate_tbl
 est_tbl <- joined %>%
   select(
     W_HBW, WeightCaliper,
-    HHSize:VehSufficiency,
-    -Age
+    HHSize:VehSufficiency
   ) %>%
+  mutate(over_60 = ifelse(Age >= 61, "Yes", "No")) %>%
+  select(-Age) %>%
   filter(VehSufficiency == "vs")
 
 tree <- rpart(
@@ -286,7 +288,7 @@ tree <- rpart(
 
 # Snip to remove specific nodes from the tree
 # summary(tree) # to find node numbers
-# tree <- snip.rpart(tree, 7)
+tree <- snip.rpart(tree, c(29, 31))
 rpart.plot(tree, type = 1, under = TRUE, extra = 1)
 
 rule_tbl <- create_rule_table(tree, "vs")
@@ -389,7 +391,7 @@ tree <- rpart(
 
 # Snip to remove specific nodes from the tree
 # summary(tree) # to find node numbers
-# tree <- snip.rpart(tree, 13)
+tree <- snip.rpart(tree, 29)
 rpart.plot(tree, type = 1, under = TRUE, extra = 1)
 
 rule_tbl <- create_rule_table(tree, "vi")
@@ -438,7 +440,7 @@ tree <- rpart(
   W_HBO ~ . - WeightCaliper,
   data = est_tbl, 
   method = "anova",
-  maxdepth = 5,
+  maxdepth = 4,
   cp = .01,
   minbucket = 40,
   weights = est_tbl$WeightCaliper
@@ -498,14 +500,14 @@ tree <- rpart(
   data = est_tbl, 
   method = "anova",
   maxdepth = 5,
-  cp = .005,
+  cp = .02,
   minbucket = 40,
   weights = est_tbl$WeightCaliper
 )
 
 # Snip to remove specific nodes from the tree
 # summary(tree) # to find node numbers
-tree <- snip.rpart(tree, 4)
+tree <- snip.rpart(tree, 6)
 rpart.plot(tree, type = 1, under = TRUE, extra = 1)
 
 rule_tbl <- create_rule_table(tree, "v0")
@@ -557,13 +559,13 @@ tree <- rpart(
   method = "anova",
   maxdepth = 4,
   cp = .01,
-  minbucket = 30,
+  minbucket = 59,
   weights = est_tbl$WeightCaliper
 )
 
 # Snip to remove specific nodes from the tree
 # summary(tree) # to find node numbers
-tree <- snip.rpart(tree, 6)
+tree <- snip.rpart(tree, c(6, 14))
 rpart.plot(tree, type = 1, under = TRUE, extra = 1)
 
 rule_tbl <- create_rule_table(tree, "vi")
