@@ -62,6 +62,8 @@ joined <- per %>%
   mutate(
     Gender = ifelse(Gender == 1, "Male", "Female"),
     Gender = as.factor(Gender),
+    # Amazon = ifelse(Amazon_Walmart.x != 8, "Yes", "No"),
+    Amazon = ifelse(grepl("1", Amazon_Walmart.x), "Yes", "No"),
     Student_Status = as.factor(Student_Status),
     Employed = ifelse(Employment == "Yes", "Yes", "No"),
     Student = Student_Status,
@@ -120,7 +122,8 @@ joined <- per %>%
     w_access = access_walk,
     VehSufficiency,
     W_HBW:N_HBH,
-    WeightCaliper = `Weight_Factor.x`
+    WeightCaliper = `Weight_Factor.x`,
+    Amazon
   ) %>%
   filter(!is.na(WeightCaliper))
 ```
@@ -603,10 +606,13 @@ rate_list$N_HBSR_vi <- rate_tbl
 
 ```{r}
 est_tbl <- joined %>%
+  mutate(Inc_PC_lt_80 = ifelse(Inc_PerCapita < 80000, "Yes", "No")) %>%
   select(
     N_HBSR, WeightCaliper,
     HHSize:VehSufficiency,
-    -HHSize
+    -HHSize, -Age, -HH_IncCat, -Inc_PerCapita,
+    Inc_PC_lt_80,
+    -Vehicles, -t_access, -g_access
   ) %>%
   filter(VehSufficiency == "vs")
   
@@ -623,7 +629,7 @@ tree <- rpart(
 
 # Snip to remove specific nodes from the tree
 # summary(tree) # to find node numbers
-# tree <- snip.rpart(tree, 2)
+tree <- snip.rpart(tree, 13)
 rpart.plot(tree, type = 1, under = TRUE, extra = 1)
 
 rule_tbl <- create_rule_table(tree, "vs")
@@ -666,7 +672,10 @@ est_tbl <- joined %>%
   select(
     N_HBO, WeightCaliper,
     HHSize:VehSufficiency
+    # -w_access
   ) %>%
+  mutate(t_access_lt_61 = ifelse(t_access < 6.1, "Yes", "No")) %>%
+  select(-t_access, -w_access) %>%
   filter(VehSufficiency == "v0")
   
 
@@ -675,8 +684,8 @@ tree <- rpart(
   data = est_tbl, 
   method = "anova",
   maxdepth = 4,
-  cp = .001,
-  minbucket = 60,
+  cp = .01,
+  minbucket = 30,
   weights = est_tbl$WeightCaliper
 )
 
@@ -722,7 +731,8 @@ rate_list$N_HBO_v0 <- rate_tbl
 est_tbl <- joined %>%
   select(
     N_HBO, WeightCaliper,
-    HHSize:VehSufficiency
+    HHSize:VehSufficiency,
+    -Inc_PerCapita, -HH_IncCat
   ) %>%
   filter(VehSufficiency == "vi")
   
@@ -732,7 +742,7 @@ tree <- rpart(
   data = est_tbl, 
   method = "anova",
   maxdepth = 4,
-  cp = .001,
+  cp = .01,
   minbucket = 40,
   weights = est_tbl$WeightCaliper
 )
@@ -788,8 +798,8 @@ tree <- rpart(
   N_HBO ~ . - WeightCaliper,
   data = est_tbl, 
   method = "anova",
-  maxdepth = 5,
-  cp = .001,
+  maxdepth = 4,
+  cp = .01,
   minbucket = 40,
   weights = est_tbl$WeightCaliper
 )
@@ -836,7 +846,7 @@ rate_list$N_HBO_vs <- rate_tbl
 est_tbl <- joined %>%
   select(
     N_HBSCH, WeightCaliper,
-    HHSize:VehSufficiency
+    HHSize:VehSufficiency, -HHSize, -num_kids, -t_access
   )
 
 tree <- rpart(
@@ -851,7 +861,7 @@ tree <- rpart(
 
 # Snip to remove specific nodes from the tree
 # summary(tree) # to find node numbers
-# tree <- snip.rpart(tree, 2)
+tree <- snip.rpart(tree, 15)
 rpart.plot(tree, type = 1, under = TRUE, extra = 1)
 
 rule_tbl <- create_rule_table(tree)
@@ -893,7 +903,7 @@ rate_list$N_HBSCH <- rate_tbl
 est_tbl <- joined %>%
   select(
     N_HBSHP, WeightCaliper,
-    HHSize:VehSufficiency
+    HHSize:VehSufficiency, -Inc_PerCapita, -w_access, -t_access
   ) %>%
   filter(VehSufficiency == "v0")
   
@@ -950,7 +960,8 @@ rate_list$N_HBSHP_v0 <- rate_tbl
 est_tbl <- joined %>%
   select(
     N_HBSHP, WeightCaliper,
-    HHSize:VehSufficiency
+    HHSize:VehSufficiency, -Inc_PerCapita,
+    -Amazon, -num_adults, -contains("access")
   ) %>%
   filter(VehSufficiency == "vi")
   
@@ -961,13 +972,13 @@ tree <- rpart(
   method = "anova",
   maxdepth = 4,
   cp = .001,
-  minbucket = 40,
+  minbucket = 30,
   weights = est_tbl$WeightCaliper
 )
 
 # Snip to remove specific nodes from the tree
 # summary(tree) # to find node numbers
-# tree <- snip.rpart(tree, 2)
+tree <- snip.rpart(tree, c(9, 10, 11))
 rpart.plot(tree, type = 1, under = TRUE, extra = 1)
 
 rule_tbl <- create_rule_table(tree, "vi")
@@ -1008,7 +1019,7 @@ est_tbl <- joined %>%
   select(
     N_HBSHP, WeightCaliper,
     HHSize:VehSufficiency,
-    -Vehicles, -w_access
+    -Vehicles, -w_access, -Inc_PerCapita, -t_access
   ) %>%
   filter(VehSufficiency == "vs")
   
@@ -1018,14 +1029,14 @@ tree <- rpart(
   data = est_tbl, 
   method = "anova",
   maxdepth = 5,
-  cp = .01,
+  cp = .007,
   minbucket = 40,
   weights = est_tbl$WeightCaliper
 )
 
 # Snip to remove specific nodes from the tree
 # summary(tree) # to find node numbers
-# tree <- snip.rpart(tree, 2)
+tree <- snip.rpart(tree, c(9, 5))
 rpart.plot(tree, type = 1, under = TRUE, extra = 1)
 
 rule_tbl <- create_rule_table(tree, "vs")
