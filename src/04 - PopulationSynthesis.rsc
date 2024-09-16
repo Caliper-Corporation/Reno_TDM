@@ -312,6 +312,7 @@ Macro "Generate Tabulations"(Args)
     modify.FindOrAddField("HHSeniors", "Long", 12,,)
     modify.FindOrAddField("HHWorkers", "Long", 12,,)
     modify.FindOrAddField("HHNWAdults", "Long", 12,,)
+    modify.FindOrAddField("HHAdults", "Long", 12,,)
     modify.Apply()
     {hhFlds, hhSpecs} = GetFields(vw_hh,)
 
@@ -330,20 +331,22 @@ Macro "Generate Tabulations"(Args)
     expr3 = CreateExpression(vw_perM, "Senior", "if Age >= 65 then 1 else 0",)
     expr4 = CreateExpression(vw_perM, "Worker", "if EmploymentStatus = 1 or EmploymentStatus = 2 or EmploymentStatus = 4 or EmploymentStatus = 5 then 1 else 0",)
     expr5 = CreateExpression(vw_perM, "NWAdults", "if Age >= 18 and Worker = 0 then 1 else 0",)
+    expr5 = CreateExpression(vw_perM, "Adult", "if Age >= 18 then 1 else 0",)
 
     // Aggregate person table by 'HouseholdID' and sum the above expression fields
-    aggrSpec = {{"Kid", "sum",}, {"AdultUnder65", "sum",}, {"Senior", "sum",}, {"Worker", "sum",}, {"NWAdults", "sum",}}
+    aggrSpec = {{"Kid", "sum",}, {"AdultUnder65", "sum",}, {"Senior", "sum",}, {"Worker", "sum",}, {"NWAdults", "sum",}, {"Adult","sum"}}
     vwA =  AggregateTable("MemAggr", vw_perM + "|", "MEM",, "HouseholdID", aggrSpec,)
     {flds, specs} = GetFields(vwA,)
     
     // Join aggregation file to HH table and copy over values
     vwJ = JoinViews("Aggr_HH", specs[1], GetFieldFullSpec(vw_hhM, "HouseholdID"),)
-    vecs = GetDataVectors(vwJ + "|", {"Kid", "AdultUnder65", "Senior", "Worker", "NWAdults"}, {OptArray: 1})
+    vecs = GetDataVectors(vwJ + "|", {"Kid", "AdultUnder65", "Senior", "Worker", "NWAdults", "Adult"}, {OptArray: 1})
     vecsSet.HHKids = vecs.Kid
     vecsSet.HHAdultsUnder65 = vecs.AdultUnder65
     vecsSet.HHSeniors = vecs.Senior
     vecsSet.HHWorkers = vecs.Worker
     vecsSet.HHNWAdults = vecs.NWAdults
+    vecsSet.HHAdults = vecs.Adult
     SetDataVectors(vwJ +"|", vecsSet,)
     CloseView(vwJ)
     CloseView(vwA)
