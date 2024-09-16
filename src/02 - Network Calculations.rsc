@@ -6,7 +6,8 @@ Macro "Create Initial Output Files" (Args)
     created = RunMacro("Is Scenario Created", Args)
     if !created then return(0)
     RunMacro("Create Output Copies", Args)
-    RunMacro("Filter Transit Modes", Args)
+    // TODO: turn this back on when mode csvs are updated
+    // RunMacro("Filter Transit Modes", Args)
     RunMacro("Check SE Data", Args)
     return(1)
 EndMacro
