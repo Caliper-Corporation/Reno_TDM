@@ -76,7 +76,7 @@ for (i in 1:length(v_time)) {
 
 # Determine how many trips (work purpose) fall in each bin
 work_trips <- calc_time %>%
-  mutate(work_trip = ifelse(tour_type == "work", 1, 0))
+  mutate(work_trip = ifelse(tour_type == "W", 1, 0))
 
 v_wrk <- c()
 for (i in 1:length(v_time)) {
@@ -463,8 +463,8 @@ tod_factors <- tripTbl %>%
     temp = ifelse(tod == "NT", 0, factor),
     factor = ifelse(tod == "NT", 1 - sum(temp), factor)
   ) %>%
-  select(purpose, tod, factor) %>%
-  arrange(purpose, tod)
+  select(trip_type = purpose, tod, factor) %>%
+  arrange(trip_type, tod)
 
 tod_factors %>%
   ungroup() %>%
@@ -473,7 +473,7 @@ tod_factors %>%
     tod = factor(tod, levels = c("AM", "MD", "PM", "NT"), ordered = TRUE)
   ) %>%
   spread(key = tod, value = factor) %>%
-  rename(Purpose = purpose) %>%
+  rename('Trip Type' = trip_type) %>%
   kable() %>%
   kable_styling(full_width = FALSE)
 
@@ -498,8 +498,8 @@ nhb_tod_factors <- tripTbl %>%
     temp = ifelse(tod == "NT", 0, factor),
     factor = ifelse(tod == "NT", 1 - sum(temp), factor)
   ) %>%
-  select(purpose, tod, factor) %>%
-  arrange(purpose, tod)
+  select(trip_type = purpose, tod, factor) %>%
+  arrange(trip_type, tod)
 
 nhb_tod_factors %>%
   ungroup() %>%
@@ -508,7 +508,7 @@ nhb_tod_factors %>%
     tod = factor(tod, levels = c("AM", "MD", "PM", "NT"), ordered = TRUE)
   ) %>%
   spread(key = tod, value = factor) %>%
-  rename(Purpose = purpose) %>%
+  rename('Trip Type' = trip_type) %>%
   kable() %>%
   kable_styling(full_width = FALSE)
 ```
@@ -538,22 +538,22 @@ trip type.
 ```{r calc_pa_factors}
 direction_tbl <- tripTbl %>%
   filter(homebased == "HB") %>%
-  group_by(purpose, tod, pa_format) %>%
+  group_by(trip_type = purpose, tod, pa_format) %>%
   summarize(trips = sum(Weight_Factor)) %>%
   mutate(
-    pct = trips / sum(trips),
+    pct = round(trips / sum(trips), 4),
     tod = factor(tod, levels = c("AM", "MD", "PM", "NT"), ordered = TRUE)
   ) %>%
   filter(pa_format == 1) %>%
   select(-trips, -pa_format) %>%
   rename(pa_fac = pct) %>%
-  arrange(purpose, tod)
+  arrange(trip_type, tod)
 
 direction_tbl %>%
   pivot_wider(
     names_from = "tod", values_from = "pa_fac"
   ) %>%
-  rename(`Purpose` = purpose) %>%
+  rename('Trip Type' = trip_type) %>%
   kable(digits = 2) %>%
   kable_styling(full_width = FALSE)
 
@@ -565,7 +565,7 @@ trns_dir_tbl <- tripTbl %>%
   group_by(tod, pa_format) %>%
   summarize(trips = sum(Weight_Factor)) %>%
   mutate(
-    pct = trips / sum(trips),
+    pct = round(trips / sum(trips), 4),
     tod = factor(tod, levels = c("AM", "MD", "PM", "NT"), ordered = TRUE)
   ) %>%
   filter(pa_format == 1) %>%
@@ -685,7 +685,7 @@ hb_hov3_tbl <- tripTbl %>%
   select(purpose, mode, tod, Value) %>%
   filter(mode == "hov3") %>%
   select(-mode) %>%
-  rename(hov3 = Value)
+  rename(hov3 = Value, trip_type = purpose)
 
 nhb_hov3_tbl <- tripTbl %>%
   filter(!is.na(mode), homebased == "NH") %>%
@@ -724,15 +724,14 @@ nhb_hov3_tbl <- tripTbl %>%
 ```{r}
 display_tbl <- hb_hov3_tbl %>%
   mutate(tod = factor(tod, levels = c("AM", "MD", "PM", "NT"), ordered = TRUE)) %>%
-  arrange(purpose, tod) %>%
+  arrange(trip_type, tod) %>%
   rename(
-    Purpose = purpose,
     Period = tod,
     HOV3 = hov3
   )
 
 display_tbl %>%
-  select(Purpose, Period, HOV3) %>%
+  select(`Trip Type` = trip_type, Period, HOV3) %>%
   pivot_wider(names_from = Period, values_from = HOV3) %>%
   kable() %>%
   kable_styling(full_width = FALSE)
@@ -765,8 +764,8 @@ hb_oth_shares <- tripTbl %>%
   ) %>%
   group_by(purpose, mode2) %>%
   summarize(weight = sum(weight)) %>%
-  mutate(pct = weight / sum(weight)) %>%
-  select(purpose, mode2, pct) %>%
+  mutate(pct = round(weight / sum(weight), 4)) %>%
+  select(trip_type = purpose, mode2, pct) %>%
   pivot_wider(names_from = mode2, values_from = pct) %>%
   replace_na(list("sov" = 0, "hov2" = 0, "hov3" = 0))
 
@@ -801,7 +800,7 @@ nhb_oth_shares <- tripTbl %>%
   summarize(weight = sum(weight)) %>%
   mutate(
     tour_type = ifelse(tour_type == "N", "NonWork", "Work"),
-    pct = weight / sum(weight)
+    pct = round(weight / sum(weight), 4)
   ) %>%
   select(tour_type, mode2, pct) %>%
   pivot_wider(names_from = mode2, values_from = pct) %>%

@@ -1,4 +1,4 @@
-purpose,tod,factor,Description
+trip_type,tod,factor,Description
 N_HBO,AM,0.191,Used to split daily resident productions
 N_HBO,MD,0.488,into period-specific values
 N_HBO,NT,0.11099999999999999,
