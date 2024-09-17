@@ -6,7 +6,8 @@ Macro "Create Initial Output Files" (Args)
     created = RunMacro("Is Scenario Created", Args)
     if !created then return(0)
     RunMacro("Create Output Copies", Args)
-    RunMacro("Filter Transit Modes", Args)
+    // TODO: turn this back on when mode csvs are updated
+    // RunMacro("Filter Transit Modes", Args)
     RunMacro("Check SE Data", Args)
     return(1)
 EndMacro
@@ -152,7 +153,7 @@ Macro "Filter Resident HB Transit Modes" (Args)
     mc_dir = Args.[Input Folder] + "/resident/mode"
     
     transit_modes = RunMacro("Get Transit Modes", mode_table)
-    trip_types = RunMacro("Get HB Trip Types", Args)
+    trip_types = Args.HBTripTypes
     for trip_type in trip_types do
         nest_file = mc_dir + "/" + trip_type + "_nest.csv"
         coef_file = mc_dir + "/" + trip_type + ".csv"

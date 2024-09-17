@@ -28,7 +28,7 @@ Macro "Aggregate HB Moto Trips" (Args)
     CloseView(jv)
     df.rename("persons_market_segment", "market_segment")
     df.group_by({"ZoneID", "market_segment"})
-    trip_types = RunMacro("Get HB Trip Types", Args)
+    trip_types = Args.HBTripTypes
     field_names = V2A(A2V(trip_types) + "_m")
     df.summarize(field_names, "sum")
     names = df.colnames()

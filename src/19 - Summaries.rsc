@@ -805,7 +805,7 @@ Macro "Summarize HB DC and MC" (Args)
   if index then return()
 
   // Create a daily matrix for each trip type
-  trip_types = RunMacro("Get HB Trip Types", Args)
+  trip_types = Args.HBTripTypes
   for trip_type in trip_types do
     total_file = output_dir + "/" + trip_type + ".mtx"
     total_files = total_files + {total_file}
@@ -1055,7 +1055,7 @@ Macro "Summarize NM" (Args, trip_types)
   f = OpenFile(summary_file, "w")
   WriteLine(f, "trip_type,moto_total,moto_share,nm_total,nm_share")
 
-  if trip_types = null then trip_types = RunMacro("Get HB Trip Types", Args)
+  if trip_types = null then trip_types = Args.HBTripTypes
   for trip_type in trip_types do
     moto_v = GetDataVector(per_vw + "|", trip_type, )
     moto_total = VectorStatistic(moto_v, "Sum", )
@@ -1735,7 +1735,7 @@ Macro "Create PA Vehicle Trip Matrices" (Args)
     CloseView(fac_vw)
 
     // This section is a slight modification to "HB Collapse Trip Types"
-    trip_types = RunMacro("Get HB Trip Types", Args)
+    trip_types = Args.HBTripTypes
     auto_cores = {"sov", "hov2", "hov3"}
 
     for period in periods do

@@ -11,7 +11,7 @@ Macro "Calibrate NM" (Args)
     max_iterations = 6
     gap_target = .1
 
-    trip_types = RunMacro("Get HB Trip Types", Args)
+    trip_types = Args.HBTripTypes
     for trip_type in trip_types do
         if trip_type = "W_HB_EK12_All" then continue
 
@@ -137,7 +137,7 @@ endmacro
     Finally writes the results to the model csv files, if chosen
 */
 Macro "Calibrate HB MC"(Args)
-    trip_types = RunMacro("Get HB Trip Types", Args)
+    trip_types = Args.HBTripTypes
     //pbar1 = CreateObject("G30 Progress Bar", "Calibrating MC models for each trip type ...", true, trip_types.length)
     for trip_type in trip_types do
         if Lower(trip_type) = "w_hb_ek12_all" then

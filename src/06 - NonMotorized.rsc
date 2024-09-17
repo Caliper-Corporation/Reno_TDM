@@ -37,7 +37,9 @@ Macro "Create NonMotorized Features" (Args)
     }
     RunMacro("Add Fields", {view: hh_vw, a_fields: hh_fields})
     per_fields = {
-        {"age_16_18", "Integer", 10, ,,,, "If person's age is 16-18"}
+        {"age_16_18", "Integer", 10, ,,,, "If person's age is 16-18"},
+        {"veh_per_adult", "Real", 10, 2,,,, "Vehicles per Adult in household"},
+        {"inc_per_capita", "Real", 10, 2,,,, "Income per person in household"}
     }
     RunMacro("Add Fields", {view: per_vw, a_fields: per_fields})
 
@@ -53,6 +55,21 @@ Macro "Create NonMotorized Features" (Args)
     v_age = GetDataVector(per_vw + "|", "Age", )
     v_age_flag = if v_age >= 16 and v_age <= 18 then 1 else 0
     SetDataVector(per_vw + "|", "age_16_18", v_age_flag, )
+    CloseView(per_vw)
+    CloseView(hh_vw)
+
+    // add HH fields to person table
+    per = CreateObject("Table", per_file)
+    per_specs = per.GetFieldSpecs({NamedArray: true})
+    hh = CreateObject("Table", hh_file)
+    hh_specs = hh.GetFieldSpecs({NamedArray: true})
+    joined = per.Join({
+        Table: hh,
+        LeftFields: {"HouseholdID"},
+        RightFields: {"HouseholdID"}
+    })
+    joined.(per_specs.veh_per_adult) = joined.(hh_specs.veh_per_adult)
+    joined.(per_specs.inc_per_capita) = joined.(hh_specs.inc_per_capita)
 endmacro
 
 /*
@@ -76,12 +93,11 @@ Macro "Calculate NM Probabilities" (Args, trip_types)
     households = Args.Households
     persons = Args.Persons
 
-    if trip_types = null then trip_types = RunMacro("Get HB Trip Types", Args)
+    if trip_types = null then trip_types = Args.HBTripTypes
     primary_spec = {Name: "person", OField: "ZoneID"}
     for trip_type in trip_types do
-        // All escort-k12 trips are motorized so skip
-        if trip_type = "W_HB_EK12_All" then continue
 
+        obj = null
         obj = CreateObject("PMEChoiceModel", {ModelName: trip_type})
         obj.OutputModelFile = output_dir + "\\" + trip_type + ".mdl"
         obj.AddTableSource({
@@ -92,12 +108,7 @@ Macro "Calculate NM Probabilities" (Args, trip_types)
         obj.AddTableSource({
             SourceName: "person",
             IDField: "PersonID",
-            JoinSpec: {
-                LeftFile: persons,
-                LeftID: "HouseholdID",
-                RightFile: households,
-                RightID: "HouseholdID"
-            }
+            File: persons
         })
         util = RunMacro("Import MC Spec", input_nm_dir + "/" + trip_type + ".csv")
         obj.AddUtility({UtilityFunction: util})
@@ -127,7 +138,7 @@ Macro "Separate NM Trips" (Args, trip_types)
     
     per_vw = OpenTable("persons", "FFB", {per_file})
 
-    if trip_types = null then trip_types = RunMacro("Get HB Trip Types", Args)
+    if trip_types = null then trip_types = Args.HBTripTypes
 
     for trip_type in trip_types do
         
@@ -200,10 +211,7 @@ Macro "Aggregate HB NonMotorized Walk Trips" (Args, trip_types)
     hh_df.select({"HouseholdID", "ZoneID"})
     per_df.left_join(hh_df, "HouseholdID", "HouseholdID")
 
-    if trip_types = null then trip_types = RunMacro("Get HB Trip Types", Args)
-    // Remove W_HB_EK12_All because it is all motorized by definition
-    pos = trip_types.position("W_HB_EK12_All")
-    if pos > 0 then trip_types = ExcludeArrayElements(trip_types, pos, 1)
+    if trip_types = null then trip_types = Args.HBTripTypes
     for trip_type in trip_types do
         file = nm_dir + "/" + trip_type + ".bin"
         vw = OpenTable("temp", "FFB", {file})
