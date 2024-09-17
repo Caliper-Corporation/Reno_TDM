@@ -93,7 +93,7 @@ Macro "Calculate NM Probabilities" (Args, trip_types)
     households = Args.Households
     persons = Args.Persons
 
-    if trip_types = null then trip_types = RunMacro("Get HB Trip Types", Args)
+    if trip_types = null then trip_types = Args.HBTripTypes
     primary_spec = {Name: "person", OField: "ZoneID"}
     for trip_type in trip_types do
 
