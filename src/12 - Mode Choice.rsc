@@ -156,7 +156,7 @@ Macro "Post Process Logsum" (Args)
     ls_dir = Args.[Output Folder] + "/resident/mode/logsums"
     periods = RunMacro("Get Unconverged Periods", Args)
 
-    trip_types = RunMacro("Get HB Trip Types", Args)
+    trip_types = Args.HBTripTypes
     for trip_type in trip_types do
         if Lower(trip_type) = "w_hb_w_all"
             then segments = {"v0", "ilvi", "ihvi", "ilvs", "ihvs"}

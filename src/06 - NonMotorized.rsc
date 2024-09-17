@@ -138,7 +138,7 @@ Macro "Separate NM Trips" (Args, trip_types)
     
     per_vw = OpenTable("persons", "FFB", {per_file})
 
-    if trip_types = null then trip_types = RunMacro("Get HB Trip Types", Args)
+    if trip_types = null then trip_types = Args.HBTripTypes
 
     for trip_type in trip_types do
         
@@ -211,7 +211,7 @@ Macro "Aggregate HB NonMotorized Walk Trips" (Args, trip_types)
     hh_df.select({"HouseholdID", "ZoneID"})
     per_df.left_join(hh_df, "HouseholdID", "HouseholdID")
 
-    if trip_types = null then trip_types = RunMacro("Get HB Trip Types", Args)
+    if trip_types = null then trip_types = Args.HBTripTypes
     // Remove W_HB_EK12_All because it is all motorized by definition
     pos = trip_types.position("W_HB_EK12_All")
     if pos > 0 then trip_types = ExcludeArrayElements(trip_types, pos, 1)

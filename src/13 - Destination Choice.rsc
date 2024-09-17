@@ -180,7 +180,7 @@ Remaining trip types are not doubly constrained
 */
 
 Macro "Other HB DC" (Args)
-    trip_types = RunMacro("Get HB Trip Types", Args)
+    trip_types = Args.HBTripTypes
     pos = trip_types.position("W_HB_W_All")
     trip_types = ExcludeArrayElements(trip_types, pos, 1)
     RunMacro("Calculate Destination Choice", Args, trip_types)
@@ -349,7 +349,7 @@ Macro "Apportion Resident HB Trips" (Args)
     // Create a folder to hold the trip matrices
     RunMacro("Create Directory", trip_dir)
 
-    trip_types = RunMacro("Get HB Trip Types", Args)
+    trip_types = Args.HBTripTypes
 
     for period in periods do
 

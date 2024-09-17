@@ -476,7 +476,7 @@ Macro "HB Apply Parking Probabilities" (Args)
     parking_prob_file = park_dir + "/ParkingDCProbability.mtx"
     logsum_file = park_dir + "/ParkingLogsums.bin"
     periods = RunMacro("Get Unconverged Periods", Args)
-    trip_types = RunMacro("Get HB Trip Types", Args)
+    trip_types = Args.HBTripTypes
     // the auto cores to apply parking to
     auto_cores = {
         "sov",

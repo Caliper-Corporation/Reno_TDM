@@ -2300,20 +2300,6 @@ Macro "Gravity2" (MacroOpts)
   CloseView(param_vw)
 endmacro
 
-/*
-Simple macro specific to TRMG2. Uses the resident production table to
-get and return the list of trip types.
-*/
-
-Macro "Get HB Trip Types" (Args)
-  prod_rate_file = Args.[Input Folder] + "/resident/generation/production_rates.csv"
-  rate_vw = OpenTable("rate_vw", "CSV", {prod_rate_file})
-  trip_types = GetDataVector(rate_vw + "|", "trip_type", )
-  trip_types = SortVector(trip_types, {Unique: "true"})
-  CloseView(rate_vw)
-  return(V2A(trip_types))
-endmacro
-
 Macro "Get NHB Trip Types" (Args)
   dir = Args.[Input Folder] + "/resident/nhb/generation"
   files = RunMacro("Catalog Files", {dir: dir})
@@ -2341,7 +2327,7 @@ Macro "Separate type and mode" (name)
 endmacro
 
 Macro "Get All Res Trip Types" (Args)
-  hb_types = RunMacro("Get HB Trip Types", Args)
+  hb_types = Args.HBTripTypes
   nhb_types = RunMacro("Get NHB Trip Types", Args)
   return(hb_types + nhb_types)
 endmacro
