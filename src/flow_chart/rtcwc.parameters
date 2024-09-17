@@ -85,6 +85,7 @@
     
         Args.ProdRates = { "Type":"File" , "Value":"%Input Folder%\\resident\\generation\\production_rates.csv", "Description":"Resident production rate file." }
         Args.ProdCalibFactors = { "Type":"File" , "Value":"%Input Folder%\\resident\\generation\\calibration_factors.csv", "Description":"Resident production calibration factors." }
+        Args.HBTripTypes = { "Type":"array" , "Value":{"W_HBW", "W_HBO", "N_HBSCH", "N_HBO", "N_HBSHP", "N_HBSR"}, "Caption":"Mode Choice ASCs for 'Park and Shuttle'", "Style":"ParkingCoeffs" }
     
     Section = "NonMotorized"
 

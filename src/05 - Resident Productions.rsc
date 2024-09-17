@@ -8,6 +8,7 @@ Macro "Home-based Productions" (Args)
     RunMacro("Apply Production Rates", Args)
     // TODO: uncomment when factors are updated
     // RunMacro("Apply Calibration Factors", Args)
+    RunMacro("Aggregate Productions", Args)
 
     return(1)
 endmacro
@@ -204,6 +205,39 @@ Macro "Debug: Apply Rates with Queries" (MacroOpts)
             if n = 0 then Throw("No records found for query: " + query)
         end
         CloseView(view)
+endmacro
+
+/*
+Productions come out of the decision tree by auto sufficiency segment.
+This macro aggregates them to the trip type level. Note that some trip types
+aren't by auto sufficiency, so they won't be aggregated.
+*/
+
+Macro "Aggregate Productions" (Args)
+    
+    per_file = Args.Persons
+    hb_trip_types = Args.HBTripTypes
+    auto_suffs = {"v0", "vi", "vs"}
+
+    per = CreateObject("Table", per_file)
+    nrow = per.GetRecordCount()
+    field_names = per.GetFieldNames()
+
+    for trip_type in hb_trip_types do
+        // skip trip types like N_HBSCH, which aren't by auto sufficiency
+        if field_names.position(trip_type + "_v0") = 0 then continue
+
+        per.AddField({
+            FieldName: trip_type, 
+            Description: trip_type + " productions aggregated across auto sufficiency segments"
+        })
+        v = Vector(nrow, "Real", {Constant: 0})
+        for auto_suff in auto_suffs do
+            v = v + nz(per.(trip_type + "_" + auto_suff))
+        end
+        data.(trip_type) = v
+    end
+    per.SetDataVectors({FieldData: data})
 endmacro
 
 /*
