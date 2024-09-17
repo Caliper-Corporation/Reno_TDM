@@ -212,9 +212,6 @@ Macro "Aggregate HB NonMotorized Walk Trips" (Args, trip_types)
     per_df.left_join(hh_df, "HouseholdID", "HouseholdID")
 
     if trip_types = null then trip_types = Args.HBTripTypes
-    // Remove W_HB_EK12_All because it is all motorized by definition
-    pos = trip_types.position("W_HB_EK12_All")
-    if pos > 0 then trip_types = ExcludeArrayElements(trip_types, pos, 1)
     for trip_type in trip_types do
         file = nm_dir + "/" + trip_type + ".bin"
         vw = OpenTable("temp", "FFB", {file})
