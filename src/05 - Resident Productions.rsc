@@ -4,8 +4,8 @@
 
 Macro "Home-based Productions" (Args)
     RunMacro("Create Production Features", Args)
-    RunMacro("Apply Production Rates", Args)
     RunMacro("Classify Households by Market Segment", Args)
+    RunMacro("Apply Production Rates", Args)
     // TODO: uncomment when factors are updated
     // RunMacro("Apply Calibration Factors", Args)
 
@@ -27,6 +27,10 @@ Macro "Create Production Features" (Args)
     se_vw = OpenTable("per", "FFB", {se_file})
     per_fields =  {
         {"HHTAZ", "Integer", 10, ,,,, "Home TAZ"},
+        {"HHSize", "Integer", 10, ,,,, "People in the household"},
+        {"HHKids", "Integer", 10, ,,,, "Kids (< 18) in household"},
+        {"HHAdults", "Integer", 10, ,,,, "Adults (>= 18) in household"},
+        {"HHSeniors", "Integer", 10, ,,,, "Seniors (>= 65) in household"},
         {"is_senior", "Integer", 10, ,,,, "Is the person a senior (>= 65)?"},
         {"over_60", "Integer", 10, ,,,, "Is the person over 60?"},
         {"is_child", "Integer", 10, ,,,, "Is the person a child (< 18)?"},
@@ -74,25 +78,29 @@ Macro "Create Production Features" (Args)
     },)
 
     data.(per_specs.HHTAZ) = v_taz
+    data.(per_specs.HHSize) = v_size
+    data.(per_specs.HHKids) = v_kids
+    data.(per_specs.HHSeniors) = v_seniors
     data.(per_specs.is_senior) = if v_age >= 65 then 1 else 0
-    data.(per_specs.over_60) = if v_age > 60 then 1 else 1
+    data.(per_specs.over_60) = if v_age > 60 then 1 else 0
     data.(per_specs.is_child) = if v_age < 18 then 1 else 0
     data.(per_specs.Employed) = if v_emp_status = 1 or v_emp_status = 2 or v_emp_status = 4 or v_emp_status = 5
         then 1
-        else 1
+        else 0
     v_num_adults = v_size - v_kids
+    data.(per_specs.HHAdults) = v_num_adults
     data.(per_specs.single_parent) = if data.(per_specs.is_child) = 0 and v_num_adults = 1 and v_kids > 0
         then 1
         else 0
     data.(per_specs.IncPerCapita) = v_inc / v_size
-    data.(per_specs.IncPerCapLt80) = if v_inc / v_size < 80000 then 1 else 1
+    data.(per_specs.IncPerCapLt80) = if v_inc / v_size < 80000 then 1 else 0
     data.(per_specs.HHIncCat) = if v_inc < 25000 then 1
         else if v_inc < 50000 then 2
         else if v_inc < 75000 then 3
         else if v_inc < 105000 then 4
         else if v_inc < 150000 then 5
         else 6
-    data.(per_specs.seniors_in_hh) = if v_seniors > 0 then 1 else 1
+    data.(per_specs.seniors_in_hh) = if v_seniors > 0 then 1 else 0
     data.(per_specs.oth_ppl) = v_size - 1
     data.(per_specs.oth_kids) = v_kids - data.(per_specs.is_child)
     data.(per_specs.oth_senior) = v_seniors - data.(per_specs.is_senior)
@@ -101,7 +109,7 @@ Macro "Create Production Features" (Args)
     data.(per_specs.e_access) = v_ea
     data.(per_specs.w_access) = v_wa
     data.(per_specs.t_access) = v_ta
-    data.(per_specs.t_access_lt_61) = if v_ta < 3.1 then 1 else 1
+    data.(per_specs.t_access_lt_61) = if v_ta < 3.1 then 1 else 0
     SetDataVectors(jv + "|", data, )
     
     CloseView(jv)
@@ -148,6 +156,14 @@ Macro "Apply Rates with Queries" (MacroOpts)
     end
     RunMacro("Add Fields", {view: view, a_fields: a_fields})
 
+    // // Only run this to debug/verify that all queries are valid and finding
+    // // records.
+    // RunMacro("Debug: Apply Rates with Queries", {
+    //     view: view,
+    //     v_query: v_query
+    // })
+    // Throw("Debug complete")
+
     // Loop over queries/rates
     SetView(view)
     for i = 1 to v_type.length do
@@ -171,6 +187,26 @@ Macro "Apply Rates with Queries" (MacroOpts)
 endmacro
 
 /*
+This is only used during debugging to verify that all queries are valid
+*/
+
+Macro "Debug: Apply Rates with Queries" (MacroOpts)
+    
+        view = MacroOpts.view
+        v_query = MacroOpts.v_query
+    
+        tbl = CreateObject("Table", view)
+        for query in v_query do
+            n = tbl.SelectByQuery({
+                SetName: "sel",
+                Query: query
+            })
+            if n = 0 then Throw("No records found for query: " + query)
+        end
+        CloseView(view)
+endmacro
+
+/*
 
 */
 
@@ -183,6 +219,7 @@ Macro "Classify Households by Market Segment" (Args)
     // Classify households by market segment
     hh_vw = OpenTable("hh", "FFB", {hh_file})
     a_fields = {
+        {"auto_suff", "Character", 10, , , , , "Auto sufficiency of household|v0: 0 autos|vi: less autos than adults|vs: autos >= adults"},
         {"market_segment", "Character", 10, , , , , "Aggregate market segment this household belongs to"}
     }
     RunMacro("Add Fields", {view: hh_vw, a_fields: a_fields})
@@ -195,15 +232,19 @@ Macro "Classify Households by Market Segment" (Args)
     v_market = if v_sufficient = "v0"
         then "v0"
         else v_income + v_sufficient
+    SetDataVector(hh_vw + "|", "auto_suff", v_sufficient, )
     SetDataVector(hh_vw + "|", "market_segment", v_market, )
 
     // Copy this segment info to the person table
     per_vw = OpenTable("persons", "FFB", {per_file})
     a_fields = {
+        {"auto_suff", "Character", 10, , , , , "Auto sufficiency of household|v0: 0 autos|vi: less autos than adults|vs: autos >= adults"},
         {"market_segment", "Character", 10, , , , , "Aggregate market segment of household this person lives in"}
     }
     RunMacro("Add Fields", {view: per_vw, a_fields: a_fields})
     jv = JoinViews("jv", per_vw + ".HouseholdID", hh_vw + ".HouseholdID", )
+    v = GetDataVector(jv + "|", hh_vw + ".auto_suff", )
+    SetDataVector(jv + "|", per_vw + ".auto_suff", v, )
     v = GetDataVector(jv + "|", hh_vw + ".market_segment", )
     SetDataVector(jv + "|", per_vw + ".market_segment", v, )
     CloseView(jv)

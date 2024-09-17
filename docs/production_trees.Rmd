@@ -152,7 +152,7 @@ create_rule_table <- function(tree, market_segment = NULL) {
   
   if (!is.null(market_segment)) {
     result <- result %>%
-      mutate(rule = paste0("market_segment = '", market_segment, "' and ", rule))
+      mutate(rule = paste0("auto_suff = '", market_segment, "' and ", rule))
   }
   
   result <- result %>%
@@ -1112,7 +1112,7 @@ out_df <- bind_rows(rate_list) %>%
   mutate(
     rule = gsub("VehSufficiency = v0,vi", "VehSufficiency <> vs", rule, fixed = TRUE),
     rule = gsub("VehSufficiency = v0,vs", "VehSufficiency <> vi", rule, fixed = TRUE),
-    rule = gsub("VehSufficiency", "market_segment", rule, fixed = TRUE),
+    rule = gsub("VehSufficiency", "auto_suff", rule, fixed = TRUE),
     rule = gsub(" vi", " 'vi'", rule, fixed = TRUE),
     rule = gsub(" vs", " 'vs'", rule, fixed = TRUE),
     rule = gsub(" v0", " 'v0'", rule, fixed = TRUE),
@@ -1121,7 +1121,7 @@ out_df <- bind_rows(rate_list) %>%
     rule = gsub("= Male", "= 1", rule, fixed = TRUE),
     rule = gsub("= Female", "= 2", rule, fixed = TRUE),
   )
-write_csv(out_df, "production_rates.csv")
+write_csv(out_df, "data/output/production_trees/production_rates.csv")
 
 # write_csv(
 #   calib_factors,
