@@ -1,98 +1,98 @@
-trip_type,rule,rate,stdev,samples
-W_HBW_v0,auto_suff = 'v0' and Employed = 0 ,0.0161,0.29,365
-W_HBW_v0,auto_suff = 'v0' and Employed = 1 and w_access < 2.434,0.4678,0.86,79
-W_HBW_v0,auto_suff = 'v0' and Employed = 1 and w_access >= 2.434,1.1329,0.92,110
-W_HBW_vi,auto_suff = 'vi' and Employed = 0 ,0.0073,0.18,916
-W_HBW_vi,auto_suff = 'vi' and Employed = 1 and HHIncCat < 3 ,0.4705,0.95,191
-W_HBW_vi,auto_suff = 'vi' and Employed = 1 and HHIncCat >= 3 and IncPerCapita >= 53063 ,0.574,0.89,56
-W_HBW_vi,auto_suff = 'vi' and Employed = 1 and HHIncCat >= 3 and IncPerCapita < 53063 and t_access < 4.531 and HHKids >= 2,0.5751,0.84,103
-W_HBW_vi,auto_suff = 'vi' and Employed = 1 and HHIncCat >= 3 and IncPerCapita < 53063 and t_access < 4.531 and HHKids < 2,1.1057,0.95,61
-W_HBW_vi,auto_suff = 'vi' and Employed = 1 and HHIncCat >= 3 and HHIncCat < 4 and IncPerCapita < 53063 and t_access >= 4.531 ,1.1225,0.81,847
-W_HBW_vi,auto_suff = 'vi' and Employed = 1 and HHIncCat >= 4 and IncPerCapita < 53063 and t_access >= 4.531 ,1.6854,0.79,252
-W_HBW_vs,auto_suff = 'vs' and Employed = 0 ,0.0153,0.22,842
-W_HBW_vs,auto_suff = 'vs' and Employed = 1 and over_60 = 1 ,0.5009,0.92,119
-W_HBW_vs,auto_suff = 'vs' and Employed = 1 and over_60 = 0 and IncPerCapita < 50125 and HHIncCat < 4 and HHSize >= 2,0.587,0.96,251
-W_HBW_vs,auto_suff = 'vs' and Employed = 1 and over_60 = 0 and IncPerCapita < 50125 and HHIncCat < 4 and HHSize < 2,0.8352,0.88,228
-W_HBW_vs,auto_suff = 'vs' and Employed = 1 and over_60 = 0 and IncPerCapita < 50125 and HHIncCat >= 4 ,0.8704,0.84,277
-W_HBW_vs,auto_suff = 'vs' and Employed = 1 and over_60 = 0 and IncPerCapita >= 50125 and g_access < 12.55 and w_access < 1.864 ,0.9182,1.03,85
-W_HBW_vs,auto_suff = 'vs' and Employed = 1 and over_60 = 0 and IncPerCapita >= 50125 and g_access < 12.55 and w_access >= 1.864 ,1.4491,0.93,40
-W_HBW_vs,auto_suff = 'vs' and Employed = 1 and over_60 = 0 and IncPerCapita >= 50125 and g_access >= 12.55 ,1.6424,0.85,144
-W_HBO_v0,auto_suff = 'v0' and HHKids < 2 and Employed = 0,0.0073,0.19,297
-W_HBO_v0,auto_suff = 'v0' and HHKids < 2 and Employed = 1,0.1789,0.6,174
-W_HBO_v0,auto_suff = 'v0' and HHKids >= 2 ,0.5445,1.78,83
-W_HBO_vi,auto_suff = 'vi' and Employed = 0 ,0.0027,0.11,916
-W_HBO_vi,auto_suff = 'vi' and Employed = 1 and seniors_in_hh = 1 ,0.0687,0.52,126
-W_HBO_vi,auto_suff = 'vi' and Employed = 1 and seniors_in_hh = 0 and Gender = 1 and HHIncCat >= 6 ,0.1289,0.39,179
-W_HBO_vi,auto_suff = 'vi' and Employed = 1 and seniors_in_hh = 0 and Gender = 1 and HHIncCat < 6 ,0.1775,0.51,191
-W_HBO_vi,auto_suff = 'vi' and Employed = 1 and seniors_in_hh = 0 and Gender = 2 and HHSize >= 3 and Age < 31,0.2938,0.55,526
-W_HBO_vi,auto_suff = 'vi' and Employed = 1 and seniors_in_hh = 0 and Gender = 2 and HHSize >= 3 and Age >= 31,0.5122,0.68,388
-W_HBO_vi,auto_suff = 'vi' and Employed = 1 and seniors_in_hh = 0 and Gender = 2 and HHSize < 3 ,0.9909,0.64,100
-W_HBO_vs,auto_suff = 'vs' and Employed = 0 ,0.0123,0.21,842
-W_HBO_vs,auto_suff = 'vs' and Employed = 1 and Age >= 59 ,0.1981,0.96,204
-W_HBO_vs,auto_suff = 'vs' and Employed = 1 and Age < 59 and HHAdults >= 2 and HHIncCat < 4,0.2537,0.67,160
-W_HBO_vs,auto_suff = 'vs' and Employed = 1 and Age < 59 and HHAdults >= 2 and HHIncCat >= 4,0.5428,0.83,551
-W_HBO_vs,auto_suff = 'vs' and Employed = 1 and Age >= 28 and Age < 59 and HHAdults < 2 ,0.6401,1.07,183
-W_HBO_vs,auto_suff = 'vs' and Employed = 1 and Age < 28 and HHAdults < 2 ,1.2157,0.96,46
-N_HBSR_v0,auto_suff = 'v0' and IncPerCapita < 12458 and t_access < 5.505,0.1548,0.63,190
-N_HBSR_v0,auto_suff = 'v0' and IncPerCapita >= 12458 and Employed = 0 and HHSize >= 2 ,0.2843,0.71,145
-N_HBSR_v0,auto_suff = 'v0' and IncPerCapita >= 12458 and Employed = 0 and HHSize < 2 ,0.442,0.85,83
-N_HBSR_v0,auto_suff = 'v0' and IncPerCapita < 12458 and t_access >= 5.505,0.7943,0.85,91
-N_HBSR_v0,auto_suff = 'v0' and IncPerCapita >= 12458 and Employed = 1 ,0.8204,1.1,45
-N_HBSR_vi,auto_suff = 'vi' and HHAdults >= 3 and w_access < 0.3451 ,0.0251,0.39,192
-N_HBSR_vi,auto_suff = 'vi' and HHAdults >= 3 and w_access >= 0.3451 and HHSeniors < 2 and Age >= 37,0.1293,0.54,727
-N_HBSR_vi,auto_suff = 'vi' and HHAdults >= 3 and w_access >= 0.3451 and HHSeniors < 2 and Age < 37,0.3819,0.61,858
-N_HBSR_vi,auto_suff = 'vi' and HHAdults < 3 and g_access >= 12.58 and HHIncCat < 4 ,0.4127,0.8,297
-N_HBSR_vi,auto_suff = 'vi' and HHAdults >= 3 and w_access >= 0.3451 and HHSeniors >= 2 ,0.5893,0.9,199
-N_HBSR_vi,auto_suff = 'vi' and HHAdults < 3 and g_access < 12.58 ,0.6712,0.89,60
-N_HBSR_vi,auto_suff = 'vi' and HHAdults < 3 and g_access >= 12.58 and HHIncCat >= 4 ,1.2535,1.12,93
-N_HBSR_vs,auto_suff = 'vs' and HHKids >= 1 ,0.2709,0.8,781
-N_HBSR_vs,auto_suff = 'vs' and HHKids < 1 and Employed = 1 and w_access < 0.7049,0.3101,0.72,178
-N_HBSR_vs,auto_suff = 'vs' and HHKids < 1 and Employed = 1 and w_access >= 0.7049,0.5651,0.87,646
-N_HBSR_vs,auto_suff = 'vs' and HHKids < 1 and Employed = 0 and IncPerCapLt80 = 1 ,0.6198,0.96,341
-N_HBSR_vs,auto_suff = 'vs' and HHKids < 1 and Employed = 0 and IncPerCapLt80 = 0 ,1.2293,0.86,40
-N_HBO_v0,auto_suff = 'v0' and t_access_lt_61 = 1 and HHAdults < 2 ,0.157,0.81,102
-N_HBO_v0,auto_suff = 'v0' and t_access_lt_61 = 1 and HHAdults >= 2 and Age >= 26 and Age < 50,0.3203,0.85,263
-N_HBO_v0,auto_suff = 'v0' and t_access_lt_61 = 1 and HHAdults >= 2 and Age < 26 ,0.5551,0.91,76
-N_HBO_v0,auto_suff = 'v0' and t_access_lt_61 = 1 and HHAdults >= 2 and Age >= 50,0.9556,1.02,83
-N_HBO_v0,auto_suff = 'v0' and t_access_lt_61 = 0 ,1.249,1.24,30
-N_HBO_vi,auto_suff = 'vi' and Age < 69 and HHKids < 2 and Employed = 1 ,0.1632,0.54,1387
-N_HBO_vi,auto_suff = 'vi' and Age >= 24 and Age < 69 and HHKids >= 2 and Gender = 1 ,0.2414,0.75,201
-N_HBO_vi,auto_suff = 'vi' and Age < 24 and HHKids >= 2 ,0.3381,0.86,542
-N_HBO_vi,auto_suff = 'vi' and Age >= 69 ,0.4337,1.15,65
-N_HBO_vi,auto_suff = 'vi' and Age < 69 and HHKids < 2 and Employed = 0 and t_access >= 5.643,0.7301,0.83,108
-N_HBO_vi,auto_suff = 'vi' and Age >= 24 and Age < 69 and HHKids >= 2 and Gender = 2 ,1.224,1.86,76
-N_HBO_vi,auto_suff = 'vi' and Age < 69 and HHKids < 2 and Employed = 0 and t_access < 5.643,1.4849,1.08,47
-N_HBO_vs,auto_suff = 'vs' and HHKids < 3 and Age >= 76 ,0.0292,0.31,61
-N_HBO_vs,auto_suff = 'vs' and HHKids >= 3 and Age >= 7 and Age < 15 ,0.433,0.93,1641
-N_HBO_vs,auto_suff = 'vs' and HHKids < 3 and Age < 76 and w_access < 3.115,1.0801,0.99,114
-N_HBO_vs,auto_suff = 'vs' and HHKids < 3 and Age < 76 and w_access >= 3.115,1.1095,1.39,40
-N_HBO_vs,auto_suff = 'vs' and HHKids >= 3 and Age >= 15 ,1.1227,1.54,82
-N_HBO_vs,auto_suff = 'vs' and HHKids >= 3 and Age < 7 ,1.5543,1.24,48
-N_HBSCH,Age >= 19 ,0.0017,0.47,56
-N_HBSCH,Age < 6 and g_access < 12.37 and IncPerCapita < 18969,0.0044,0.1,4232
-N_HBSCH,Age < 6 and g_access < 12.37 and IncPerCapita >= 18969,0.2046,0.47,79
-N_HBSCH,Age < 4 and g_access >= 12.37 ,0.2581,0.72,66
-N_HBSCH,Age >= 4 and Age < 6 and g_access >= 12.37 ,0.7303,0.94,104
-N_HBSCH,Age >= 6 and Age < 19 and g_access < 11.49 ,1.004,0.79,48
-N_HBSCH,Age >= 6 and Age < 19 and g_access >= 11.49 ,1.175,0.93,381
-N_HBSHP_v0,auto_suff = 'v0' and Age < 18 ,0.0638,0.53,78
-N_HBSHP_v0,auto_suff = 'v0' and Age >= 18 and Employed = 1 and HHIncCat < 2,0.0813,0.63,60
-N_HBSHP_v0,auto_suff = 'v0' and Age >= 35 and Employed = 0 and g_access >= 12.40 and g_access < 13.06 ,0.3409,0.74,40
-N_HBSHP_v0,auto_suff = 'v0' and Age >= 35 and Employed = 0 and g_access < 12.40 ,0.4061,0.8,48
-N_HBSHP_v0,auto_suff = 'v0' and Age >= 34 and Employed = 1 and HHIncCat >= 2,0.6628,0.87,145
-N_HBSHP_v0,auto_suff = 'v0' and Age >= 18 and Age < 34 and Employed = 1 and HHIncCat >= 2,0.7183,0.82,81
-N_HBSHP_v0,auto_suff = 'v0' and Age >= 18 and Age < 35 and Employed = 0 and g_access < 13.06 ,0.9957,0.93,50
-N_HBSHP_v0,auto_suff = 'v0' and Age >= 18 and Employed = 0 and g_access >= 13.06 ,1.1976,0.96,52
-N_HBSHP_vi,auto_suff = 'vi' and HHIncCat >= 4 and HHSize >= 3 and HHKids < 2,0.1008,0.3,1313
-N_HBSHP_vi,auto_suff = 'vi' and HHIncCat >= 2 and HHSize < 3 and Age >= 46 ,0.2554,0.56,85
-N_HBSHP_vi,auto_suff = 'vi' and HHIncCat < 2 and Age >= 30 ,0.3368,0.58,129
-N_HBSHP_vi,auto_suff = 'vi' and HHIncCat >= 4 and HHSize >= 3 and HHKids >= 2,0.349,0.62,496
-N_HBSHP_vi,auto_suff = 'vi' and HHIncCat >= 2 and HHIncCat < 4 and HHSize >= 3 ,0.4465,0.71,187
-N_HBSHP_vi,auto_suff = 'vi' and HHIncCat >= 2 and HHSize < 3 and Age < 46 ,0.795,0.84,129
-N_HBSHP_vi,auto_suff = 'vi' and HHIncCat < 2 and Age < 30 ,0.8641,0.78,87
-N_HBSHP_vs,auto_suff = 'vs' and Age < 65 and g_access < 12.76 and HHIncCat >= 5,0.1605,0.55,494
-N_HBSHP_vs,auto_suff = 'vs' and Age >= 65 and HHAdults >= 2 and HHSeniors >= 2 ,0.1933,0.69,50
-N_HBSHP_vs,auto_suff = 'vs' and Age >= 65 and HHAdults >= 2 and HHSeniors < 2 ,0.3176,0.7,903
-N_HBSHP_vs,auto_suff = 'vs' and Age < 65 and g_access >= 12.76 ,0.616,0.77,114
-N_HBSHP_vs,auto_suff = 'vs' and Age < 65 and g_access < 12.76 and HHIncCat < 5,0.6484,0.77,350
-N_HBSHP_vs,auto_suff = 'vs' and Age >= 65 and HHAdults < 2 ,0.8694,1.01,75
+trip_type,rule,rate
+W_HBW_v0,auto_suff = 'v0' and Employed=0,0.0161
+W_HBW_v0,auto_suff = 'v0' and Employed=1 and w_access< 2.434,0.4678
+W_HBW_v0,auto_suff = 'v0' and Employed=1 and w_access>=2.434,1.1329
+W_HBW_vi,auto_suff = 'vi' and Employed=0,0.0073
+W_HBW_vi,auto_suff = 'vi' and Employed=1 and HHIncCat< 2.5,0.4705
+W_HBW_vi,auto_suff = 'vi' and Employed=1 and HHIncCat>=2.5 and IncPerCapita>=53060,0.5751
+W_HBW_vi,auto_suff = 'vi' and Employed=1 and HHIncCat>=2.5 and IncPerCapita< 53060 and t_access< 4.531 and HHKids>=1.5,0.574
+W_HBW_vi,auto_suff = 'vi' and Employed=1 and HHIncCat>=2.5 and IncPerCapita< 53060 and t_access< 4.531 and HHKids< 1.5,1.1225
+W_HBW_vi,auto_suff = 'vi' and Employed=1 and HHIncCat>=2.5 and IncPerCapita< 53060 and t_access>=4.531 and HHIncCat< 3.5,1.1057
+W_HBW_vi,auto_suff = 'vi' and Employed=1 and HHIncCat>=2.5 and IncPerCapita< 53060 and t_access>=4.531 and HHIncCat>=3.5,1.6854
+W_HBW_vs,auto_suff = 'vs' and Employed=0,0.0153
+W_HBW_vs,auto_suff = 'vs' and Employed=1 and over_60=1,0.5009
+W_HBW_vs,auto_suff = 'vs' and Employed=1 and over_60=0 and IncPerCapita< 50120 and HHIncCat< 3.5 and HHSize>=1.5,0.587
+W_HBW_vs,auto_suff = 'vs' and Employed=1 and over_60=0 and IncPerCapita< 50120 and HHIncCat< 3.5 and HHSize< 1.5,0.9182
+W_HBW_vs,auto_suff = 'vs' and Employed=1 and over_60=0 and IncPerCapita< 50120 and HHIncCat>=3.5,0.8704
+W_HBW_vs,auto_suff = 'vs' and Employed=1 and over_60=0 and IncPerCapita>=50120 and g_access< 12.55 and w_access< 1.864,0.8352
+W_HBW_vs,auto_suff = 'vs' and Employed=1 and over_60=0 and IncPerCapita>=50120 and g_access< 12.55 and w_access>=1.864,1.4491
+W_HBW_vs,auto_suff = 'vs' and Employed=1 and over_60=0 and IncPerCapita>=50120 and g_access>=12.55,1.6424
+W_HBO_v0,auto_suff = 'v0' and HHKids< 1.5 and Employed=0,0.0073
+W_HBO_v0,auto_suff = 'v0' and HHKids< 1.5 and Employed=1,0.1789
+W_HBO_v0,auto_suff = 'v0' and HHKids>=1.5,0.5445
+W_HBO_vi,auto_suff = 'vi' and Employed=0,0.0027
+W_HBO_vi,auto_suff = 'vi' and Employed=1 and seniors_in_hh=1,0.1289
+W_HBO_vi,auto_suff = 'vi' and Employed=1 and seniors_in_hh=0 and Gender=1 and HHIncCat>=5.5,0.0687
+W_HBO_vi,auto_suff = 'vi' and Employed=1 and seniors_in_hh=0 and Gender=1 and HHIncCat< 5.5,0.2938
+W_HBO_vi,auto_suff = 'vi' and Employed=1 and seniors_in_hh=0 and Gender=2 and HHSize>=2.5 and Age< 30.5,0.1775
+W_HBO_vi,auto_suff = 'vi' and Employed=1 and seniors_in_hh=0 and Gender=2 and HHSize>=2.5 and Age>=30.5,0.5122
+W_HBO_vi,auto_suff = 'vi' and Employed=1 and seniors_in_hh=0 and Gender=2 and HHSize< 2.5,0.9909
+W_HBO_vs,auto_suff = 'vs' and Employed=0,0.0123
+W_HBO_vs,auto_suff = 'vs' and Employed=1 and Age>=58.5,0.2537
+W_HBO_vs,auto_suff = 'vs' and Employed=1 and Age< 58.5 and HHAdults>=1.5 and HHIncCat< 3.5,0.1981
+W_HBO_vs,auto_suff = 'vs' and Employed=1 and Age< 58.5 and HHAdults>=1.5 and HHIncCat>=3.5,0.5428
+W_HBO_vs,auto_suff = 'vs' and Employed=1 and Age< 58.5 and HHAdults< 1.5 and Age>=27.5,0.6401
+W_HBO_vs,auto_suff = 'vs' and Employed=1 and Age< 58.5 and HHAdults< 1.5 and Age< 27.5,1.2157
+N_HBSR_v0,auto_suff = 'v0' and IncPerCapita< 12460 and t_access< 5.505,0.1548
+N_HBSR_v0,auto_suff = 'v0' and IncPerCapita< 12460 and t_access>=5.505,0.8204
+N_HBSR_v0,auto_suff = 'v0' and IncPerCapita>=12460 and Employed=1,0.2843
+N_HBSR_v0,auto_suff = 'v0' and IncPerCapita>=12460 and Employed=0 and HHSize>=1.5,0.442
+N_HBSR_v0,auto_suff = 'v0' and IncPerCapita>=12460 and Employed=0 and HHSize< 1.5,0.7943
+N_HBSR_vi,auto_suff = 'vi' and HHAdults>=2.5 and w_access< 0.3451,0.0251
+N_HBSR_vi,auto_suff = 'vi' and HHAdults>=2.5 and w_access>=0.3451 and HHSeniors< 1.5 and Age>=36.5,0.1293
+N_HBSR_vi,auto_suff = 'vi' and HHAdults>=2.5 and w_access>=0.3451 and HHSeniors< 1.5 and Age< 36.5,0.3819
+N_HBSR_vi,auto_suff = 'vi' and HHAdults>=2.5 and w_access>=0.3451 and HHSeniors>=1.5,0.6712
+N_HBSR_vi,auto_suff = 'vi' and HHAdults< 2.5 and g_access< 12.58,0.4127
+N_HBSR_vi,auto_suff = 'vi' and HHAdults< 2.5 and g_access>=12.58 and HHIncCat< 3.5,0.5893
+N_HBSR_vi,auto_suff = 'vi' and HHAdults< 2.5 and g_access>=12.58 and HHIncCat>=3.5,1.2535
+N_HBSR_vs,auto_suff = 'vs' and HHKids>=0.5,0.2709
+N_HBSR_vs,auto_suff = 'vs' and HHKids< 0.5 and Employed=1 and w_access< 0.7049,0.3101
+N_HBSR_vs,auto_suff = 'vs' and HHKids< 0.5 and Employed=1 and w_access>=0.7049,0.5651
+N_HBSR_vs,auto_suff = 'vs' and HHKids< 0.5 and Employed=0 and IncPerCapLt80=1,0.6198
+N_HBSR_vs,auto_suff = 'vs' and HHKids< 0.5 and Employed=0 and IncPerCapLt80=0,1.2293
+N_HBO_v0,auto_suff = 'v0' and t_access_lt_61=1 and HHAdults< 1.5,0.3203
+N_HBO_v0,auto_suff = 'v0' and t_access_lt_61=1 and HHAdults>=1.5 and Age< 49.5 and Age>=25.5,0.157
+N_HBO_v0,auto_suff = 'v0' and t_access_lt_61=1 and HHAdults>=1.5 and Age< 49.5 and Age< 25.5,0.5551
+N_HBO_v0,auto_suff = 'v0' and t_access_lt_61=1 and HHAdults>=1.5 and Age>=49.5,0.9556
+N_HBO_v0,auto_suff = 'v0' and t_access_lt_61=0,1.249
+N_HBO_vi,auto_suff = 'vi' and Age< 68.5 and HHKids< 1.5 and Employed=1,0.1632
+N_HBO_vi,auto_suff = 'vi' and Age< 68.5 and HHKids< 1.5 and Employed=0 and t_access< 5.643,0.3381
+N_HBO_vi,auto_suff = 'vi' and Age< 68.5 and HHKids< 1.5 and Employed=0 and t_access>=5.643,1.4849
+N_HBO_vi,auto_suff = 'vi' and Age< 68.5 and HHKids>=1.5 and Age< 23.5,0.2414
+N_HBO_vi,auto_suff = 'vi' and Age< 68.5 and HHKids>=1.5 and Age>=23.5 and Gender=1,0.4337
+N_HBO_vi,auto_suff = 'vi' and Age< 68.5 and HHKids>=1.5 and Age>=23.5 and Gender=2,1.224
+N_HBO_vi,auto_suff = 'vi' and Age>=68.5,0.7301
+N_HBO_vs,auto_suff = 'vs' and HHKids< 2.5 and Age< 75.5 and w_access< 3.115,0.433
+N_HBO_vs,auto_suff = 'vs' and HHKids< 2.5 and Age< 75.5 and w_access>=3.115,1.0801
+N_HBO_vs,auto_suff = 'vs' and HHKids< 2.5 and Age>=75.5,1.1095
+N_HBO_vs,auto_suff = 'vs' and HHKids>=2.5 and Age>=6.5 and Age< 14.5,0.0292
+N_HBO_vs,auto_suff = 'vs' and HHKids>=2.5 and Age>=6.5 and Age>=14.5,1.1227
+N_HBO_vs,auto_suff = 'vs' and HHKids>=2.5 and Age< 6.5,1.5543
+N_HBSCH,Age>=18.5,0.0044
+N_HBSCH,Age< 18.5 and Age< 5.5 and g_access< 12.37 and IncPerCapita< 18970,0.0017
+N_HBSCH,Age< 18.5 and Age< 5.5 and g_access< 12.37 and IncPerCapita>=18970,0.2581
+N_HBSCH,Age< 18.5 and Age< 5.5 and g_access>=12.37 and Age< 3.5,0.2046
+N_HBSCH,Age< 18.5 and Age< 5.5 and g_access>=12.37 and Age>=3.5,1.004
+N_HBSCH,Age< 18.5 and Age>=5.5 and g_access< 11.49,0.7303
+N_HBSCH,Age< 18.5 and Age>=5.5 and g_access>=11.49,1.175
+N_HBSHP_v0,auto_suff = 'v0' and Age< 17.5,0.0638
+N_HBSHP_v0,auto_suff = 'v0' and Age>=17.5 and Employed=1 and HHIncCat< 1.5,0.0813
+N_HBSHP_v0,auto_suff = 'v0' and Age>=17.5 and Employed=1 and HHIncCat>=1.5 and Age< 33.5,0.4061
+N_HBSHP_v0,auto_suff = 'v0' and Age>=17.5 and Employed=1 and HHIncCat>=1.5 and Age>=33.5,0.7183
+N_HBSHP_v0,auto_suff = 'v0' and Age>=17.5 and Employed=0 and g_access< 13.06 and Age>=34.5 and g_access< 12.4,0.3409
+N_HBSHP_v0,auto_suff = 'v0' and Age>=17.5 and Employed=0 and g_access< 13.06 and Age>=34.5 and g_access>=12.4,0.6628
+N_HBSHP_v0,auto_suff = 'v0' and Age>=17.5 and Employed=0 and g_access< 13.06 and Age< 34.5,0.9957
+N_HBSHP_v0,auto_suff = 'v0' and Age>=17.5 and Employed=0 and g_access>=13.06,1.1976
+N_HBSHP_vi,auto_suff = 'vi' and HHIncCat>=1.5 and HHSize>=2.5 and HHIncCat>=3.5 and HHKids< 1.5,0.1008
+N_HBSHP_vi,auto_suff = 'vi' and HHIncCat>=1.5 and HHSize>=2.5 and HHIncCat>=3.5 and HHKids>=1.5,0.3368
+N_HBSHP_vi,auto_suff = 'vi' and HHIncCat>=1.5 and HHSize>=2.5 and HHIncCat< 3.5,0.349
+N_HBSHP_vi,auto_suff = 'vi' and HHIncCat>=1.5 and HHSize< 2.5 and Age< 45.5,0.4465
+N_HBSHP_vi,auto_suff = 'vi' and HHIncCat>=1.5 and HHSize< 2.5 and Age>=45.5,0.795
+N_HBSHP_vi,auto_suff = 'vi' and HHIncCat< 1.5 and Age>=29.5,0.2554
+N_HBSHP_vi,auto_suff = 'vi' and HHIncCat< 1.5 and Age< 29.5,0.8641
+N_HBSHP_vs,auto_suff = 'vs' and Age< 64.5 and g_access< 12.76 and HHIncCat>=4.5,0.1605
+N_HBSHP_vs,auto_suff = 'vs' and Age< 64.5 and g_access< 12.76 and HHIncCat< 4.5,0.3176
+N_HBSHP_vs,auto_suff = 'vs' and Age< 64.5 and g_access>=12.76,0.6484
+N_HBSHP_vs,auto_suff = 'vs' and Age>=64.5 and HHAdults>=1.5 and HHSeniors< 1.5,0.1933
+N_HBSHP_vs,auto_suff = 'vs' and Age>=64.5 and HHAdults>=1.5 and HHSeniors>=1.5,0.616
+N_HBSHP_vs,auto_suff = 'vs' and Age>=64.5 and HHAdults< 1.5,0.8694
