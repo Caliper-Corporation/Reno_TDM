@@ -1,6 +1,6 @@
 Alternative,Expression,Segment,Coefficient,Description
 motorized,Constant,,0,
-nonmotorized,person.HHAdult,,0.14902,
+nonmotorized,person.HHAdults,,0.14902,
 nonmotorized,person.HHKids,,-0.28976,
 nonmotorized,person.veh_per_adult,,-3.80686,HH vehicles per adult
 nonmotorized,se.access_walk.O,,0.0928,Interzonal walk accessiblity
