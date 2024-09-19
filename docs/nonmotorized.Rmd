@@ -43,6 +43,38 @@ est_tbl <- trips %>%
   mutate(ID = seq(from = 1, to = n()))
 ```
 
+# Calibration
+
+```{r}
+temp <- read_csv("data/input/nonmotorized/uncalibrated_nm_model_results.csv")
+
+model <- temp %>%
+  pivot_longer(cols = W_HBW_m:N_HBSR_nm, names_to = "purpose", values_to = "trips") %>%
+  group_by(purpose) %>%
+  summarize(trips = sum(trips, na.rm = TRUE)) %>%
+  separate(purpose, into = c("tour_type", "purpose", "motorized")) %>%
+  unite("purpose", tour_type:purpose) %>%
+  pivot_wider(names_from = "motorized", values_from = "trips") %>%
+  mutate(model_pct = nm / (m + nm)) %>%
+  select(-m, -nm)
+
+survey <- est_tbl %>%
+  group_by(purpose) %>%
+  summarize(
+    total = n(),
+    nm = sum(nonmotorized, na.rm = TRUE)
+  ) %>%
+  mutate(survey_pct = nm / total) %>%
+  filter(!grepl("NHB", purpose), purpose != "N_HBH") %>%
+  select(-total, -nm)
+
+calib_tbl <- survey %>%
+  left_join(model, by = "purpose") %>%
+  mutate(factor = log(survey_pct/model_pct))
+  
+```
+
+
 ```{r}
 write_csv(est_tbl, "../../working_files/nonmotorized/estimation_tbl.csv")
 ```

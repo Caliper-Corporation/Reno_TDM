@@ -5,4 +5,4 @@ nonmotorized,person.HHKids,,-0.28976,
 nonmotorized,person.veh_per_adult,,-3.80686,HH vehicles per adult
 nonmotorized,se.access_walk.O,,0.0928,Interzonal walk accessiblity
 nonmotorized,Constant,,-1.1555,Estimated constant
-nonmotorized,Constant,,0,Calibration constant
+nonmotorized,Constant,,1.032,Calibration constant
