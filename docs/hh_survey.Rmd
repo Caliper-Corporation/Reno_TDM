@@ -444,6 +444,7 @@ trip_file <- remove_xfers %>%
   # group_by(tour_id) %>%
   transmute(
     tour_type = tour_type,
+    tour_num = lead(tour_num),
     trip_number = lead(`Activity/Trip_Number`),
     Weight_Factor = lead(Weight_Factor),
     dep_hr = dep_hr,
