@@ -2302,12 +2302,9 @@ endmacro
 
 Macro "Separate type and mode" (name)
   pieces = ParseString(name, "_")
-  trip_type = pieces[1]
-  for i = 2 to 4 do
-    trip_type = trip_type + "_" + pieces[i]
-  end
-  mode = pieces[5]
-  for i = 6 to pieces.length do
+  trip_type = pieces[1] + "_" + pieces[2]
+  mode = pieces[3]
+  for i = 3 to pieces.length do
     mode = mode + "_" + pieces[i]
   end
   return({trip_type, mode})
