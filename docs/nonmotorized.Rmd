@@ -1,0 +1,81 @@
+---
+title: "Non-Motorized Model"
+output: html_document
+date: "2024-09-17"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+options(dplyr.summarise.inform = FALSE)
+options(scipen = 999)
+
+library(tidyverse)
+library(knitr)
+library(scales)
+library(kableExtra)
+```
+
+```{r}
+trips <- read_csv("data/_private/hh_survey/output/output_trips.csv")
+hh <- read_csv("data/_private/hh_survey/output/output_households.csv")
+per <- read_csv("data/_private/hh_survey/output/output_persons.csv")
+```
+
+```{r}
+est_tbl <- trips %>%
+  select(Sample_Number, Person_Number, purpose, mode) %>%
+  mutate(nonmotorized = ifelse(mode %in% c("bike", "walk"), 1, 0)) %>%
+  left_join(
+    hh %>%
+      select(Sample_Number, HomeTAZ, Number_Persons, HHKids, Vehicles_Available),
+    by = "Sample_Number"
+  ) %>%
+  mutate(
+    HHAdults = Number_Persons - HHKids,
+    VehPerAdult = Vehicles_Available / HHAdults
+  ) %>%
+  left_join(
+    per %>% select(Sample_Number, Person_Number, Senior),
+    by = c("Sample_Number", "Person_Number")
+  ) %>%
+  mutate(ID = seq(from = 1, to = n()))
+```
+
+# Calibration
+
+```{r}
+temp <- read_csv("data/input/nonmotorized/uncalibrated_nm_model_results.csv")
+
+model <- temp %>%
+  pivot_longer(cols = W_HBW_m:N_HBSR_nm, names_to = "purpose", values_to = "trips") %>%
+  group_by(purpose) %>%
+  summarize(trips = sum(trips, na.rm = TRUE)) %>%
+  separate(purpose, into = c("tour_type", "purpose", "motorized")) %>%
+  unite("purpose", tour_type:purpose) %>%
+  pivot_wider(names_from = "motorized", values_from = "trips") %>%
+  mutate(model_pct = nm / (m + nm)) %>%
+  select(-m, -nm)
+
+survey <- est_tbl %>%
+  group_by(purpose) %>%
+  summarize(
+    total = n(),
+    nm = sum(nonmotorized, na.rm = TRUE)
+  ) %>%
+  mutate(survey_pct = nm / total) %>%
+  filter(!grepl("NHB", purpose), purpose != "N_HBH") %>%
+  select(-total, -nm)
+
+calib_tbl <- survey %>%
+  left_join(model, by = "purpose") %>%
+  mutate(factor = log(survey_pct/model_pct))
+  
+```
+
+
+```{r}
+write_csv(est_tbl, "../../working_files/nonmotorized/estimation_tbl.csv")
+```
+

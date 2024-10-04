@@ -26,7 +26,7 @@ Macro "NHB Generation" (Args)
     periods = RunMacro("Get Unconverged Periods", Args)
     se_file = Args.SE
     tod_fac_file = Args.NHBTODFacs
-    trip_types = RunMacro("Get NHB Trip Types", Args)
+    trip_types = Args.NHBTripTypes
     modes = {"sov", "hov2", "hov3", "auto_pay", "walkbike", "t"}
     iteration = Args.FeedbackIteration
 
@@ -187,7 +187,7 @@ endMacro
 // Collapses the NHB trips by purpose and mode into 10 categories ('W_Auto', 'N_Auto') X (sov, hov2, hov3, auto_pay), 'Transit', 'WalkBike')
 Macro "Combine NHB trips for DC"(Args, Spec)
     periods = Args.periods
-    trip_types = RunMacro("Get NHB Trip Types", Args)
+    trip_types = Args.NHBTripTypes
 
     // Create output table
     out_dir = Args.[Output Folder]

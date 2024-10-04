@@ -13,7 +13,7 @@
 "PMHeadway",I,119,4,0,4,0,,"","",,"Sum",
 "NTHeadway",I,123,4,0,4,0,,"","",,"Sum",
 "Agency",I,127,4,0,4,0,,"","ID of Agency Operating the Route",,"Sum",
-"Mode",I,131,4,0,4,0,,"","Transit Mode|0 = Tram, Streetcar, Light Rail|1 = Subway, Metro|2 = Rail|3 = Bus|4 = Ferry|5 = Cable Car|6 = Gondola|7 = Funicular",,"Sum",
+"Mode",I,131,4,0,4,0,,"","Transit Mode|2: Local Bus|3: Express Bus",,"Sum",
 "URL",C,135,70,0,70,0,,"","URL for the Particular Route",,"Copy",
 "Color",I,205,4,0,4,0,,"","Color of Route (xCCCCCC)",,"Sum",
 "Text Color",I,209,4,0,4,0,,"","Legible Color for Text Against the Background of the Route (0xCCCCCC)",,"Sum",

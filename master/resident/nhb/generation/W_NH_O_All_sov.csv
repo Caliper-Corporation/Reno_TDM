@@ -1,7 +1,0 @@
-term,estimated_as,estimate,std.error,statistic,p.value
-W_HB_EK12_All_hov2,W_HB_EK12_All_auto,0.24428,0.038561901,6.33471161,0
-W_HB_EK12_All_hov3,W_HB_EK12_All_auto,0.24428,0.038561901,6.33471161,0
-W_HB_O_All_hov2,W_HB_O_All_hov,0.91834,0.037880635,24.24309265,0
-W_HB_O_All_hov3,W_HB_O_All_hov,0.91834,0.037880635,24.24309265,0
-W_HB_O_All_sov,W_HB_O_All_sov,1.38541,0.023934893,57.88232253,0
-r_sq,NA,0.45494,NA,NA,NA

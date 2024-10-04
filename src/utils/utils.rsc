@@ -2300,27 +2300,11 @@ Macro "Gravity2" (MacroOpts)
   CloseView(param_vw)
 endmacro
 
-Macro "Get NHB Trip Types" (Args)
-  dir = Args.[Input Folder] + "/resident/nhb/generation"
-  files = RunMacro("Catalog Files", {dir: dir})
-  for file in files do
-    {, , name, } = SplitPath(file)
-    if name = "nhb_calibration_factors" then continue
-    {trip_type, mode} = RunMacro("Separate type and mode", name)
-    trip_types = trip_types + {trip_type}
-  end
-  trip_types = V2A(SortVector(A2V(trip_types), {Unique: "true"}))
-  return(trip_types)
-endmacro
-
 Macro "Separate type and mode" (name)
   pieces = ParseString(name, "_")
-  trip_type = pieces[1]
-  for i = 2 to 4 do
-    trip_type = trip_type + "_" + pieces[i]
-  end
-  mode = pieces[5]
-  for i = 6 to pieces.length do
+  trip_type = pieces[1] + "_" + pieces[2]
+  mode = pieces[3]
+  for i = 3 to pieces.length do
     mode = mode + "_" + pieces[i]
   end
   return({trip_type, mode})
@@ -2328,7 +2312,7 @@ endmacro
 
 Macro "Get All Res Trip Types" (Args)
   hb_types = Args.HBTripTypes
-  nhb_types = RunMacro("Get NHB Trip Types", Args)
+  nhb_types = Args.NHBTripTypes
   return(hb_types + nhb_types)
 endmacro
 
