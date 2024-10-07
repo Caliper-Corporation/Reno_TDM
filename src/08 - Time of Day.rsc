@@ -28,7 +28,7 @@ Macro "Resident HB TOD" (Args)
         tod = v_tod[i]
         fac = v_fac[i]
 
-        if type = "W_HB_W_All"
+        if type = "W_HBW"
             then segments = {"v0", "ilvi", "ilvs", "ihvi", "ihvs"}
             else segments = {"v0", "vi", "vs"}
 
