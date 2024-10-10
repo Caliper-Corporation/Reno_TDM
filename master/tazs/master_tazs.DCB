@@ -1,12 +1,14 @@
 RTC TAZ 2024-02-23
-412,codepage=1252
+441,codepage=1252
 "ID",I,1,4,0,4,0,,"","",,"Sum",
 "COUNTY",C,5,16,0,16,0,,"","",,"Copy",
 "TAZ",I,21,4,0,8,0,,"","",,"Sum",
 "PUMA",C,25,8,0,8,0,,"","",,"Copy",
-"DISTRICT",I,33,4,0,8,0,,"","",,"Copy",
-"DistrictUp",C,37,50,0,50,0,,"","",,"Copy",
-"DistName",C,87,254,0,254,0,,"","",,"Copy",
-"Cluster",I,341,4,0,8,0,,"","",,"Sum",
-"ClusterName",C,345,64,0,64,0,,"","",,"Copy",
-"temp",I,409,4,0,8,0,,"","",,"Sum",
+"DC_Cluster",I,33,4,0,8,0,,"","",,"Sum",
+"DC_ClusterName",C,37,25,0,25,0,,"","",,"Copy",
+"DISTRICT",I,62,4,0,8,0,,"","",,"Copy",
+"DistrictUp",C,66,50,0,50,0,,"","",,"Copy",
+"DistName",C,116,254,0,254,0,,"","",,"Copy",
+"Cluster",I,370,4,0,8,0,,"","",,"Sum",
+"ClusterName",C,374,64,0,64,0,,"","",,"Copy",
+"temp",I,438,4,0,8,0,,"","",,"Sum",
