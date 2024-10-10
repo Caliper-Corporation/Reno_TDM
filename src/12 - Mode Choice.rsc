@@ -4,7 +4,8 @@ Calculates aggregate mode choice probabilities between zonal ij pairs
 
 Macro "Mode Probabilities" (Args)
 
-    if Args.FeedbackIteration = 1 then RunMacro("Create MC Features", Args)
+    if Args.FeedbackIteration = 1 then 
+        RunMacro("Create MC Features", Args)
     RunMacro("Calculate MC", Args)
     RunMacro("Post Process Logsum", Args)
     return(1)
@@ -22,35 +23,30 @@ Macro "Create MC Features" (Args)
     hh_vw = OpenTable("hh", "FFB", {hh_file})
     se_vw = OpenTable("se", "FFB", {se_file})
     hh_fields = {
-        {"HiIncome", "Integer", 10, ,,,, "IncomeCategory > 2"},
-        {"HHSize1", "Integer", 10, ,,,, "HHSize = 1"},
-        {"LargeHH", "Integer", 10, ,,,, "HHSize > 2"}
+        {"LowIncome", "Integer", 10, ,,,, "IncomeCategory = 1"},
+        {"HiIncome", "Integer", 10, ,,,, "IncomeCategory > 2"}
     }
     RunMacro("Add Fields", {view: hh_vw, a_fields: hh_fields})
     se_fields = {
-        {"HiIncomePct", "Real", 10, 2,,,, "Percentage of households where IncomeCategory > 2"},
-        {"HHSize1Pct", "Real", 10, 2,,,, "Percentage of households where HHSize = 1"},
-        {"LargeHHPct", "Real", 10, 2,,,, "Percentage of households where HHSize > 1"}
+        {"LowIncomePct", "Real", 10, 2,,,, "Percentage of households where IncomeCategory = 1"},
+        {"HighIncomePct", "Real", 10, 2,,,, "Percentage of households where IncomeCategory > 2"}
     }
     RunMacro("Add Fields", {view: se_vw, a_fields: se_fields})
 
-    {v_inc_cat, v_size} = GetDataVectors(hh_vw + "|", {"IncomeCategory", "HHSize"}, )
+    v_inc_cat = GetDataVector(hh_vw + "|", "IncomeCategory", )
+    data.LowIncome = if v_inc_cat = 1 then 1 else 0
     data.HiIncome = if v_inc_cat > 2 then 1 else 0
-    data.HHSize1 = if v_size = 1 then 1 else 0
-    data.LargeHH = if v_size > 2 then 1 else 0
     SetDataVectors(hh_vw + "|", data, )
     grouped_vw = AggregateTable(
         "grouped_vw", hh_vw + "|", "FFB", GetTempFileName(".bin"), "ZoneID", 
-        {{"HiIncome", "AVG", }, {"HHSize1", "AVG", }, {"LargeHH", "AVG"}}, 
+        {{"HiIncome", "AVG", }, {"LowIncome", "AVG", }}, 
         {"Missing As Zero": "true"}
     )
     jv = JoinViews("jv", se_vw + ".TAZ", grouped_vw + ".ZoneID", )
     v = nz(GetDataVector(jv + "|", "Avg HiIncome", ))
-    SetDataVector(jv + "|", "HiIncomePct", v, )
-    v = nz(GetDataVector(jv + "|", "Avg HHSize1", ))
-    SetDataVector(jv + "|", "HHSize1Pct", v, )
-    v = nz(GetDataVector(jv + "|", "Avg LargeHH", ))
-    SetDataVector(jv + "|", "LargeHHPct", v, )
+    SetDataVector(jv + "|", "HighIncomePct", v, )
+    v = nz(GetDataVector(jv + "|", "Avg LowIncome", ))
+    SetDataVector(jv + "|", "LowIncomePct", v, )
 
     CloseView(jv)
     CloseView(grouped_vw)
@@ -74,17 +70,11 @@ Macro "Calculate MC" (Args)
     transit_modes = RunMacro("Get Transit Modes", mode_table)
     access_modes = Args.access_modes
 
-    // Determine trip purposes
-    prod_rate_file = input_dir + "/resident/generation/production_rates.csv"
-    rate_vw = OpenTable("rate_vw", "CSV", {prod_rate_file})
-    trip_types = GetDataVector(rate_vw + "|", "trip_type", )
-    trip_types = SortVector(trip_types, {Unique: "true"})
-    CloseView(rate_vw)
-
+    trip_types = Args.HBTripTypes
     opts = null
     opts.primary_spec = {Name: "w_lb_skim"}
     for trip_type in trip_types do
-        if Lower(trip_type) = "w_hb_w_all"
+        if Lower(trip_type) = "w_hbw"
             then opts.segments = {"v0", "ilvi", "ihvi", "ilvs", "ihvs"}
             else opts.segments = {"v0", "vi", "vs"}
         opts.trip_type = trip_type
@@ -158,7 +148,7 @@ Macro "Post Process Logsum" (Args)
 
     trip_types = Args.HBTripTypes
     for trip_type in trip_types do
-        if Lower(trip_type) = "w_hb_w_all"
+        if Lower(trip_type) = "w_hbw"
             then segments = {"v0", "ilvi", "ihvi", "ilvs", "ihvs"}
             else segments = {"v0", "vi", "vs"}
         for period in periods do
@@ -166,10 +156,10 @@ Macro "Post Process Logsum" (Args)
                 mtx_file = ls_dir + "/logsum_" + trip_type + "_" + segment + "_" + period + ".mtx"
                 mtx = CreateObject("Matrix", mtx_file)
                 core_names = mtx._GetCoreNames()
-                if ArrayPosition(core_names, {"nonhh_auto"},) > 0 then do
+                /*if ArrayPosition(core_names, {"nonhh_auto"},) > 0 then do
                     mtx.AddCores({"NonHHAutoComposite"})
                     mtx.NonHHAutoComposite := log(1 + nz(exp(mtx.nonhh_auto)))
-                end
+                end*/
                 if ArrayPosition(core_names, {"transit"},) > 0 then do
                     mtx.AddCores({"TransitComposite"})
                     mtx.TransitComposite := log(1 + nz(exp(mtx.transit)))
