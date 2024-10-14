@@ -5,7 +5,7 @@
 Macro "Destination Probabilities" (Args)
 
     if Args.FeedbackIteration = 1 then do
-        RunMacro("DC Attractions", Args)
+        // RunMacro("DC Attractions", Args)
         RunMacro("DC Size Terms", Args)
     end
     RunMacro("HBW DC", Args)
@@ -162,8 +162,9 @@ Macro "HBW DC" (Args)
 
     if Args.FeedbackIteration = 1 then RunMacro("Create Intra Cluster Matrix", Args)
 
-    trip_types = {"W_HB_W_All"}
-    max_iters = 3
+    trip_types = {"W_HBW"}
+    // kyle: set to 1 to disable double constraint
+    max_iters = 1
     for i = 1 to max_iters do
         RunMacro("Calculate Destination Choice", Args, trip_types)
         if i < max_iters then prmse = RunMacro("Update Shadow Price", Args, trip_types)
@@ -180,7 +181,7 @@ Remaining trip types are not doubly constrained
 
 Macro "Other HB DC" (Args)
     trip_types = Args.HBTripTypes
-    pos = trip_types.position("W_HB_W_All")
+    pos = trip_types.position("W_HBW")
     trip_types = ExcludeArrayElements(trip_types, pos, 1)
     RunMacro("Calculate Destination Choice", Args, trip_types)
 endmacro
