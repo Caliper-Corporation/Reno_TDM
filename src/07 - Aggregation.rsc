@@ -61,7 +61,7 @@ Macro "Aggregate HB Moto Trips" (Args)
         end
     end
 
-    // For trip types other than W_HB_W_All, collapse market segments
+    // For trip types other than work, collapse market segments
     for trip_type in trip_types do
         if Lower(trip_type) = "w_hbw" then continue
         for segment in segments do
