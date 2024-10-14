@@ -1,0 +1,16 @@
+Cluster,ClusterName,Theta,ASC,IC,Calibrated_DeltaASC,Calibrated_DeltaIC
+1,Downtown Reno,1.000,-0.733,0.420,0,0
+2,University,1.000,0,1.210,0,0
+3,Midtown,1.000,-0.661,0.422,0,0
+7,Airport,1.000,-1.100,0,0,0
+4,West - NorthWest,0.417,0.823,0.622,0,0
+5,Sparks - D'Andrea,0.733,0,1.050,0,0
+6,NW Reno - Skyline,0.658,0.735,0.769,0,0
+8,East Reno - Meadowood,0.899,0,0,0,0
+9,Virginia - Galena,0.816,0,0.383,0,0
+10,North Reno - Sparks,0.709,0.729,0,0,0
+11,Palomina - North Valley,1.000,-0.616,0,0,0
+12,Verdi - Mogul - Somerset,1.000,-0.616,0,0,0
+13,East Truckee,1.000,0,0,0,0
+15,Rural Spring Mt,1.000,0,0,0,0
+14,Mt Rose,1.000,0,0,0,0
