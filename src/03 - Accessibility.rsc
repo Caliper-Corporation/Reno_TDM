@@ -4,6 +4,7 @@ Calls various macros that calculate different accessibility measures.
 
 Macro "Accessibility" (Args)
 
+    RunMacro("Split Employment by Earnings", Args)
     RunMacro("Calc GS and Walkability Attractions", Args)
     RunMacro("Calc Gini-Simpson Diversity Index", Args)
     RunMacro("Calc Intersection Approach Density", Args)
