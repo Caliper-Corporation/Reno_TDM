@@ -50,9 +50,6 @@ Macro "HB Directionality" (Args)
         CopyFile(pa_mtx_file, od_mtx_file)
 
         mtx = CreateObject("Matrix", od_mtx_file)
-        if trip_type = "W_HB_EK12_All" then
-                        mtx.AddCores({"sov"})
-                        
         cores = mtx.GetCores()
         t_mtx = mtx.Transpose()
         t_cores = t_mtx.GetCores()

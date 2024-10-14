@@ -1059,17 +1059,10 @@ Macro "Summarize NM" (Args, trip_types)
   for trip_type in trip_types do
     moto_v = GetDataVector(per_vw + "|", trip_type, )
     moto_total = VectorStatistic(moto_v, "Sum", )
-    if trip_type = "W_HB_EK12_All" then do
-      moto_share = 100
-      nm_total = 0
-      nm_share = 0
-    end else do
-      nm_v = GetDataVector(nm_vw + "|", trip_type, )
-      nm_total = VectorStatistic(nm_v, "Sum", )
-      moto_share = round(moto_total / (moto_total + nm_total) * 100, 2)
-      nm_share = round(nm_total / (moto_total + nm_total) * 100, 2)
-    end
-
+    nm_v = GetDataVector(nm_vw + "|", trip_type, )
+    nm_total = VectorStatistic(nm_v, "Sum", )
+    moto_share = round(moto_total / (moto_total + nm_total) * 100, 2)
+    nm_share = round(nm_total / (moto_total + nm_total) * 100, 2)
     WriteLine(f, trip_type + "," + String(moto_total) + "," + String(moto_share) + "," + String(nm_total) + "," + String(nm_share))
   end
 

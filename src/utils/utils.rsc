@@ -2347,7 +2347,7 @@ Macro "Create Intra Cluster Matrix"(Args)
   SetMatrixVector(mc, v, {{"Diagonal"}})
   
   // Cluster definitions from dc spec for the 2 level model
-  cluster_data = Args.[Input Folder] + "/resident/dc/w_hb_w_all_cluster.csv"
+  cluster_data = Args.[Input Folder] + "/resident/dc/w_hbw_cluster.csv"
   theta_vw = OpenTable("thetas", "CSV", {cluster_data})
   {v_cluster_ids, v_cluster_names} = GetDataVectors(theta_vw + "|", {"Cluster", "ClusterName"},)
   CloseView(theta_vw)

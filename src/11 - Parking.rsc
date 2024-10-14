@@ -490,13 +490,9 @@ Macro "HB Apply Parking Probabilities" (Args)
             trip_dir = out_dir + "/resident/trip_matrices"
             trip_mtx_file = trip_dir + "/pa_per_trips_" + trip_type + "_" + period + ".mtx"
 
-            // W_HB_EK12 only has hov2 and hov3 cores at this point. 
             // Standardize the matrix here so that all further procedures can be simpler.
             mtx = CreateObject("Matrix", trip_mtx_file)
-            if trip_type = "W_HB_EK12_All" then
-                mtx.AddCores({"sov"})
-
-            if trip_type = "W_HB_W_All" 
+            if trip_type = "W_HBW" 
                 then work_type = "w"
                 else work_type = "n"
             

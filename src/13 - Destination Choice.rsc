@@ -59,37 +59,37 @@ Macro "Split Employment by Earnings" (Args)
     SetDataVectors(se_vw + "|", output, )
 endmacro
 
-/*
-Calculates attractions for the HB work trip type. These attractions are used
-as targets for double constraint in the DC.
-*/
+// /*
+// Calculates attractions for the HB work trip type. These attractions are used
+// as targets for double constraint in the DC.
+// */
 
-Macro "DC Attractions" (Args)
+// Macro "DC Attractions" (Args)
 
-    se_file = Args.SE
-    rate_file = Args.ResDCAttrRates
-    tod_file = Args.ResTODFactors
+//     se_file = Args.SE
+//     rate_file = Args.ResDCAttrRates
+//     tod_file = Args.ResTODFactors
 
-    se_vw = OpenTable("se", "FFB", {se_file})
-    {drive, folder, name, ext} = SplitPath(rate_file)
-    RunMacro("Create Sum Product Fields", {
-        view: se_vw, factor_file: rate_file,
-        field_desc: "Resident DC Attractions|Used for double constraint.|See " + name + ext + " for details."
-    })
+//     se_vw = OpenTable("se", "FFB", {se_file})
+//     {drive, folder, name, ext} = SplitPath(rate_file)
+//     RunMacro("Create Sum Product Fields", {
+//         view: se_vw, factor_file: rate_file,
+//         field_desc: "Resident DC Attractions|Used for double constraint.|See " + name + ext + " for details."
+//     })
 
-    // Balance these to match total hbw productions
-    {p1, p2, p3, p4, p5, v_a} = GetDataVectors(
-        se_vw + "|",
-        {"W_HB_W_All_v0", "W_HB_W_All_ilvi", "W_HB_W_All_ilvs", "W_HB_W_All_ihvi", "W_HB_W_All_ihvs", "w_hbw_a"},
-    )
-    total_p = p1 + p2 + p3 + p4 + p5
-    p_sum = VectorStatistic(total_p, "sum",)
-    a_sum = VectorStatistic(v_a, "sum",)
-    total_a = v_a * (p_sum / a_sum)
-    SetDataVector(se_vw + "|", "w_hbw_a", total_a, )
+//     // Balance these to match total hbw productions
+//     {p1, p2, p3, p4, p5, v_a} = GetDataVectors(
+//         se_vw + "|",
+//         {"W_HB_W_All_v0", "W_HB_W_All_ilvi", "W_HB_W_All_ilvs", "W_HB_W_All_ihvi", "W_HB_W_All_ihvs", "w_hbw_a"},
+//     )
+//     total_p = p1 + p2 + p3 + p4 + p5
+//     p_sum = VectorStatistic(total_p, "sum",)
+//     a_sum = VectorStatistic(v_a, "sum",)
+//     total_a = v_a * (p_sum / a_sum)
+//     SetDataVector(se_vw + "|", "w_hbw_a", total_a, )
 
-    CloseView(se_vw)
-endmacro
+//     CloseView(se_vw)
+// endmacro
 
 /*
 Creates sum product fields using DC size coefficients. Then takes the log
@@ -204,7 +204,7 @@ Macro "Calculate Destination Choice" (Args, trip_types)
     opts.output_dir = output_dir
     opts.primary_spec = {Name: "sov_skim"}
     for trip_type in trip_types do
-        if Lower(trip_type) = "w_hb_w_all"
+        if Lower(trip_type) = "w_hbw"
             then segments = {"v0", "ilvi", "ihvi", "ilvs", "ihvs"}
             else segments = {"v0", "vi", "vs"}
         opts.trip_type = trip_type
@@ -267,67 +267,66 @@ Macro "DC Runner" (opts)
     obj.Run()
 endmacro
 
-/*
-Note: could re-factor this along with the "Apportion Resident HB Trips" macro
-to avoid duplicate code.
-*/
+// /*
 
-Macro "Update Shadow Price" (Args)
+// */
+
+// Macro "Update Shadow Price" (Args)
     
-    se_file = Args.SE
-    out_dir = Args.[Output Folder]
-    dc_dir = out_dir + "/resident/dc"
-    sp_file = Args.ShadowPrices
-    periods = Args.periods
+//     se_file = Args.SE
+//     out_dir = Args.[Output Folder]
+//     dc_dir = out_dir + "/resident/dc"
+//     sp_file = Args.ShadowPrices
+//     periods = Args.periods
 
-    se_vw = OpenTable("se", "FFB", {se_file})
-    sp_vw = OpenTable("sp", "FFB", {sp_file})
+//     se_vw = OpenTable("se", "FFB", {se_file})
+//     sp_vw = OpenTable("sp", "FFB", {sp_file})
 
-    trip_type = "W_HB_W_All"
-    segments = {"v0", "ilvi", "ilvs", "ihvi", "ihvs"}
+//     trip_type = "W_HB_W_All"
+//     segments = {"v0", "ilvi", "ilvs", "ihvi", "ihvs"}
 
-    v_sp = GetDataVector(sp_vw + "|", "hbw", )
-    v_attrs = GetDataVector(se_vw + "|", "w_hbw_a", )
+//     v_sp = GetDataVector(sp_vw + "|", "hbw", )
+//     v_attrs = GetDataVector(se_vw + "|", "w_hbw_a", )
 
-    for period in periods do
-        for segment in segments do
-            name = trip_type + "_" + segment + "_" + period
-            dc_mtx_file = dc_dir + "/probabilities/probability_" + name + "_zone.mtx"
-            out_mtx_file = Substitute(dc_mtx_file, ".mtx", "_temp.mtx", )
-            if GetFileInfo(out_mtx_file) <> null then DeleteFile(out_mtx_file)
-            CopyFile(dc_mtx_file, out_mtx_file)
+//     for period in periods do
+//         for segment in segments do
+//             name = trip_type + "_" + segment + "_" + period
+//             dc_mtx_file = dc_dir + "/probabilities/probability_" + name + "_zone.mtx"
+//             out_mtx_file = Substitute(dc_mtx_file, ".mtx", "_temp.mtx", )
+//             if GetFileInfo(out_mtx_file) <> null then DeleteFile(out_mtx_file)
+//             CopyFile(dc_mtx_file, out_mtx_file)
             
-            out_mtx = CreateObject("Matrix", out_mtx_file)
-            cores = out_mtx.GetCores()
+//             out_mtx = CreateObject("Matrix", out_mtx_file)
+//             cores = out_mtx.GetCores()
             
-            v_prods = nz(GetDataVector(se_vw + "|", name, ))
-            v_prods.rowbased = "false"
-            cores.final_prob := cores.final_prob * v_prods
-            v_trips = out_mtx.GetVector({"Core": "final_prob", Marginal: "Column Sum"})
-            v_total_trips = nz(v_total_trips) + v_trips
+//             v_prods = nz(GetDataVector(se_vw + "|", name, ))
+//             v_prods.rowbased = "false"
+//             cores.final_prob := cores.final_prob * v_prods
+//             v_trips = out_mtx.GetVector({"Core": "final_prob", Marginal: "Column Sum"})
+//             v_total_trips = nz(v_total_trips) + v_trips
 
-            out_mtx = null
-            cores = null
-            DeleteFile(out_mtx_file)
-        end
-    end
+//             out_mtx = null
+//             cores = null
+//             DeleteFile(out_mtx_file)
+//         end
+//     end
     
-    // Calculate constant adjustmente. avoid Log(0) = -inf
-    delta = if v_attrs = 0 or v_total_trips = 0
-        then 0
-        else nz(Log(v_attrs/v_total_trips)) * .85
-    v_sp_new = v_sp + delta
-    SetDataVector(sp_vw + "|", "hbw", v_sp_new, )
+//     // Calculate constant adjustmente. avoid Log(0) = -inf
+//     delta = if v_attrs = 0 or v_total_trips = 0
+//         then 0
+//         else nz(Log(v_attrs/v_total_trips)) * .85
+//     v_sp_new = v_sp + delta
+//     SetDataVector(sp_vw + "|", "hbw", v_sp_new, )
 
-    CloseView(se_vw)
-    CloseView(sp_vw)
+//     CloseView(se_vw)
+//     CloseView(sp_vw)
 
-    // return the %RMSE
-    o = CreateObject("Model.Statistics")
-    stats = o.rmse({Method: "vectors", Predicted: v_sp_new, Observed: v_sp})
-    prmse = stats.RelRMSE
-    return(prmse)
-endmacro
+//     // return the %RMSE
+//     o = CreateObject("Model.Statistics")
+//     stats = o.rmse({Method: "vectors", Predicted: v_sp_new, Observed: v_sp})
+//     prmse = stats.RelRMSE
+//     return(prmse)
+// endmacro
 
 /*
 With DC and MC probabilities calculated, resident trip productions can be 
@@ -355,7 +354,7 @@ Macro "Apportion Resident HB Trips" (Args)
 
         // Resident trips
         for trip_type in trip_types do
-            if Lower(trip_type) = "w_hb_w_all"
+            if Lower(trip_type) = "w_hbw"
                 then segments = {"v0", "ilvi", "ilvs", "ihvi", "ihvs"}
                 else segments = {"v0", "vi", "vs"}
             

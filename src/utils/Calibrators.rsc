@@ -13,8 +13,6 @@ Macro "Calibrate NM" (Args)
 
     trip_types = Args.HBTripTypes
     for trip_type in trip_types do
-        if trip_type = "W_HB_EK12_All" then continue
-
         iter = 1
         while iter <= max_iterations do
 
@@ -140,10 +138,8 @@ Macro "Calibrate HB MC"(Args)
     trip_types = Args.HBTripTypes
     //pbar1 = CreateObject("G30 Progress Bar", "Calibrating MC models for each trip type ...", true, trip_types.length)
     for trip_type in trip_types do
-        if Lower(trip_type) = "w_hb_ek12_all" then
-            continue
 
-        if Lower(trip_type) = "w_hb_w_all" then 
+        if Lower(trip_type) = "w_hbw" then 
             segments = {"v0", "ilvi", "ilvs", "ihvi", "ihvs"}
         else 
             segments = {"v0", "vi", "vs"}

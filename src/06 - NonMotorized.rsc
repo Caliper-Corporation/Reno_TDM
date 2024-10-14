@@ -151,15 +151,6 @@ Macro "Separate NM Trips" (Args, trip_types)
         }
         RunMacro("Add Fields", {view: per_vw, a_fields: per_fields_to_add})
         
-        // All escort-k12 trips are motorized
-        if trip_type = "W_HB_EK12_All" then do
-            v = GetDataVector(per_vw + "|", trip_type, )
-            SetDataVector(per_vw + "|", per_out_field, v, )
-            v2 = Vector(v.length, "Long", {Constant: 0})
-            SetDataVector(per_vw + "|", nm_field, v2, )
-            continue
-        end
-        
         nm_file = output_dir + "/" + trip_type + ".bin"
         nm_vw = OpenTable("nm", "FFB", {nm_file})
         
@@ -286,7 +277,6 @@ Macro "NM TOD" (Args)
 
         core_name = type + "_" + tod
         nm_mtx.AddCores({core_name})
-        if type = "W_HB_EK12_All" then continue
         cores = nm_mtx.GetCores()
         cores.(core_name) := cores.(type) * fac
     end
