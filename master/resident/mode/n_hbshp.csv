@@ -15,6 +15,7 @@ hov3,hov_skim.[TollCostHOV (Skim)],,-0.01035,Toll cost
 hov3,hov_skim.[Length (Skim)],,-0.00104,Auto Operating Cost
 auto_pay,hov_skim.CongTime,,-0.0294,Travel time
 auto_pay,hov_skim.auto_pay_fare,,-0.1076,Auto fare
+auto_pay,Constant,vs,-99,Unavailable
 w_lb,Constant,,-0.127,Constant
 w_lb,Constant,v0,3.45,Zero-vehicle households
 w_lb,w_lb_skim.[In-Vehicle Time],,-0.00933,IVTT

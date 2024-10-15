@@ -1,6 +1,7 @@
 Alternative,Expression,Segment,Coefficient,Description
 sov,Constant,,-2.05,Constant
 sov,Constant,v0,-99,Auto Availability
+sov,Constant,vi,-99,Auto Availability
 sov,sov_skim.CongTime,,-0.029,Travel time
 hov2,Constant,,-1.04,Constant
 hov2,hov_skim.CongTime,,-0.029,Travel time
