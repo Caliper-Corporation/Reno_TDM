@@ -7,7 +7,6 @@ Macro "Mode Probabilities" (Args)
     if Args.FeedbackIteration = 1 then 
         RunMacro("Create MC Features", Args)
     RunMacro("Calculate MC", Args)
-    RunMacro("Post Process Logsum", Args)
     return(1)
 endmacro
 
@@ -133,43 +132,4 @@ Macro "Calculate MC" (Args)
     // monitor.WaitForAll()
     // if monitor.IsFailed then Throw("MC Failed")
     // monitor.CloseStatusDbox()
-endmacro
-
-/*
-Transforms the mc logsums used in destination choice to all be positive values.
-This is only necessary because we are using nest-level logsums rather than
-ultimate/root logsums (which are all positive already)
-*/
-
-Macro "Post Process Logsum" (Args)
-    
-    ls_dir = Args.[Output Folder] + "/resident/mode/logsums"
-    periods = RunMacro("Get Unconverged Periods", Args)
-
-    trip_types = Args.HBTripTypes
-    for trip_type in trip_types do
-        if Lower(trip_type) = "w_hbw"
-            then segments = {"v0", "ilvi", "ihvi", "ilvs", "ihvs"}
-            else segments = {"v0", "vi", "vs"}
-        for period in periods do
-            for segment in segments do
-                mtx_file = ls_dir + "/logsum_" + trip_type + "_" + segment + "_" + period + ".mtx"
-                mtx = CreateObject("Matrix", mtx_file)
-                core_names = mtx._GetCoreNames()
-                /*if ArrayPosition(core_names, {"nonhh_auto"},) > 0 then do
-                    mtx.AddCores({"NonHHAutoComposite"})
-                    mtx.NonHHAutoComposite := log(1 + nz(exp(mtx.nonhh_auto)))
-                end*/
-                if ArrayPosition(core_names, {"transit"},) > 0 then do
-                    mtx.AddCores({"TransitComposite"})
-                    mtx.TransitComposite := log(1 + nz(exp(mtx.transit)))
-                end
-                if segment <> "v0" and ArrayPosition(core_names, {"auto"},) > 0 then do
-                    mtx.AddCores({"AutoComposite"})
-                    mtx.AutoComposite := log(1 + nz(exp(mtx.auto)))
-                end
-                mtx = null
-            end
-        end
-    end
 endmacro
