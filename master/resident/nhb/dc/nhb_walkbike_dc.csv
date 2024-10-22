@@ -1,8 +1,7 @@
 Expression,Segment,Coefficient,Description
-se.nhb_walkbike_size.D,,0.519,Size term
-skim.[Length (skim)],,-0.497,
-skim.[Length (skim)] > 1,,-2.42,Destination more than a mile away
-IntraCluster.IC,,0.539,Intra Cluster Dummy
-IntraCluster.IZ,,1.16,Intra Zonal Dummy
-se.EmpDensity.D / 1000,,0.00108,Total Emp Density
-se.access_walk.D,v0,0.157,Access Walk
+se.nhb_walkbike_size.D,,0.403,Size term
+skim.[Length (skim)],,-0.381,
+skim.[Length (skim)] > 1,,-1.46,Destination more than a mile away
+IntraCluster.IC,,1.71,Intra Cluster Dummy
+IntraCluster.IZ,,2.07,Intra Zonal Dummy
+se.access_walk.D,v0,0.416,Access Walk
