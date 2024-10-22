@@ -118,11 +118,11 @@ Macro "MC" (MacroOpts)
         obj.AddPrimarySpec(primary_spec)
         
         // Specify outputs
-        output_opts = {Probability: prob_dir + "\\probability_" + tag + ".mtx"}
+        output_opts = {Probability: prob_dir + "\\probability_" + tag + ".mtx",
+                        Logsum: logsum_dir + "\\logsum_" + tag + ".mtx"}
         // The matrices take up a lot of space, so don't write the utility 
         // matrices except for debugging/development.
         // Uncomment the line below to write them.
-        // output_opts = output_opts + {Logsum: logsum_dir + "\\logsum_" + tag + ".mtx"}
         // output_opts = output_opts + {Utility: util_dir + "\\utility_" + tag + ".mtx"}
         obj.AddOutputSpec(output_opts)
         
