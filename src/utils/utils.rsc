@@ -2304,7 +2304,7 @@ Macro "Separate type and mode" (name)
   pieces = ParseString(name, "_")
   trip_type = pieces[1] + "_" + pieces[2]
   mode = pieces[3]
-  for i = 3 to pieces.length do
+  for i = 4 to pieces.length do
     mode = mode + "_" + pieces[i]
   end
   return({trip_type, mode})
