@@ -88,7 +88,7 @@ Macro "Add Airport Trips" (Args)
     shares_file = Args.HBOtherShares
 
     // Which trip type to add airport trips to
-    trip_type = "N_HB_OD_Long"
+    trip_type = "N_HBO"
     
     for period in periods do
         air_mtx_file = air_dir + "/airport_auto_trips_" + period + ".mtx"
