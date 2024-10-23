@@ -161,12 +161,14 @@ Macro "Post Process Logsum" (Args)
                     mtx.NonHHAutoComposite := log(1 + nz(exp(mtx.nonhh_auto)))
                 end*/
                 if ArrayPosition(core_names, {"transit"},) > 0 then do
-                    mtx.AddCores({"TransitComposite"})
-                    mtx.TransitComposite := log(1 + nz(exp(mtx.transit)))
+                    newCore = "TransitComposite_" + segment
+                    mtx.AddCores({newCore})
+                    mtx.(newCore) := log(1 + nz(exp(mtx.transit)))
                 end
                 if segment <> "v0" and ArrayPosition(core_names, {"auto"},) > 0 then do
-                    mtx.AddCores({"AutoComposite"})
-                    mtx.AutoComposite := log(1 + nz(exp(mtx.auto)))
+                    newCore = "AutoComposite_" + segment
+                    mtx.AddCores({newCore})
+                    mtx.(newCore) := log(1 + nz(exp(mtx.auto)))
                 end
                 mtx = null
             end

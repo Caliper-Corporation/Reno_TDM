@@ -76,3 +76,22 @@ pnr_eb,pnr_eb_skim.[Transfer Walk Time],,-0.02333,Transfer walk time
 pnr_eb,pnr_eb_skim.[Initial Wait Time],,-0.01866,Initial wait time
 pnr_eb,pnr_eb_skim.[Transfer Wait Time],,-0.01866,Transfer wait time
 pnr_eb,pnr_eb_skim.[Dwelling Time],,-0.00933,Dwell Time
+hov2,Constant,v0,0.086122,Additional Calibration Constant
+hov3,Constant,v0,0.554981,Additional Calibration Constant
+walk,Constant,v0,-0.634842,Additional Calibration Constant
+pnr,Constant,v0,-0.634842,Additional Calibration Constant
+knr,Constant,v0,-0.634842,Additional Calibration Constant
+auto_pay,Constant,v0,2.723187,Additional Calibration Constant
+sov,Constant,vi,-0.285686,Additional Calibration Constant
+hov2,Constant,vi,0.179913,Additional Calibration Constant
+hov3,Constant,vi,0.184812,Additional Calibration Constant
+walk,Constant,vi,-2.104242,Additional Calibration Constant
+pnr,Constant,vi,-2.104242,Additional Calibration Constant
+knr,Constant,vi,-2.104242,Additional Calibration Constant
+auto_pay,Constant,vi,-0.87699,Additional Calibration Constant
+sov,Constant,vs,-0.002084,Additional Calibration Constant
+hov2,Constant,vs,0.129583,Additional Calibration Constant
+hov3,Constant,vs,0.069719,Additional Calibration Constant
+walk,Constant,vs,-2.310649,Additional Calibration Constant
+pnr,Constant,vs,-2.310649,Additional Calibration Constant
+knr,Constant,vs,-2.310649,Additional Calibration Constant
