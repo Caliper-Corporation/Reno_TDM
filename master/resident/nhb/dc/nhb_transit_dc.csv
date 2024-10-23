@@ -1,5 +1,5 @@
 Expression,Segment,Coefficient,Description
-se.nhb_transit_size.D,,0.694,Size term
-skim.[Total Time],,-0.0225,
-skim.[Number of Transfers],,-0.498,
-se.access_transit.D,,0.348,Transit Accessibility
+se.nhb_transit_size.D,,0.212,Size term
+skim.[Total Time],,-0.057,
+skim.[Number of Transfers],,0,
+se.access_transit.D,,0.114,Transit Accessibility
