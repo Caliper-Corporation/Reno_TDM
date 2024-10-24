@@ -22,10 +22,10 @@ w_lb,w_lb_skim.[Dwelling Time],,-0.029,Dwell Time
 hov2,Constant,v0,-0.638173,Additional Calibration Constant
 hov3,Constant,v0,-2.344855,Additional Calibration Constant
 school_bus,Constant,v0,-1.709996,Additional Calibration Constant
-hov2,Constant,vi,-0.508695,Additional Calibration Constant
-hov3,Constant,vi,-0.225593,Additional Calibration Constant
-school_bus,Constant,vi,0.034519,Additional Calibration Constant
-sov,Constant,vs,-0.226357,Additional Calibration Constant
-hov2,Constant,vs,0.131554,Additional Calibration Constant
-hov3,Constant,vs,-0.401933,Additional Calibration Constant
-school_bus,Constant,vs,-0.494422,Additional Calibration Constant
+hov2,Constant,vi,-0.600512,Additional Calibration Constant
+hov3,Constant,vi,-0.31741,Additional Calibration Constant
+school_bus,Constant,vi,-0.055748,Additional Calibration Constant
+sov,Constant,vs,-0.333879,Additional Calibration Constant
+hov2,Constant,vs,0.024032,Additional Calibration Constant
+hov3,Constant,vs,-0.509455,Additional Calibration Constant
+school_bus,Constant,vs,-0.602575,Additional Calibration Constant
