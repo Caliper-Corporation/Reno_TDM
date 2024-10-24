@@ -81,6 +81,25 @@ menu "RTCWC Menu"
     
     MenuItem "Calibrators" text: "Calibrators"
         menu "RTCWC Calibrators"
+
+    separator
+
+    MenuItem "AQ Reports" text: "Run AQ Reports" do
+       btn = MessageBox("This report will generate estimated VMT, VHT and average speeds by speed category, facility type, and urban/rural type. You need to perform a full model run before running this report. Do you want to continue?",
+            {Caption: "Question", Buttons: "YesNo"})
+        if btn = "Yes" then do
+
+            mr = CreateObject("Model.Runtime")
+            Args = mr.GetValues()
+            ret_value = mr.RunCode("AQ Summaries", Args)
+            if ret_value then
+                ShowMessage("AQ Reports ran successfully.")
+            else
+                ShowMessage("AQ Reports failed.")
+        end
+    enditem
+
+
 endMenu 
 menu "RTCWC Utilities"
     init do
