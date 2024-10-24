@@ -15,6 +15,7 @@ hov3,hov_skim.[TollCostHOV (Skim)],,-0.01035,Toll cost
 hov3,hov_skim.[Length (Skim)],,-0.00104,Auto Operating Cost
 auto_pay,hov_skim.CongTime,,-0.0294,Travel time
 auto_pay,hov_skim.auto_pay_fare,,-0.1076,Auto fare
+auto_pay,Constant,vs,-99,Unavailable
 w_lb,Constant,,-0.127,Constant
 w_lb,Constant,v0,3.45,Zero-vehicle households
 w_lb,w_lb_skim.[In-Vehicle Time],,-0.00933,IVTT
@@ -75,3 +76,22 @@ pnr_eb,pnr_eb_skim.[Transfer Walk Time],,-0.02333,Transfer walk time
 pnr_eb,pnr_eb_skim.[Initial Wait Time],,-0.01866,Initial wait time
 pnr_eb,pnr_eb_skim.[Transfer Wait Time],,-0.01866,Transfer wait time
 pnr_eb,pnr_eb_skim.[Dwelling Time],,-0.00933,Dwell Time
+hov2,Constant,v0,0.086122,Additional Calibration Constant
+hov3,Constant,v0,0.554981,Additional Calibration Constant
+walk,Constant,v0,-0.634842,Additional Calibration Constant
+pnr,Constant,v0,-0.634842,Additional Calibration Constant
+knr,Constant,v0,-0.634842,Additional Calibration Constant
+auto_pay,Constant,v0,2.723187,Additional Calibration Constant
+sov,Constant,vi,-0.285512,Additional Calibration Constant
+hov2,Constant,vi,0.180133,Additional Calibration Constant
+hov3,Constant,vi,0.18503,Additional Calibration Constant
+walk,Constant,vi,-2.114479,Additional Calibration Constant
+pnr,Constant,vi,-2.114479,Additional Calibration Constant
+knr,Constant,vi,-2.114479,Additional Calibration Constant
+auto_pay,Constant,vi,-0.88061,Additional Calibration Constant
+sov,Constant,vs,-0.002084,Additional Calibration Constant
+hov2,Constant,vs,0.129583,Additional Calibration Constant
+hov3,Constant,vs,0.069719,Additional Calibration Constant
+walk,Constant,vs,-2.310649,Additional Calibration Constant
+pnr,Constant,vs,-2.310649,Additional Calibration Constant
+knr,Constant,vs,-2.310649,Additional Calibration Constant

@@ -22,11 +22,13 @@ auto_pay,Constant,ihvi,0.616,Vehicle insufficient households
 auto_pay,hov_skim.CongTime,,-0.0106,Travel time
 auto_pay,se.PKTNCWait.O,,-0.0893,Auto wait time
 auto_pay,hov_skim.auto_pay_fare,,-0.0388,Auto fare
+shuttle,Constant,ihvs,-99,Unavailable
 shuttle,hov_skim.CongTime,,-0.0106,Shuttle Time
 w_lb,Constant,,0.825,Constant
 w_lb,Constant,v0,2.32,Zero-vehicle households
 w_lb,Constant,ilvi,2.03,Low Income
 w_lb,Constant,ilvs,2.03,Low Income
+w_lb,Constant,ihvs,-99,Unavailable
 w_lb,w_lb_skim.[In-Vehicle Time],,-0.0106,IVTT
 w_lb,w_lb_skim.Fare,,-0.05345,Transit fare
 w_lb,w_lb_skim.[Access Walk Time],,-0.0302,Access walk time
@@ -39,6 +41,7 @@ w_eb,Constant,,0.825,Constant
 w_eb,Constant,v0,2.32,Zero-vehicle households
 w_eb,Constant,ilvi,2.03,Low Income
 w_eb,Constant,ilvs,2.03,Low Income
+w_eb,Constant,ihvs,-99,Unavailable
 w_eb,w_eb_skim.[In-Vehicle Time],,-0.0106,IVTT
 w_eb,w_eb_skim.Fare,,-0.05345,Transit fare
 w_eb,w_eb_skim.[Access Walk Time],,-0.0302,Access walk time
@@ -51,6 +54,7 @@ knr_lb,Constant,,0.825,Constant
 knr_lb,Constant,v0,2.32,Zero-vehicle households
 knr_lb,Constant,ilvi,2.03,Low Income
 knr_lb,Constant,ilvs,2.03,Low Income
+knr_lb,Constant,ihvs,-99,Unavailable
 knr_lb,knr_lb_skim.[In-Vehicle Time],,-0.0106,IVTT
 knr_lb,knr_lb_skim.Fare,,-0.05345,Transit fare
 knr_lb,knr_lb_skim.[Access Drive Time],,-0.0106,Access drive time
@@ -63,6 +67,7 @@ knr_eb,Constant,,0.825,Constant
 knr_eb,Constant,v0,2.32,Zero-vehicle households
 knr_eb,Constant,ilvi,2.03,Low Income
 knr_eb,Constant,ilvs,2.03,Low Income
+knr_eb,Constant,ihvs,-99,Unavailable
 knr_eb,knr_eb_skim.[In-Vehicle Time],,-0.0106,IVTT
 knr_eb,knr_eb_skim.Fare,,-0.05345,Transit fare
 knr_eb,knr_eb_skim.[Access Drive Time],,-0.0106,Access drive time
@@ -75,6 +80,7 @@ pnr_lb,Constant,,0.825,Constant
 pnr_lb,Constant,v0,-99,Auto Availability
 pnr_lb,Constant,ilvi,2.03,Low Income
 pnr_lb,Constant,ilvs,2.03,Low Income
+pnr_lb,Constant,ihvs,-99,Unavailable
 pnr_lb,pnr_lb_skim.[In-Vehicle Time],,-0.0106,IVTT
 pnr_lb,pnr_lb_skim.Fare,,-0.05345,Transit fare
 pnr_lb,pnr_lb_skim.[Access Drive Time],,-0.0106,Access drive time
@@ -87,6 +93,7 @@ pnr_eb,Constant,,0.825,Constant
 pnr_eb,Constant,v0,-99,Auto Availability
 pnr_eb,Constant,ilvi,2.03,Low Income
 pnr_eb,Constant,ilvs,2.03,Low Income
+pnr_eb,Constant,ihvs,-99,Unavailable
 pnr_eb,pnr_eb_skim.[In-Vehicle Time],,-0.0106,IVTT
 pnr_eb,pnr_eb_skim.Fare,,-0.05345,Transit fare
 pnr_eb,pnr_eb_skim.[Access Drive Time],,-0.0106,Access drive time
@@ -95,3 +102,38 @@ pnr_eb,pnr_eb_skim.[Transfer Walk Time],,-0.0302,Transfer walk time
 pnr_eb,pnr_eb_skim.[Initial Wait Time],,-0.0212,Initial wait time
 pnr_eb,pnr_eb_skim.[Transfer Wait Time],,-0.0212,Transfer wait time
 pnr_eb,pnr_eb_skim.[Dwelling Time],,-0.0106,Dwell Time
+hov2,Constant,v0,-1.296022,Additional Calibration Constant
+hov3,Constant,v0,0.33041,Additional Calibration Constant
+walk,Constant,v0,-0.514434,Additional Calibration Constant
+pnr,Constant,v0,-0.514434,Additional Calibration Constant
+knr,Constant,v0,-0.514434,Additional Calibration Constant
+auto_pay,Constant,v0,-0.22115,Additional Calibration Constant
+shuttle,Constant,v0,2.425819,Additional Calibration Constant
+sov,Constant,ilvi,0.014194,Additional Calibration Constant
+hov2,Constant,ilvi,0.640482,Additional Calibration Constant
+hov3,Constant,ilvi,0.186732,Additional Calibration Constant
+walk,Constant,ilvi,-1.308812,Additional Calibration Constant
+pnr,Constant,ilvi,-1.308812,Additional Calibration Constant
+knr,Constant,ilvi,-1.308812,Additional Calibration Constant
+auto_pay,Constant,ilvi,-1.089568,Additional Calibration Constant
+shuttle,Constant,ilvi,1.600502,Additional Calibration Constant
+sov,Constant,ilvs,0.109097,Additional Calibration Constant
+hov2,Constant,ilvs,-0.051116,Additional Calibration Constant
+hov3,Constant,ilvs,0.352927,Additional Calibration Constant
+walk,Constant,ilvs,-4.954385,Additional Calibration Constant
+pnr,Constant,ilvs,-4.954385,Additional Calibration Constant
+knr,Constant,ilvs,-4.954385,Additional Calibration Constant
+auto_pay,Constant,ilvs,-1.333749,Additional Calibration Constant
+shuttle,Constant,ilvs,0.128243,Additional Calibration Constant
+sov,Constant,ihvi,0.030077,Additional Calibration Constant
+hov2,Constant,ihvi,-0.245474,Additional Calibration Constant
+hov3,Constant,ihvi,-0.718534,Additional Calibration Constant
+walk,Constant,ihvi,-2.055353,Additional Calibration Constant
+pnr,Constant,ihvi,-2.055353,Additional Calibration Constant
+knr,Constant,ihvi,-2.055353,Additional Calibration Constant
+auto_pay,Constant,ihvi,0.238247,Additional Calibration Constant
+shuttle,Constant,ihvi,-0.685842,Additional Calibration Constant
+sov,Constant,ihvs,-0.004535,Additional Calibration Constant
+hov2,Constant,ihvs,0.291538,Additional Calibration Constant
+hov3,Constant,ihvs,-1.362243,Additional Calibration Constant
+auto_pay,Constant,ihvs,-0.351138,Additional Calibration Constant
