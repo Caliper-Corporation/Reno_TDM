@@ -1,5 +1,8 @@
 Macro "AQ Summaries" (Args)
     ret_value = 1
+    out_dir  = Args.[Output Folder]
+    output_dir = out_dir + "/_summaries/AirQuality"
+    if GetDirectoryInfo(output_dir, "All") = null then CreateDirectory(output_dir)
     periods = Args.Periods
     db = Args.Links
     abba = {"AB", "BA"}
@@ -78,8 +81,8 @@ Macro "AQ Summaries" (Args)
             c.SetOptionsViewProperty("ShowRowGrandTotalHeader", true)
             c.SetOptionsViewProperty("ShowColumnHeaders", true)
             c.SetOptionsViewProperty("ShowRowHeaders", true)
-            ret = c.Run()
             c.Export({FileName:Args.("AQ" + rtype)})
+//            ret = c.Run()
             c = null
         end
         c = CreateObject("PivotGrid")
@@ -95,8 +98,8 @@ Macro "AQ Summaries" (Args)
         c.SetOptionsViewProperty("ShowRowGrandTotalHeader", true)
         c.SetOptionsViewProperty("ShowColumnHeaders", true)
         c.SetOptionsViewProperty("ShowRowHeaders", true)
-        ret = c.Run()
         c.Export({FileName:Args.AQSpeed})
+//        ret = c.Run()
         c = null
  
     Return(ret_value)

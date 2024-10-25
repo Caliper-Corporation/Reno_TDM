@@ -143,7 +143,7 @@
 
     Section = "AQ Summaries"
     
-        Args.AQAssign = { "Type":"File", "Caption":"AQAssign", "Description":"Assignment for AQ Analysis", "Value":"%Output Folder%\\Assignment\\Roadway\\AQAssign.bin" }
-        Args.AQVMT = { "Type":"File", "Caption":"AQVMT", "Description":"VMT aggregations by UrbanCode, Functional Class, and Speed Category for AQ Analysis", "Value":"%Output Folder%\\assignment\\roadway\\AQVMT.xlsx" }
-        Args.AQVHT = { "Type":"File", "Caption":"AQVHT", "Description":"VHT aggregations by UrbanCode, Functional Class, and Speed Category for AQ Analysis", "Value":"%Output Folder%\\assignment\\roadway\\AQVHT.xlsx" }
-        Args.AQSpeed = { "Type":"File", "Caption":"AQSpeed", "Description":"VMT and SpeedVMT aggregations by UrbanCode and Functional Class for AQ Analysis", "Value":"%Output Folder%\\assignment\\roadway\\AQSpeed.xlsx" }
+        Args.AQAssign = { "Type":"File", "Caption":"AQAssign", "Description":"Assignment for AQ Analysis", "Value":"%Output Folder%\\_summaries\\AirQuality\\AQAssign.bin" }
+        Args.AQVMT = { "Type":"File", "Caption":"AQVMT", "Description":"VMT aggregations by UrbanCode, Functional Class, and Speed Category for AQ Analysis", "Value":"%Output Folder%\\_summaries\\AirQuality\\AQVMT.xlsx" }
+        Args.AQVHT = { "Type":"File", "Caption":"AQVHT", "Description":"VHT aggregations by UrbanCode, Functional Class, and Speed Category for AQ Analysis", "Value":"%Output Folder%\\_summaries\\AirQuality\\AQVHT.xlsx" }
+        Args.AQSpeed = { "Type":"File", "Caption":"AQSpeed", "Description":"VMT and SpeedVMT aggregations by UrbanCode and Functional Class for AQ Analysis", "Value":"%Output Folder%\\_summaries\\AirQuality\\AQSpeed.xlsx" }
