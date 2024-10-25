@@ -11,7 +11,7 @@ Macro "Maps" (Args)
     RunMacro("VOC Maps", Args)
     RunMacro("Speed Maps", Args)
     //RunMacro("Isochrones", Args)
-	  RunMacro("Accessibility Maps", Args)
+      RunMacro("Accessibility Maps", Args)
     
     return(1)
 endmacro
@@ -37,6 +37,7 @@ Macro "Other Reports" (Args)
     RunMacro("Congestion Cost Summary", Args)
     RunMacro("Create PA Vehicle Trip Matrices", Args)
     RunMacro("Summarize HH Strata", Args)
+    RunMacro("AQ Summaries", Args)
     //RunMacro("Aggregate Transit Flow by Route", Args)
     return(1)
 endmacro
@@ -230,8 +231,8 @@ Macro "Calculate Daily Fields" (Args)
       output.("Total_" + field + "_Daily") = nz(output.("Total_" + field + "_Daily")) + v_output
     end
 
-	description = "Daily " + field + " in both directions"
-	if field = "Delay" then description = description + " (hours)"
+    description = "Daily " + field + " in both directions"
+    if field = "Delay" then description = description + " (hours)"
     fields_to_add = fields_to_add + {{"Total_" + field + "_Daily", "Real", 10, 2,,,, description}}
   end
 
@@ -337,7 +338,7 @@ Macro "VOC Maps" (Args)
 
   // The first set of colors are the traditional green-to-red ramp. The second
   // set of colors are yellow-to-blue, which is color-blind friendly.
-  a_line_colors =	{
+  a_line_colors =   {
     {
       ColorRGB(10794, 52428, 17733),
       ColorRGB(63736, 63736, 3084),
@@ -520,7 +521,7 @@ Macro "Speed Maps" (Args)
           }}
       }
     )
-    line_colors =	{
+    line_colors =   {
       ColorRGB(6682, 38550, 16705),
       ColorRGB(42662, 55769, 27242),
       ColorRGB(65535, 65535, 49087),
@@ -588,71 +589,71 @@ EndMacro
 */
 
 Macro "Accessibility Maps" (Args)
-	
-	taz_file = Args.TAZs
-	se_file = Args.SE
-	periods = Args.periods
-	output_dir = Args.[Output Folder] + "/_summaries/accessibility"
-	if GetDirectoryInfo(output_dir, "All") = null then CreateDirectory(output_dir)
+    
+    taz_file = Args.TAZs
+    se_file = Args.SE
+    periods = Args.periods
+    output_dir = Args.[Output Folder] + "/_summaries/accessibility"
+    if GetDirectoryInfo(output_dir, "All") = null then CreateDirectory(output_dir)
 
-	map = CreateObject("Map", taz_file)
-	tazs = CreateObject("Table", map.GetActiveLayer())
-	se = CreateObject("Table", se_file)
-	join = tazs.Join({
-		Table: se,
-		LeftFields: "ID",
-		RightFields: "TAZ"
-	})
+    map = CreateObject("Map", taz_file)
+    tazs = CreateObject("Table", map.GetActiveLayer())
+    se = CreateObject("Table", se_file)
+    join = tazs.Join({
+        Table: se,
+        LeftFields: "ID",
+        RightFields: "TAZ"
+    })
 
-	a_stats = {
-		{field: "access_transit", values: {
-			{0, "true", .81, "false"},
-			{.81, "true", 2.35, "false"},
-			{2.35, "true", 3.49, "false"},
-			{3.49, "true", 4.8, "false"},
-			{4.8, "true", 1000, "false"}
-		}},
-		{field: "access_walk", values: {
-			{0, "true", .4, "false"},
-			{.4, "true", 1.1, "false"},
-			{1.1, "true", 1.76, "false"},
-			{1.76, "true", 2.61, "false"},
-			{2.61, "true", 1000, "false"}
-		}}
-	}
+    a_stats = {
+        {field: "access_transit", values: {
+            {0, "true", .81, "false"},
+            {.81, "true", 2.35, "false"},
+            {2.35, "true", 3.49, "false"},
+            {3.49, "true", 4.8, "false"},
+            {4.8, "true", 1000, "false"}
+        }},
+        {field: "access_walk", values: {
+            {0, "true", .4, "false"},
+            {.4, "true", 1.1, "false"},
+            {1.1, "true", 1.76, "false"},
+            {1.76, "true", 2.61, "false"},
+            {2.61, "true", 1000, "false"}
+        }}
+    }
 
-	for stat in a_stats do
-		field = stat.field
-		values = stat.values
+    for stat in a_stats do
+        field = stat.field
+        values = stat.values
 
-		map.ColorTheme({
-			ThemeName: field,
-			FieldName: field,
-			Method: "manual",
-			NumClasses: ArrayLength(values),
-			Options: {
-				Values: values,
-				Other: "false"
-			},
-			Colors: {
-				StartColor: ColorRGB(65535, 65535, 54248),
-				EndColor: ColorRGB(8738, 24158, 43176)
-			},
-			Labels: {
-				"Bad",
-				"Poor",
-				"Fair",
-				"Good",
-				"Excellent"
-			}
-		})
-		map.CreateLegend({
-			DisplayLayers: "false"
-		})
+        map.ColorTheme({
+            ThemeName: field,
+            FieldName: field,
+            Method: "manual",
+            NumClasses: ArrayLength(values),
+            Options: {
+                Values: values,
+                Other: "false"
+            },
+            Colors: {
+                StartColor: ColorRGB(65535, 65535, 54248),
+                EndColor: ColorRGB(8738, 24158, 43176)
+            },
+            Labels: {
+                "Bad",
+                "Poor",
+                "Fair",
+                "Good",
+                "Excellent"
+            }
+        })
+        map.CreateLegend({
+            DisplayLayers: "false"
+        })
 
-		out_file = output_dir + "/" + field + ".map"
-		map.Save(out_file)
-	end
+        out_file = output_dir + "/" + field + ".map"
+        map.Save(out_file)
+    end
 endmacro
 
 /*
@@ -737,14 +738,14 @@ This macro is also used by the scenario comparison tool to re-summarize for
 a subarea if one is provided. In that case, Args will have extra options as
 shown below:
 
-	* RowIndex and ColIndex
-		* Strings
-		* If provided, the macro will summarize only a subset of the full matrix. Used
-		  by the scenario comparison tool and the disadvantage community (dc) summaries.
-	* OutDir
-		* String
-		* Where to write out the files.
-		* Default: Args.[Scenario Folder] + "/output/_summaries/resident_hb"
+    * RowIndex and ColIndex
+        * Strings
+        * If provided, the macro will summarize only a subset of the full matrix. Used
+          by the scenario comparison tool and the disadvantage community (dc) summaries.
+    * OutDir
+        * String
+        * Where to write out the files.
+        * Default: Args.[Scenario Folder] + "/output/_summaries/resident_hb"
 */
 
 Macro "Summarize HB DC and MC" (Args)
@@ -761,10 +762,10 @@ Macro "Summarize HB DC and MC" (Args)
   row_index = Args.RowIndex
   col_index = Args.ColIndex
   if row_index <> null or col_index <> null then do
-  	index = "true"
-	ri = if row_index = null then "All" else row_index
-	ci = if col_index = null then "All" else col_index
-	index_suffix = ri + "_by_" + ci
+    index = "true"
+    ri = if row_index = null then "All" else row_index
+    ci = if col_index = null then "All" else col_index
+    index_suffix = ri + "_by_" + ci
   end
 
   mtx_files = RunMacro("Catalog Files", {dir: trip_dir, ext: "mtx"})
@@ -1267,16 +1268,16 @@ Macro "Congested VMT" (Args)
   {map, {nlyr, llyr}} = RunMacro("Create Map", {file: hwy_dbd})
   for period in Args.periods do
     fields_to_add = fields_to_add + {
-		{
-			"ABCongLength_" + period, "Real", 10, 2,,,, "The length of link if the " + period +
-		  	" period is congested (v/c > " + String(vc_cutoff) + ")|Used by summary macros to skim congested VMT."
-		},
-		{
-			"BACongLength_" + period, "Real", 10, 2,,,, "The length of link if the " + period +
-		  	" period is congested (v/c > " + String(vc_cutoff) + ")|Used by summary macros to skim congested VMT."
-		},
-		{"CongestedVMT_" + period, "Real", 10, ,,,, "The VMT in the " + period + " period that is congested"}
-	}
+        {
+            "ABCongLength_" + period, "Real", 10, 2,,,, "The length of link if the " + period +
+            " period is congested (v/c > " + String(vc_cutoff) + ")|Used by summary macros to skim congested VMT."
+        },
+        {
+            "BACongLength_" + period, "Real", 10, 2,,,, "The length of link if the " + period +
+            " period is congested (v/c > " + String(vc_cutoff) + ")|Used by summary macros to skim congested VMT."
+        },
+        {"CongestedVMT_" + period, "Real", 10, ,,,, "The VMT in the " + period + " period that is congested"}
+    }
     
     v_length = GetDataVector(llyr + "|", "Length", )
     v_ab_vc = GetDataVector(llyr + "|", "AB_VOCE_" + period, )
@@ -1286,7 +1287,7 @@ Macro "Congested VMT" (Args)
     v_ab_cong_vmt = if v_ab_vc > vc_cutoff then v_ab_vmt else 0
     v_ba_cong_vmt = if v_ba_vc > vc_cutoff then v_ba_vmt else 0
     output.("ABCongLength_" + period) = if v_ab_vc > vc_cutoff then v_length else 0
-	output.("BACongLength_" + period) = if v_ba_vc > vc_cutoff then v_length else 0
+    output.("BACongLength_" + period) = if v_ba_vc > vc_cutoff then v_length else 0
     output.("CongestedVMT_" + period) = v_ab_cong_vmt + v_ba_cong_vmt
   end
   RunMacro("Add Fields", {view: llyr, a_fields: fields_to_add})
@@ -1597,97 +1598,97 @@ EndMacro
 
 
 Macro "Congestion Cost Summary" (Args)
-	//Set input file path
-	scen_outdir = Args.[Output Folder]
-	report_dir = scen_outdir + "\\_summaries" //need to create this dir in argument file 
-	output_dir = report_dir + "\\CongestionCost"
-	RunMacro("Create Directory", output_dir)
+    //Set input file path
+    scen_outdir = Args.[Output Folder]
+    report_dir = scen_outdir + "\\_summaries" //need to create this dir in argument file 
+    output_dir = report_dir + "\\CongestionCost"
+    RunMacro("Create Directory", output_dir)
 
-	hwy_dbd = Args.Links
-	vot_params = Args.[Input Folder] + "/assignment/vot_params.csv"
-	p = RunMacro("Read Parameter File", {file: vot_params})
-	periods = Args.Periods
-	a_dirs = {"AB", "BA"}
-	veh_classes = {"sov", "hov2", "hov3", "CV", "SUT", "MUT"}
-	auto_classes = {"sov", "hov2", "hov3", "CV"}
-	//group_fields = {"HCMType", "AreaType", "NCDOTClass", "County", "MPO"}
+    hwy_dbd = Args.Links
+    vot_params = Args.[Input Folder] + "/assignment/vot_params.csv"
+    p = RunMacro("Read Parameter File", {file: vot_params})
+    periods = Args.Periods
+    a_dirs = {"AB", "BA"}
+    veh_classes = {"sov", "hov2", "hov3", "CV", "SUT", "MUT"}
+    auto_classes = {"sov", "hov2", "hov3", "CV"}
+    //group_fields = {"HCMType", "AreaType", "NCDOTClass", "County", "MPO"}
   group_fields = {"HCMType", "AreaType", "County"}
 
 
-	{nLayer, llyr} = GetDBLayers(hwy_dbd)
-	llyr = AddLayerToWorkspace(llyr, hwy_dbd, llyr)
+    {nLayer, llyr} = GetDBLayers(hwy_dbd)
+    llyr = AddLayerToWorkspace(llyr, hwy_dbd, llyr)
 
-	hwy_df = CreateObject("df")
-	opts = null
-	opts.view = llyr
-	opts.fields = field_names
-	hwy_df.read_view(opts)
+    hwy_df = CreateObject("df")
+    opts = null
+    opts.view = llyr
+    opts.fields = field_names
+    hwy_df.read_view(opts)
 
-	// Calculate CgCost
-	for veh_class in veh_classes do
-		outfield_daily = "CgCost_" + veh_class + "_Daily"
-		v_output_daily = null
+    // Calculate CgCost
+    for veh_class in veh_classes do
+        outfield_daily = "CgCost_" + veh_class + "_Daily"
+        v_output_daily = null
 
-		for period in periods do
-		outfield = "CgCost_" + veh_class + "_" + period
-		v_output = null
+        for period in periods do
+        outfield = "CgCost_" + veh_class + "_" + period
+        v_output = null
 
-		// Determine VOT based on veh type
-		if period = "AM" or period = "PM"
-			then pkop = "pk"
-			else pkop = "op"
-		if auto_classes.position(veh_class) > 0 then vot = p.(pkop + "_auto")
-		else vot = p.(veh_class)
+        // Determine VOT based on veh type
+        if period = "AM" or period = "PM"
+            then pkop = "pk"
+            else pkop = "op"
+        if auto_classes.position(veh_class) > 0 then vot = p.(pkop + "_auto")
+        else vot = p.(veh_class)
 
-		for dir in a_dirs do
-			// Get data vectors
-			v_fft = nz(hwy_df.get_col("FFTime"))
-			v_ct = nz(hwy_df.get_col(dir + "_Time_" + period))
-			v_vol = nz(hwy_df.get_col(dir + "_Flow_" + veh_class + "_" + period))
+        for dir in a_dirs do
+            // Get data vectors
+            v_fft = nz(hwy_df.get_col("FFTime"))
+            v_ct = nz(hwy_df.get_col(dir + "_Time_" + period))
+            v_vol = nz(hwy_df.get_col(dir + "_Flow_" + veh_class + "_" + period))
 
-			// Calculate delay
-			v_delay = (v_ct - v_fft) * v_vol / 60
-			v_delay = max(v_delay, 0)
-			v_cost = v_delay * vot
+            // Calculate delay
+            v_delay = (v_ct - v_fft) * v_vol / 60
+            v_delay = max(v_delay, 0)
+            v_cost = v_delay * vot
 
-			v_output = nz(v_output) + v_cost
-		end  
+            v_output = nz(v_output) + v_cost
+        end  
 
-		v_output_daily = v_output + nz(v_output_daily)
-		hwy_df.mutate(outfield, v_output)
-		end
-		hwy_df.mutate(outfield_daily, v_output_daily)
-	end
+        v_output_daily = v_output + nz(v_output_daily)
+        hwy_df.mutate(outfield, v_output)
+        end
+        hwy_df.mutate(outfield_daily, v_output_daily)
+    end
 
-	// Build summary fields
-	periods = periods + {"Daily"}
-	for veh_class in veh_classes do  
-		for period in periods do
-			out_field = "CgCost_" + veh_class + "_" + period
-			fields_to_sum = fields_to_sum + {out_field}
-		end
-	end
+    // Build summary fields
+    periods = periods + {"Daily"}
+    for veh_class in veh_classes do  
+        for period in periods do
+            out_field = "CgCost_" + veh_class + "_" + period
+            fields_to_sum = fields_to_sum + {out_field}
+        end
+    end
 
-	field_out = {"ID"} + group_fields + fields_to_sum
-	hwy_df.filter("HCMType <> 'TransitOnly' and HCMType <> null and HCMType <> 'CC'")
-	hwy_df.select(field_out)
-	hwy_df.write_csv(output_dir + "/LinkCongestionCost.csv")
+    field_out = {"ID"} + group_fields + fields_to_sum
+    hwy_df.filter("HCMType <> 'TransitOnly' and HCMType <> null and HCMType <> 'CC'")
+    hwy_df.select(field_out)
+    hwy_df.write_csv(output_dir + "/LinkCongestionCost.csv")
 
-	// Summarize by different variable  
-	for var in group_fields do
-		cg_df = CreateObject("df", output_dir + "/LinkCongestionCost.csv")
-		cg_df.group_by(var)
-		cg_df.summarize(fields_to_sum, {"sum", "count"})
-		names = cg_df.colnames()
-		for name in names do
-			if Left(name, 4) = "sum_" then do
-				new_name = Substitute(name, "sum_", "", 1)
-				cg_df.rename(name, new_name)
-			end
-		end
-		cg_df.write_csv(output_dir + "/CongestionCost_summary_by_" + var +".csv")
-	end
-	CloseView(llyr)
+    // Summarize by different variable  
+    for var in group_fields do
+        cg_df = CreateObject("df", output_dir + "/LinkCongestionCost.csv")
+        cg_df.group_by(var)
+        cg_df.summarize(fields_to_sum, {"sum", "count"})
+        names = cg_df.colnames()
+        for name in names do
+            if Left(name, 4) = "sum_" then do
+                new_name = Substitute(name, "sum_", "", 1)
+                cg_df.rename(name, new_name)
+            end
+        end
+        cg_df.write_csv(output_dir + "/CongestionCost_summary_by_" + var +".csv")
+    end
+    CloseView(llyr)
 EndMacro
 
 /*
