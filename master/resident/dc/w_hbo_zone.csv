@@ -8,3 +8,5 @@ sov_skim.CongTime,,-0.201,
 se.access_transit.D,v0,0.364,
 se.access_walk.D * intra_cluster.IZ,v0,0.259,
 sov_skim.CongTime > 50,,-99,Cutoff
+sov_skim.CongTime,,0.015,Calibration term
+intra_cluster.IZ,,0.2,Calibration term

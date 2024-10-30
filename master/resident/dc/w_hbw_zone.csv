@@ -5,9 +5,10 @@ se.w_hbw_size_L.D,ilvi,0.5,Size term for low income workers
 se.w_hbw_size_L.D,ilvs,0.5,Size term for low income workers
 se.w_hbw_size_L.D,v0,0.5,Size term for low income workers
 nz(mc_logsums.TransitComposite),,0,
-intra_cluster.IZ,,0.680,
+intra_cluster.IZ,,0.68,
 sov_skim.CongTime,,-0.156,
 se.access_transit.D,,0.022,
 se.access_walk.D * intra_cluster.IZ,,0.132,
 sp.hbw.D,,1,Shadow price
 sov_skim.CongTime > 60,,-99,Cutoff
+sov_skim.CongTime,,0.03,Calibration term
