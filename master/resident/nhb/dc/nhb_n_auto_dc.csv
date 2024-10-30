@@ -4,4 +4,5 @@ skim.CongTime,,-0.187,
 "Max(skim.CongTime - 30, 0)",,0.128,Time excess of 30 min
 IntraCluster.IC,,0.698,Intra Cluster Dummy
 IntraCluster.IZ,,0.988,Intra Zonal Dummy
-IntraCluster.IZ,,0,Additional IZ Adjustment
+IntraCluster.IZ,,1.1,Additional IZ Adjustment
+skim.CongTime,,0.02,Calibration term
