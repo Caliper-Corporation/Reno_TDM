@@ -1,5 +1,5 @@
 HCMType,AreaType,ModifyPosted,Alpha,Beta,Notes
-Arterial,Downtown,-5,1.15,5,
+Arterial,Downtown,-6,1.15,5,
 Arterial,Rural,-1,1.15,5,
 Arterial,Suburban,0,1.15,5,
 Arterial,Urban,-3,1.15,5,
@@ -7,7 +7,7 @@ CC,Downtown,0,0.15,4,"CC speed set separately. See the ""CCSpeeds"" parameter in
 CC,Rural,0,0.15,4,"CC speed set separately. See the ""CCSpeeds"" parameter in the flow chart."
 CC,Suburban,0,0.15,4,"CC speed set separately. See the ""CCSpeeds"" parameter in the flow chart."
 CC,Urban,0,0.15,4,"CC speed set separately. See the ""CCSpeeds"" parameter in the flow chart."
-Collector,Downtown,-3,1.6,4,
+Collector,Downtown,-5,1.6,4,
 Collector,Rural,0,1.75,3,
 Collector,Suburban,0,1.6,4,
 Collector,Urban,0,1.6,4,
@@ -19,9 +19,9 @@ Local,Downtown,-2,2,3,
 Local,Rural,0,4,3,The large speed adjustment is compensating for posted speeds in the model we believe are significantly higher than traffic travels.
 Local,Suburban,2,1.9,4,
 Local,Urban,1,1.9,4,
-MajorArterial,Downtown,-4,1,5.25,
+MajorArterial,Downtown,-5,1,5.25,
 MajorArterial,Rural,5,1,5.25,
-MajorArterial,Suburban,0,1,5.25,
+MajorArterial,Suburban,-2,1,5.25,
 MajorArterial,Urban,-3,1,5.25,
 MajorCollector,Downtown,-4,1.25,4,
 MajorCollector,Rural,0,1.25,4,
