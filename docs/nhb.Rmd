@@ -944,7 +944,8 @@ work (e.g. picking up groceries).
 # This file is produced by the model. Importantly, it must be generated
 # by a model run with calibration factors set to 1.
 results <- read_csv("data/input/nhb/nhb_generation.csv") %>%
-  select(-c(TAZ:access_walk))
+  select(-c(TAZ:access_walk)) %>%
+  mutate_all(as.numeric)
 ```
 
 
@@ -952,13 +953,13 @@ results <- read_csv("data/input/nhb/nhb_generation.csv") %>%
 model <- results %>%
   pivot_longer(names_to = "type", cols = everything()) %>%
   mutate(type = gsub("auto_pay", "autopay", type)) %>%
-  separate(type, into = c("tour_type", "hb", "activity", "length", "mode", "tod"), remove = FALSE) %>%
+  separate(type, into = c("tour_type", "purpose", "mode", "tod"), remove = FALSE) %>%
   group_by(tour_type, mode, tod) %>%
-  summarize(est_trips = sum(value))
+  summarize(est_trips = sum(value, na.rm = TRUE))
 
 comparison <- trips %>%
   mutate(
-    # mode_nhb = mode
+    party_size = HH_Members + Non_HH_Members,
     mode_nhb = case_when(
       homebased == "HB" ~ mode,
       mode == "auto_pay" ~ "autopay",
@@ -974,10 +975,11 @@ comparison <- trips %>%
     !(mode_nhb %in% c("school_bus", "XXX", "other"))
   ) %>%
   mutate(
-    mode_nhb = ifelse(mode_nhb %in% c("lb", "eb"), "t", mode_nhb)
+    mode_nhb = ifelse(mode_nhb %in% c("bus", "lb", "eb"), "t", mode_nhb),
+    tour_type = ifelse(tour_type == "work", "W", "N")
   ) %>%
   group_by(tour_type, tod, mode_nhb) %>%
-  summarize(obs_trips = sum(trip_weight_combined)) %>%
+  summarize(obs_trips = sum(Weight_Factor)) %>%
   rename(mode = mode_nhb) %>%
   left_join(
     model, 
@@ -988,7 +990,18 @@ comparison <- trips %>%
     pct_diff = (diff / obs_trips) * 100,
     factor = round(obs_trips / est_trips, 4)
   ) %>%
-  ungroup()
+  ungroup() %>%
+  filter(!(mode %in% c("scooter", "cv", "flexride", "shuttle")))
+
+# there was no auto pay in the AM in the survey, so just manually add that row
+# with a factor of 1
+row_to_add <- tibble(
+  tour_type = "N",
+  tod = "AM",
+  mode = "autopay",
+  factor = 1
+)
+comparison <- bind_rows(comparison, row_to_add)
 
 comparison %>%
   select(-diff, -pct_diff) %>%
