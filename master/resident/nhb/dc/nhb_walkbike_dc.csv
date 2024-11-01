@@ -1,0 +1,7 @@
+Expression,Segment,Coefficient,Description
+se.nhb_walkbike_size.D,,0.403,Size term
+skim.[Length (skim)],,-0.381,
+skim.[Length (skim)] > 1,,-1.46,Destination more than a mile away
+IntraCluster.IC,,1.71,Intra Cluster Dummy
+IntraCluster.IZ,,2.07,Intra Zonal Dummy
+se.access_walk.D,v0,0.416,Access Walk

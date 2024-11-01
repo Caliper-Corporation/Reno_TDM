@@ -1,0 +1,1052 @@
+---
+title: "Non-Homebased Trips"
+author: "Caliper Corporation"
+date: "September 30, 2024"
+output: 
+  html_document:
+    toc_depth: 4
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+options(dplyr.summarise.inform = FALSE)
+options(scipen = 999)
+
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(sf)
+source("R/estimate_nhb.R")
+source("R/utils.R")
+```
+
+## Introduction
+
+There are many problems related to non-home-based trips in traditional
+trip-based models arising from the fact that they are disconnected from the
+home-based trips with which they comprise complete tours. In order to properly
+represent non-home-based trips, two spatial distribution or destination/spatial
+choice models are required to account for both the trip’s origin location and
+destination location. The four-step model architecture is fundamentally flawed
+because it produces non-home-based trips from only one trip distribution or
+spatial choice model. 
+
+To address these problems, the model adopts an alternative approach with a simple
+change to the structure of the trip-based model, running the non-home-based
+model components after and conditional on the home-based model components
+instead of in parallel and independently of them as in the traditional four-step
+model. This relatively simple structural change significantly improves the model’s
+ability to represent non-home-based trips and their response to land use changes
+and transportation infrastructure investments. Running a NHB distribution or
+destination choice model after and conditional on home-based destination choices
+in this approach, provides the required second spatial distribution model to
+properly model both the origin and destination of NHB trips.
+
+In this approach, NHB trips are generated separately by mode based on home-based
+mode choices. This essentially provides information about whether a traveler has
+a car with them and allows the model, despite its trip-based form, to ensure a
+reasonable consistency of modes on tour.
+
+Available modes include:
+
+- SOV
+- HOV2
+- HOV3+
+- Auto Pay
+- Transit
+- Bike
+- Walk
+
+The model coefficients below are the result of multiple linear regression with a
+forced intercept at zero. In addition, the model estimation will
+be scaled up to a predicted regional total. As a result of these two factors,
+the displayed r-squared values are not as meaningful. Instead, the value of the
+coefficients is in determining the relative effect that various home-based trip
+types have on non-home-based trip generation.
+
+When reviewing the coefficients below, note their logical consistency: SOV NHB
+trips are most likely to result when the HB trip is SOV or HOV. NHB walk trips
+can be made when a person drives from home, but is more much more likely if they
+walk. These results greatly improve the NHB models compared to traditional
+trip-based construction.
+
+```{r, include=FALSE}
+trips_orig <- read_csv(
+  "data/_private/hh_survey/output/output_trips.csv")
+```
+
+
+```{r, include = FALSE}
+trips <- trips_orig %>%
+  filter(!is.na(p_taz) & !is.na(a_taz) & purpose != "N_HBH") %>%
+  mutate(
+    mode = ifelse(mode %in% c("walk", "bike"), "walkbike", mode),
+    mode = ifelse(mode == "tnc", "auto_pay", mode),
+    purpose = paste0(purpose, "_", mode),
+    trip_type = purpose,
+    homebased = ifelse(grepl("_HB", trip_type), "HB", "NH")
+  )
+
+# hold all model tables and plots in a list
+coeffs_list <- list()
+p_tbl_list <- list()
+```
+
+```{r}
+make_table <- function(tbl) {
+  tbl %>%
+    arrange(estimated_as) %>%
+    kable(digits = 4) %>%
+    kable_styling(full_width = FALSE)
+}
+
+# unique(trips$mode_nhb)
+```
+
+## Work tours
+
+Each trip type below is a non-home-based trip on a work tour. Each tab shows a
+mode-specific model that estimates which home-based trips and modes generate that
+non-home-based trip and mode combination.
+
+### W_NHBO {.tabset .W_NHBO}
+
+These are non-home-based trips made on a work tour not related to work. In
+other words, neither end of the trip is work or home.
+
+#### SOV
+
+```{r, W_NHBO_sov}
+type <- "W_NHBO_sov"
+
+# Collapse trip types
+equiv <- list(
+  "W_HBW_hov2" = "W_HBW_hov",
+  "W_HBW_hov3" = "W_HBW_hov",
+  "W_HBW_sov" = "W_HBW_sov",
+  "W_HBO_hov2" = "W_HBO_hov",
+  "W_HBO_hov3" = "W_HBO_hov"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "W_HBO_sov",
+  "W_HBW_sov"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# View(model1$tbl)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(trips, type, equiv = equiv, 
+                       dependent_vars = dependent_vars)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### HOV2
+
+```{r, W_NHBO_hov2}
+type <- "W_NHBO_hov2"
+
+# Collapse trip types
+equiv <- list(
+  "W_HBO_hov2" = "W_HBO_auto",
+  "W_HBO_hov3" = "W_HBO_auto",
+  "W_HBO_sov" = "W_HBO_auto"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "W_HBO_auto"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(trips, type, equiv = equiv, 
+                       dependent_vars = dependent_vars)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### HOV3+
+
+```{r, W_NHBO_hov}
+type <- "W_NHBO_hov3"
+
+# Collapse trip types
+equiv <- list(
+  "W_HBO_hov2" = "W_HBO_auto",
+  "W_HBO_hov3" = "W_HBO_auto",
+  "W_HBO_sov" = "W_HBO_auto"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "W_HBO_auto"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(trips, type, equiv = equiv, 
+                       dependent_vars = dependent_vars)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### Auto Pay
+
+No significant presence of this trip type in the survey, and it is
+not an important source of travel demand. No model was estimated.
+
+```{r, W_NHBO_auto_pay}
+type <- "W_NHBO_auto_pay"
+n_records <- trips %>%
+  filter(purpose == type) %>%
+  nrow()
+```
+
+#### Transit
+
+```{r, W_NHBO_bus}
+type <- "W_NHBO_bus"
+
+# Collapse trip types
+equiv <- list(
+  "W_HBO_hov2" = "W_HBO_auto",
+  "W_HBO_hov3" = "W_HBO_auto",
+  "W_HBO_sov" = "W_HBO_auto"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "W_HBO_walkbike",
+  "W_HBO_bus"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(trips, type, equiv = equiv, 
+                       dependent_vars = dependent_vars)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### Non-motorized
+
+```{r, W_NH_EK12_All_walkbike}
+type <- "W_NHBO_walkbike"
+
+# Collapse trip types
+equiv <- NULL
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "W_HBO_walkbike"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(trips, type, equiv = equiv, 
+                       dependent_vars = dependent_vars)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+
+### W_NHBW {.tabset .W_NHBW}
+
+These are non-home-based trips made on a work tour where one trip end is related
+to work, but not the primary work location. A trip made to attend a business
+meeting is a good example.
+
+#### SOV
+
+```{r, W_NHBW_sov}
+type <- "W_NHBW_sov"
+
+# Collapse trip types
+equiv <- list(
+  "W_HBW_hov2" = "W_HBW_auto",
+  "W_HBW_hov3" = "W_HBW_auto",
+  "W_HBW_sov" = "W_HBW_auto"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "W_HBO_sov",
+  "W_HBO_hov2",
+  "W_HBO_hov3",
+  "W_HBW_auto"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# View(model1$tbl)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(trips, type, equiv = equiv, 
+                       dependent_vars = dependent_vars)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### HOV2
+
+```{r, W_NHBW_hov2}
+type <- "W_NHBW_hov2"
+
+# Collapse trip types
+equiv <- list(
+  "W_HBO_hov2" = "W_HBO_hov",
+  "W_HBO_hov3" = "W_HBO_hov"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  'W_HBO_hov',
+  'W_HBO_sov'
+)
+
+# model1 <- estimate_nhb(trips, type)
+# View(model1$tbl)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(trips, type, equiv = equiv, 
+                       dependent_vars = dependent_vars)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### HOV3+
+
+```{r, W_NHBW_hov3}
+type <- "W_NHBW_hov3"
+
+# Collapse trip types
+equiv <- list(
+  "W_HBO_hov2" = "W_HBO_hov",
+  "W_HBO_hov3" = "W_HBO_hov",
+  "W_HBW_hov2" = "W_HBW_hov"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  'W_HBO_hov',
+  "W_HBW_hov3"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# View(model1$tbl)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(trips, type, equiv = equiv, 
+                       dependent_vars = dependent_vars)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### Auto Pay
+
+```{r, W_NHBW_auto_pay}
+type <- "W_NHBW_auto_pay"
+
+# Collapse trip types
+equiv <- NULL
+
+# Restrict dependent variables
+dependent_vars <- c(
+  'W_HBO_auto_pay'
+)
+
+# model1 <- estimate_nhb(trips, type)
+# View(model1$tbl)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(trips, type, equiv = equiv, 
+                       dependent_vars = dependent_vars)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### Transit
+
+```{r, W_NHBW_lb}
+type <- "W_NHBW_bus"
+
+# Collapse trip types
+equiv <- list(
+  "W_HBO_hov2" = "W_HBO_auto",
+  "W_HBO_hov3" = "W_HBO_auto",
+  "W_HBO_sov" = "W_HBO_auto"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "W_HBO_bus"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(trips, type, equiv = equiv, 
+                       dependent_vars = dependent_vars)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### Non-motorized
+
+```{r, W_NHBW_walkbike}
+type <- "W_NHBW_walkbike"
+
+# Collapse trip types
+equiv <- list(
+  "W_HBO_hov2" = "W_HBO_hov",
+  "W_HBO_hov3" = "W_HBO_hov"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "W_HBW_walkbike"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# View(model1$tbl)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(trips, type, equiv = equiv, 
+                       dependent_vars = dependent_vars)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+## Non-work tours
+
+Each trip type below is a non-home-based trip made on a non-work tour. Each tab
+shows a mode-specific model that estimates which home-based trips and modes
+generate that non-home-based trip and mode combination.
+
+For many of these trip types, the models have two additional parameters alpha
+and beta. These coefficients control the impact of zonal accessibility on the
+models and are discussed in detail in the next section.
+
+### N_NHBSHP {.tabset .N_NHBSHP}
+
+These are non-home-based trips made on a non-work tour with one trip end for
+shopping.
+
+#### SOV
+
+```{r, N_NHBSHP_sov}
+type <- "N_NHBSHP_sov"
+
+# Collapse trip types
+equiv <- list(
+  "N_HBO_sov" = "N_HBO_sov",
+  "N_HBO_hov2" = "N_HBO_hov",
+  "N_HBO_hov3" = "N_HBO_hov",
+  "N_HBSHP_hov2" = "N_HBSHP_auto",
+  "N_HBSHP_hov3" = "N_HBSHP_auto",
+  "N_HBSHP_sov" = "N_HBSHP_auto",
+  "N_HBSR_hov2" = "N_HBSR_auto",
+  "N_HBSR_hov3" = "N_HBSR_auto",
+  "N_HBSR_sov" = "N_HBSR_auto"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "N_HBO_sov",
+  "N_HBSHP_auto",
+  "N_HBSR_auto"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(
+  trips, type, equiv = equiv, dependent_vars = dependent_vars,
+  boost = TRUE
+)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+
+
+#### HOV2
+
+```{r, N_NHBSHP_hov2}
+type <- "N_NHBSHP_hov2"
+
+# Collapse trip types
+equiv <- list(
+  "N_HBO_hov2" = "N_HBO_hov",
+  "N_HBO_hov3" = "N_HBO_hov",
+  "N_HBSHP_hov3" = "N_HBSHP_hov",
+  "N_HBSHP_hov3" = "N_HBSHP_hov",
+  "N_HBSR_hov3" = "N_HBSR_hov",
+  "N_HBSR_hov3" = "N_HBSR_hov"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "N_HBO_hov"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(
+  trips, type, equiv = equiv, dependent_vars = dependent_vars,
+  boost = TRUE
+)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### HOV3+
+
+```{r, N_NHBSHP_hov3}
+type <- "N_NHBSHP_hov3"
+
+# Collapse trip types
+equiv <- list(
+  "N_HBSHP_hov3" = "N_HBSHP_hov",
+  "N_HBSHP_hov3" = "N_HBSHP_hov"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "N_HBSHP_hov",
+  "N_HBO_hov2"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(
+  trips, type, equiv = equiv, dependent_vars = dependent_vars,
+  boost = TRUE
+)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### Auto Pay
+
+```{r, N_NHBSHP_auto_pay}
+type <- "N_NHBSHP_auto_pay"
+
+# Collapse trip types
+equiv <- NULL
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "N_HBSHP_auto_pay"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(
+  trips, type, equiv = equiv, dependent_vars = dependent_vars,
+  boost = TRUE
+)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### Transit
+
+```{r, N_NHBSHP_lb}
+type <- "N_NHBSHP_bus"
+
+
+# Collapse trip types
+equiv <- NULL
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "N_HBSHP_bus"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(
+  trips, type, equiv = equiv, dependent_vars = dependent_vars,
+  boost = FALSE
+)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### Non-motorized
+
+```{r, N_NHBSHP_walkbike}
+type <- "N_NHBSHP_walkbike"
+
+# Collapse trip types
+equiv <- NULL
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "N_HBSHP_walkbike"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(
+  trips, type, equiv = equiv, dependent_vars = dependent_vars,
+  boost = FALSE
+)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+
+### N_NHBO {.tabset .N_NHBO}
+
+These non-home-based trips are those where neither end is shopping. In effect,
+these are all other non-home-based trips made on non-work tours. Visiting
+friends or family at their home is an example of this trip type.
+
+#### SOV
+
+```{r, N_NHBO_sov}
+type <- "N_NHBO_sov"
+
+# Collapse trip types
+equiv <- c(
+  "N_HBO_hov2" = "N_HBO_auto",
+  "N_HBO_hov3" = "N_HBO_auto",
+  "N_HBO_sov" = "N_HBO_auto",
+  "N_HBSR_hov2" = "N_HBSR_auto",
+  "N_HBSR_hov3" = "N_HBSR_auto",
+  "N_HBSR_sov" = "N_HBSR_auto",
+  "N_HBSHP_hov2" = "N_HBSHP_auto",
+  "N_HBSHP_hov3" = "N_HBSHP_auto",
+  "N_HBSHP_sov" = "N_HBSHP_auto"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "N_HBO_auto",
+  "N_HBSR_auto"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(
+  trips, type, equiv = equiv, dependent_vars = dependent_vars,
+  boost = TRUE
+)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### HOV2
+
+```{r, N_NHBO_hov2}
+type <- "N_NHBO_hov2"
+
+# Collapse trip types
+equiv <- c(
+  "N_HBO_hov2" = "N_HBO_auto",
+  "N_HBO_hov3" = "N_HBO_auto",
+  "N_HBO_sov" = "N_HBO_auto",
+  "N_HBSR_hov2" = "N_HBSR_hov",
+  "N_HBSR_hov3" = "N_HBSR_hov",
+  "N_HBO_hov2" = "N_HBO_hov",
+  "N_HBO_hov3" = "N_HBO_hov",
+  "N_HBSHP_hov2" = "N_HBSHP_hov",
+  "N_HBSHP_hov3" = "N_HBSHP_hov"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "N_HBO_auto",
+  "N_HBSR_hov",
+  "N_HBSHP_sov"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(
+  trips, type, equiv = equiv, dependent_vars = dependent_vars,
+  boost = TRUE
+)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### HOV3+
+
+```{r, N_NHBO_hov3}
+type <- "N_NHBO_hov3"
+
+# Collapse trip types
+equiv <- c(
+  "N_HBO_hov2" = "N_HBO_auto",
+  "N_HBO_hov3" = "N_HBO_auto",
+  "N_HBO_sov" = "N_HBO_auto",
+  "N_HBSHP_sov" = "N_HBSHP_auto",
+  "N_HBSHP_hov2" = "N_HBSHP_auto",
+  "N_HBSHP_hov3" = "N_HBSHP_auto"
+)
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "N_HBO_auto",
+  "N_HBSHP_auto"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(
+  trips, type, equiv = equiv, dependent_vars = dependent_vars,
+  boost = TRUE
+)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+
+#### Auto Pay
+
+```{r, N_NHBO_auto_pay}
+type <- "N_NHBO_auto_pay"
+
+# Collapse trip types
+equiv <- NULL
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "N_HBO_auto_pay",
+  "N_HBSHP_auto_pay",
+  "N_HBSR_auto_pay"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(
+  trips, type, equiv = equiv, dependent_vars = dependent_vars,
+  boost = FALSE
+)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+#### Transit
+
+```{r, N_NHBO_lb}
+type <- "N_NHBO_bus"
+
+# Collapse trip types
+equiv <- NULL
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "N_HBO_bus",
+  "N_HBSR_bus",
+  "N_HBO_walkbike"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(
+  trips, type, equiv = equiv, dependent_vars = dependent_vars,
+  boost = FALSE
+)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[gsub("_bus", "_t", type)] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+
+
+#### Non-motorized
+
+```{r, N_NHBO_walkbike}
+type <- "N_NHBO_walkbike"
+
+# Collapse trip types
+equiv <- NULL
+
+# Restrict dependent variables
+dependent_vars <- c(
+  "N_HBO_walkbike"
+)
+
+# model1 <- estimate_nhb(trips, type)
+# model2 <- estimate_nhb(trips, type, equiv = equiv)
+model3 <- estimate_nhb(
+  trips, type, equiv = equiv, dependent_vars = dependent_vars,
+  boost = FALSE
+)
+
+zonal_result <- apply_nhb_zonal(trips, type, model3$tbl)
+coeff_tbl <- model3$tbl %>%
+  add_row(term = "r_sq", estimate = zonal_result$r_sq)
+coeffs_list[type] <- list(coeff_tbl)
+make_table(coeff_tbl)
+p_tbl_list[type] <- list(model3$p_tbl)
+```
+
+## Boosting charts
+
+"Boosting" is an approach borrowed from machine learning where the errors of a
+previous model are used to estimate a second model. The models shown above
+illustrate the link between home- and non-home-based trips by mode, but
+intuition and experience tells us that accessibility should also influence NHB
+trip making. Travel to a central business district is more likely to lead to
+further trips compared to traveling to a rural zone.
+
+The chart below shows how accessibility impacts each trip type and mode
+combination. The y-axis is a simple factor. When the factor is 1, the trip rates
+will be the same as displayed in the tables above. A y-value of 0.5 means the
+trip rates will be reduced by 50 percent. Conversely, a y-value of 1.5 means
+that trip rates are increased by 50 percent. With this additional factor, the
+model will understand the role that accessibility plays in NHB trip generation.
+
+```{r}
+tbl <- bind_rows(p_tbl_list)
+ggplot(tbl) +
+  geom_point(aes(x = logsum, y = y, color = trip_type)) +
+  labs(
+    title = "NHB Trip-Making and Accessibility",
+    y = "Effect on NHB Trip Rate",
+    x = "Nearby Accessibility",
+    color = "Trip Type"
+  ) +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+## Time of Day Adjustment
+
+The independent feedback by time of day in the model presents a unique challenge
+for NHB. NHB and HB trips have very different time of day patterns (see Time of
+Day documentation), but NHB generation is simply rates multiplied by HB trip
+ends. Without correction, this would mean that the NHB trips would have the same
+distribution as HB trips. To correct this, Caliper calculated adjustment factors
+by tour type, mode, and time of day. This was done by comparing raw model
+outputs back to the observed NHB trips from the survey.
+
+The easiest way to understand the table below is by highlighting one row as an
+example. For SOV trips on work tours, these factors move NHB trips out of the AM
+and NT periods and into the MD and PM. Another way of saying it is that,
+compared to HB trips, NHB trips are less likely in the AM/NT and more likely in
+the MD/PM. The large mid day factor reflects lunch trips and other mid-day
+activities. The relative size of the AM and PM periods confirms what we know:
+that stops are more likely to be made on the way home compared to the way to
+work (e.g. picking up groceries).
+
+```{r, include=FALSE}
+# This file is produced by the model. Importantly, it must be generated
+# by a model run with calibration factors set to 1.
+results <- read_csv("data/input/nhb/nhb_generation.csv") %>%
+  select(-c(TAZ:access_walk)) %>%
+  mutate_all(as.numeric)
+```
+
+
+```{r}
+model <- results %>%
+  pivot_longer(names_to = "type", cols = everything()) %>%
+  mutate(type = gsub("auto_pay", "autopay", type)) %>%
+  separate(type, into = c("tour_type", "purpose", "mode", "tod"), remove = FALSE) %>%
+  group_by(tour_type, mode, tod) %>%
+  summarize(est_trips = sum(value, na.rm = TRUE))
+
+comparison <- trips %>%
+  mutate(
+    party_size = HH_Members + Non_HH_Members,
+    mode_nhb = case_when(
+      homebased == "HB" ~ mode,
+      mode == "auto_pay" ~ "autopay",
+      mode != "other_auto" ~ mode,
+      party_size == 1 ~ "sov",
+      party_size == 2 ~ "hov2",
+      party_size >= 3 ~ "hov3"
+    )
+  ) %>%
+  filter(
+    homebased == "NH",
+    tour_type != "H",
+    !(mode_nhb %in% c("school_bus", "XXX", "other"))
+  ) %>%
+  mutate(
+    mode_nhb = ifelse(mode_nhb %in% c("bus", "lb", "eb"), "t", mode_nhb),
+    tour_type = ifelse(tour_type == "work", "W", "N")
+  ) %>%
+  group_by(tour_type, tod, mode_nhb) %>%
+  summarize(obs_trips = sum(Weight_Factor)) %>%
+  rename(mode = mode_nhb) %>%
+  left_join(
+    model, 
+    by = c("tour_type" = "tour_type", "tod" = "tod", "mode" = "mode")
+  ) %>%
+  mutate(
+    diff = est_trips - obs_trips,
+    pct_diff = (diff / obs_trips) * 100,
+    factor = round(obs_trips / est_trips, 4)
+  ) %>%
+  ungroup() %>%
+  filter(!(mode %in% c("scooter", "cv", "flexride", "shuttle")))
+
+# there was no auto pay in the AM in the survey, so just manually add that row
+# with a factor of 1
+row_to_add <- tibble(
+  tour_type = "N",
+  tod = "AM",
+  mode = "autopay",
+  factor = 1
+)
+comparison <- bind_rows(comparison, row_to_add)
+
+comparison %>%
+  select(-diff, -pct_diff) %>%
+  mutate(
+    obs_trips = round(obs_trips, 0),
+    est_trips = round(est_trips, 0),
+    mode = case_when(
+      mode == "autopay" ~ "Auto Pay",
+      mode == "sov" ~ "SOV",
+      mode == "hov2" ~ "HOV2",
+      mode == "hov3" ~ "HOV3",
+      mode == "t" ~ "Transit",
+      mode == "walkbike" ~ "Nonmotorized",
+    ),
+    mode = factor(
+      mode, 
+      levels = c("SOV", "HOV2", "HOV3", "Auto Pay", "Transit", "Nonmotorized"),
+      ordered = TRUE
+    )
+  ) %>%
+  select(tour_type, tod, mode, factor) %>%
+  pivot_wider(names_from = tod, values_from = factor) %>%
+  mutate(tour_type = ifelse(tour_type == "N", "NonWork", "Work")) %>%
+  rename(
+    Mode = mode,
+    `Tour Type` = tour_type
+  ) %>%
+  kable(digits = 2) %>%
+  kable_styling(full_width = FALSE)
+
+calib_out_tbl <- comparison %>%
+  mutate(
+    mode = ifelse(mode == "autopay", "auto_pay", mode),
+    type = paste(tour_type, mode, tod, sep = "_")
+  ) %>%
+  select(type, factor)
+```
+
+```{r write_output, eval=FALSE}
+output_dir <- "../master/resident/nhb/generation/"
+for (i in 1:length(coeffs_list)) {
+  name <- names(coeffs_list)[i]
+  df <- coeffs_list[[i]]
+  write_csv(df, paste0(output_dir, name, ".csv"))
+}
+
+write_csv(calib_out_tbl, paste0(output_dir, "nhb_calibration_factors.csv"))
+```

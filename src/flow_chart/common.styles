@@ -1,0 +1,106 @@
+    Styles.AreaType = Pme.Table(
+                              {"Columns":{{"Name":"AreaType", "Type":"string",  "Fixed":"false"},
+                                          {"Name":"Density", "Type":"float",  "Fixed":"false"},
+                                          {"Name":"Buffer", "Type":"float",  "Fixed":"false"}
+                              }})
+
+    Styles.CCSpeed = Pme.Table(
+                              {"Columns":{{"Name":"AreaType", "Type":"string",  "Fixed":"false"},
+                                          {"Name":"Speed", "Type":"int",  "Fixed":"false"}
+                              }})
+
+    Styles.MatrixOptionList = Pme.DropList({ Options: {".MTX",".OMX"} })
+
+    Styles.SimpleTable = Pme.Table({ 
+            "Columns":{
+            {Name:"String Column", Type:"droplist",  "Fixed":"false", "Editable": "true", Options: {"Name 1","Name 2","Name 3"}},
+            {Name:"Real Column",   Type:"real",    "Fixed":"false"},
+            {Name:"Int Column",    Type:"int",     "Fixed":"false"},
+            {Name:"Combobox Column", Type:"combobox", "Fixed":"false", "Editable":"true", Options: { "Value 1","Value 2","Value 3" }}
+            },
+            "Values":"Option Arrays"
+        })
+
+    Styles.NumericTable = Pme.Table({
+        "Columns": {
+            {Name:"Deviation From Speed Limit",Type:"real","Fixed":"false","Editable":"true","Unit":"mph",Min:-20,Max:40,"AxisRange":"both","Decimals":1,"Order":1,"Sorted":true},
+            {Name:"Driver Population",Type:"real",Min:0,Max:100,"AxisRange":"min","Decimals":1,"Xaxis":-1,"Yscale":100,"Movable":"both"}
+        },
+        "Fixed":   "roworder",
+        "Values":  "Rows",			/* Can be: "Option Arrays" (default), "Indexed Option Arrays", "Columns" or "Rows" */
+        "MinRows": 2,
+        Value:   {{-10,2},{-5,5},{0,15},{5,25},{10,25},{15,15},{20,10},{25,3}} // Default initial value, if the parameter is set to null in the model file 
+    })
+
+    Styles.ParkingCoeffs = Pme.Table({ 
+            "Columns":{
+                        {Name:"Coefficient Name", Type:"string",  "Fixed":"true", "Width":150},
+                        {Name:"CBD Work", Type:"real",  "Fixed":"false"},
+                        {Name:"CBD NonWork",   Type:"real",    "Fixed":"false"},
+                        {Name:"Univ Work", Type:"real",  "Fixed":"false"},
+                        {Name:"Univ NonWork",   Type:"real",    "Fixed":"false"}
+                      },
+            "Values":"Columns",
+            "Height":4,
+            "MaxRows": 3
+        })
+
+    Styles.IntRange   = Pme.IntRange({Min: 1, Max: 100})
+    Styles.RealRange  = Pme.RealRange({Min: 1.5 , Max: 99.5})
+    Styles.DropList   = Pme.DropList()
+    Styles.ComboBox   = Pme.ComboBox()
+    Styles.SubSet     = Pme.SubSet()
+    Styles.IntSlider  = Pme.IntSlider()
+    Styles.RealSlider = Pme.RealSlider()
+    Styles.Time       = Pme.Time()
+    Styles.Date       = Pme.Date()
+    Styles.Font       = Pme.Font()
+    Styles.Color      = Pme.Color()
+    Styles.FillStyle  = Pme.FillStyle()
+    Styles.LineStyle  = Pme.LineStyle()
+    Styles.RadioList  = Pme.RadioList()
+    Styles.CheckBoxes = Pme.CheckBoxes()
+
+    // Styles for the generic tables that support choice models
+    Styles.JoinInfo = Pme.Table({Height: 6, MaxRows: 5, Values: "Columns",    
+                               Columns: {{Name: "Join Name", Type: "string",  Fixed: "false"},
+										    {Name: "Left Table", Type: "string",  Fixed: "false"},
+                                            {Name: "Left Table ID",   Type: "string",    Fixed: "false"},
+											{Name: "Right Table",   Type: "string",    Fixed: "false"},
+										    {Name: "Right Table ID",   Type: "string",    Fixed: "false"}}
+                            })
+
+    Styles.Keys = Pme.Table({Height: 4, MaxRows: 3, Values: "Columns",
+                            Columns: {{Name: "Key", Type: "string",  Fixed: "false"},
+										{Name: "Values", Type: "string",  Fixed: "false"}}
+                        })
+
+    Styles.MatrixSources = Pme.Table({Height: 10, MaxRows: 9, Values: "Columns", 
+                                    Columns: {{Name: "Name", Type: "string",  Fixed: "false"},
+                                                {Name: "RowIndex", Type: "string",  Fixed: "false"},
+												{Name: "ColumnIndex", Type: "string",  Fixed: "false"}}
+                                    })
+
+    Styles.TableSources = Pme.Table({Height: 6, MaxRows: 5, Values: "Columns", 
+                                    Columns: {{Name: "Name", Type: "string",  Fixed: "false"},
+											  {Name: "IDField", Type: "string",  Fixed: "false"}}
+                                    })
+
+    Styles.[Nesting Structure] = Pme.Table({Height: 6, MaxRows: 5, Values: "Columns",   
+                                            Columns: {{Name: "Parent", Type: "string",  Fixed: "false"},
+                                                        {Name: "Alternatives", Type: "string",  Fixed: "false", Width:  300},
+														{Name: "ParentNestCoeff", Type: "real",    Fixed: "false"}}
+                                        })
+
+    Styles.Availability = Pme.Table({Height: 8, MaxRows: 7, Values: "Columns", 
+                                                Columns: {{Name: "Alternative", Type: "string",  Fixed: "false", Width:  100},
+														  {Name: "Expression", Type: "string",    Fixed: "false"}}
+                                })
+
+    // Tables for specific choice models
+    Styles.NonMotorized = Pme.Table({Height: 7, MaxRows: 8, Values: "Columns", 
+                                    Columns: {{Name: "Description", Type: "string",  Fixed: "false"},
+											  {Name: "Expression", Type: "string",  Fixed: "false"},
+                                              {Name: "Motorized", Type: "real",  Fixed: "false"},
+                                              {Name: "NonMotorized", Type: "real",  Fixed: "false"}}
+                                    })

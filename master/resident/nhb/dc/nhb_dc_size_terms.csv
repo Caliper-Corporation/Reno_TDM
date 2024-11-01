@@ -1,0 +1,6 @@
+Field,nhb_w_auto_size,nhb_n_auto_size,nhb_transit_size,nhb_walkbike_size,Description
+Service_RateLow,0.075,0.159,29.964,0.077,Attractions/Size terms for NHB destination choice
+Service_RateHigh,0.137,0,0,0,
+Office,0,0.557,0,0.032,
+Retail,0.653,2.33,0,0.183,
+K12,0.105,0.116,0,0.081,

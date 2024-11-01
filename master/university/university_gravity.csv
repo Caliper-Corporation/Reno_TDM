@@ -1,0 +1,25 @@
+purpose,p_field,a_field,constraint,imp_core,a,b,c
+UHC_ON_UNR_AM,ProdOn_UHC_UNR_AM,AttrOn_UHC_UNR_AM,Production,Length (Skim),5,1.15,0.1
+UHC_ON_UNR_MD,ProdOn_UHC_UNR_MD,AttrOn_UHC_UNR_MD,Production,Length (Skim),5,1.15,0.1
+UHC_ON_UNR_PM,ProdOn_UHC_UNR_PM,AttrOn_UHC_UNR_PM,Production,Length (Skim),5,1.15,0.1
+UHC_ON_UNR_NT,ProdOn_UHC_UNR_NT,AttrOn_UHC_UNR_NT,Production,Length (Skim),5,1.15,0.1
+UHC_OFF_UNR_AM,ProdOff_UHC_UNR_AM,AttrOff_UHC_UNR_AM,Production,Length (Skim),5,0.8,0.1
+UHC_OFF_UNR_MD,ProdOff_UHC_UNR_MD,AttrOff_UHC_UNR_MD,Production,Length (Skim),5,0.8,0.1
+UHC_OFF_UNR_PM,ProdOff_UHC_UNR_PM,AttrOff_UHC_UNR_PM,Production,Length (Skim),5,0.8,0.1
+UHC_OFF_UNR_NT,ProdOff_UHC_UNR_NT,AttrOff_UHC_UNR_NT,Production,Length (Skim),5,0.8,0.1
+UHO_ON_UNR_AM,ProdOn_UHO_UNR_AM,AttrOn_UHO_UNR_AM,Production,Length (Skim),5,1.15,0.1
+UHO_ON_UNR_MD,ProdOn_UHO_UNR_MD,AttrOn_UHO_UNR_MD,Production,Length (Skim),5,1.15,0.1
+UHO_ON_UNR_PM,ProdOn_UHO_UNR_PM,AttrOn_UHO_UNR_PM,Production,Length (Skim),5,1.15,0.1
+UHO_ON_UNR_NT,ProdOn_UHO_UNR_NT,AttrOn_UHO_UNR_NT,Production,Length (Skim),5,1.15,0.1
+UHO_OFF_UNR_AM,ProdOff_UHO_UNR_AM,AttrOff_UHO_UNR_AM,Production,Length (Skim),5,0.9,0.1
+UHO_OFF_UNR_MD,ProdOff_UHO_UNR_MD,AttrOff_UHO_UNR_MD,Production,Length (Skim),5,0.9,0.1
+UHO_OFF_UNR_PM,ProdOff_UHO_UNR_PM,AttrOff_UHO_UNR_PM,Production,Length (Skim),5,0.9,0.1
+UHO_OFF_UNR_NT,ProdOff_UHO_UNR_NT,AttrOff_UHO_UNR_NT,Production,Length (Skim),5,0.9,0.1
+UCO_UNR_AM,Prod_UCO_UNR_AM,Attr_UCO_UNR_AM,Production,Length (Skim),5,1.15,0.1
+UCO_UNR_MD,Prod_UCO_UNR_MD,Attr_UCO_UNR_MD,Production,Length (Skim),5,1.15,0.1
+UCO_UNR_PM,Prod_UCO_UNR_PM,Attr_UCO_UNR_PM,Production,Length (Skim),5,1.15,0.1
+UCO_UNR_NT,Prod_UCO_UNR_NT,Attr_UCO_UNR_NT,Production,Length (Skim),5,1.15,0.1
+UC1_UNR_AM,Prod_UC1_UNR_AM,Attr_UC1_UNR_AM,Production,Length (Skim),5,1.15,0.1
+UC1_UNR_MD,Prod_UC1_UNR_MD,Attr_UC1_UNR_MD,Production,Length (Skim),5,1.15,0.1
+UC1_UNR_PM,Prod_UC1_UNR_PM,Attr_UC1_UNR_PM,Production,Length (Skim),5,1.15,0.1
+UC1_UNR_NT,Prod_UC1_UNR_NT,Attr_UC1_UNR_NT,Production,Length (Skim),5,1.15,0.1

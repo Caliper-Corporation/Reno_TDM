@@ -1,0 +1,10 @@
+Expression,Segment,Coefficient,Description
+se.n_hbshp_size.D,,1,Size term
+nz(mc_logsums.NonHHAutoComposite),,0,
+sov_skim.CongTime,,-0.238,
+"max(0, sov_skim.CongTime - 20)",,0.094,
+se.access_transit.D,v0,0.212,Adjustment
+se.access_walk.D * intra_cluster.IZ,v0,0.636,
+sov_skim.CongTime > 55,,-99,Cutoff
+sov_skim.CongTime,,0.02,Calibration term
+intra_cluster.IZ,,-0.5,Calibration term

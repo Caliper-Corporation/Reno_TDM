@@ -1,0 +1,8 @@
+Expression,Segment,Coefficient,Description
+se.nhb_w_auto_size.D,,0.383,Size term
+skim.CongTime,,-0.266,
+"Max(skim.CongTime - 20, 0)",,0.241,Time excess of 30 min
+IntraCluster.IC,,0.741,Intra Cluster Dummy
+IntraCluster.IZ,,1.21,Intra Zonal Dummy
+IntraCluster.IZ,,0.2,Additional Adjustment
+skim.CongTime,,0.07,Calibration term

@@ -1,0 +1,16 @@
+model label=walkability version=1.5
+  field name=Beta1
+  field name=Beta2
+  field name=Beta3
+  field name=Beta4
+  source name=sedata type=Survey primary=True origins=True destinations=True view=scenario_se set=internal idfield=TAZ origfield=TAZ destfield=TAZ
+  segment name=*
+    term coefficient=0.161745 name=Beta1
+    term coefficient=0.233626 name=Beta3
+    term coefficient=0.12593 name=Beta4
+    alternative name=walk asc=-1.96437
+      data source=sedata spec=ApproachDensity_z term=Beta1
+      data source=sedata spec=walk_attr_dens_z term=Beta3
+      data source=sedata spec=GSIndex_z term=Beta4
+    alternative name=notwalk
+

@@ -1,0 +1,8 @@
+Alternative,Expression,Segment,Coefficient,Description
+motorized,Constant,,0,
+nonmotorized,person.HHKids,,0.18549,
+nonmotorized,person.HHAdults,,-0.06389,
+nonmotorized,person.veh_per_adult,,-2.96366,HH vehicles per adult
+nonmotorized,se.access_walk.O,,0.091678,walk accessiblity
+nonmotorized,Constant,,-1.003183,Estimated constant
+nonmotorized,Constant,,0.6,Calibration constant

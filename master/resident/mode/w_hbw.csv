@@ -1,0 +1,139 @@
+Alternative,Expression,Segment,Coefficient,Description
+sov,Constant,,3.69,Constant
+sov,Constant,v0,-99,Auto Availability
+sov,Constant,ilvs,0.998,Vehicle sufficient households
+sov,Constant,ihvs,0.998,Vehicle sufficient households
+sov,Constant,ihvi,0.289,High income households
+sov,Constant,ihvs,0.289,High income households
+sov,sov_skim.CongTime,,-0.0106,Travel time
+sov,sov_skim.[TollCostSOV (Skim)],,-0.0388,Toll cost
+sov,sov_skim.[Length (Skim)],,-0.00388,Auto Operating Cost
+hov2,Constant,,2.7,Constant
+hov2,hov_skim.CongTime,,-0.0106,Travel time
+hov2,hov_skim.[TollCostHOV (Skim)],,-0.0194,Toll cost
+hov2,hov_skim.[Length (Skim)],,-0.00194,Auto Operating Cost
+hov3,Constant,,1.28,Constant
+hov3,hov_skim.CongTime,,-0.0106,Travel time
+hov3,hov_skim.[TollCostHOV (Skim)],,-0.0118,Toll cost
+hov3,hov_skim.[Length (Skim)],,-0.00118,Auto Operating Cost
+auto_pay,Constant,,3.06,Constant
+auto_pay,Constant,ilvi,0.616,Vehicle insufficient households
+auto_pay,Constant,ihvi,0.616,Vehicle insufficient households
+auto_pay,hov_skim.CongTime,,-0.0106,Travel time
+auto_pay,se.PKTNCWait.O,,-0.0893,Auto wait time
+auto_pay,hov_skim.auto_pay_fare,,-0.0388,Auto fare
+shuttle,Constant,ihvs,-99,Unavailable
+shuttle,hov_skim.CongTime,,-0.0106,Shuttle Time
+w_lb,Constant,,0.825,Constant
+w_lb,Constant,v0,2.32,Zero-vehicle households
+w_lb,Constant,ilvi,2.03,Low Income
+w_lb,Constant,ilvs,2.03,Low Income
+w_lb,Constant,ihvs,-99,Unavailable
+w_lb,w_lb_skim.[In-Vehicle Time],,-0.0106,IVTT
+w_lb,w_lb_skim.Fare,,-0.05345,Transit fare
+w_lb,w_lb_skim.[Access Walk Time],,-0.0302,Access walk time
+w_lb,w_lb_skim.[Egress Walk Time],,-0.0302,Egress walk time
+w_lb,w_lb_skim.[Transfer Walk Time],,-0.0302,Transfer walk time
+w_lb,w_lb_skim.[Initial Wait Time],,-0.0212,Initial wait time
+w_lb,w_lb_skim.[Transfer Wait Time],,-0.0212,Transfer wait time
+w_lb,w_lb_skim.[Dwelling Time],,-0.0106,Dwell Time
+w_eb,Constant,,0.825,Constant
+w_eb,Constant,v0,2.32,Zero-vehicle households
+w_eb,Constant,ilvi,2.03,Low Income
+w_eb,Constant,ilvs,2.03,Low Income
+w_eb,Constant,ihvs,-99,Unavailable
+w_eb,w_eb_skim.[In-Vehicle Time],,-0.0106,IVTT
+w_eb,w_eb_skim.Fare,,-0.05345,Transit fare
+w_eb,w_eb_skim.[Access Walk Time],,-0.0302,Access walk time
+w_eb,w_eb_skim.[Egress Walk Time],,-0.0302,Egress walk time
+w_eb,w_eb_skim.[Transfer Walk Time],,-0.0302,Transfer walk time
+w_eb,w_eb_skim.[Initial Wait Time],,-0.0212,Initial wait time
+w_eb,w_eb_skim.[Transfer Wait Time],,-0.0212,Transfer wait time
+w_eb,w_eb_skim.[Dwelling Time],,-0.0106,Dwell Time
+knr_lb,Constant,,0.825,Constant
+knr_lb,Constant,v0,2.32,Zero-vehicle households
+knr_lb,Constant,ilvi,2.03,Low Income
+knr_lb,Constant,ilvs,2.03,Low Income
+knr_lb,Constant,ihvs,-99,Unavailable
+knr_lb,knr_lb_skim.[In-Vehicle Time],,-0.0106,IVTT
+knr_lb,knr_lb_skim.Fare,,-0.05345,Transit fare
+knr_lb,knr_lb_skim.[Access Drive Time],,-0.0106,Access drive time
+knr_lb,knr_lb_skim.[Egress Walk Time],,-0.0302,Egress walk time
+knr_lb,knr_lb_skim.[Transfer Walk Time],,-0.0302,Transfer walk time
+knr_lb,knr_lb_skim.[Initial Wait Time],,-0.0212,Initial wait time
+knr_lb,knr_lb_skim.[Transfer Wait Time],,-0.0212,Transfer wait time
+knr_lb,knr_lb_skim.[Dwelling Time],,-0.0106,Dwell Time
+knr_eb,Constant,,0.825,Constant
+knr_eb,Constant,v0,2.32,Zero-vehicle households
+knr_eb,Constant,ilvi,2.03,Low Income
+knr_eb,Constant,ilvs,2.03,Low Income
+knr_eb,Constant,ihvs,-99,Unavailable
+knr_eb,knr_eb_skim.[In-Vehicle Time],,-0.0106,IVTT
+knr_eb,knr_eb_skim.Fare,,-0.05345,Transit fare
+knr_eb,knr_eb_skim.[Access Drive Time],,-0.0106,Access drive time
+knr_eb,knr_eb_skim.[Egress Walk Time],,-0.0302,Egress walk time
+knr_eb,knr_eb_skim.[Transfer Walk Time],,-0.0302,Transfer walk time
+knr_eb,knr_eb_skim.[Initial Wait Time],,-0.0212,Initial wait time
+knr_eb,knr_eb_skim.[Transfer Wait Time],,-0.0212,Transfer wait time
+knr_eb,knr_eb_skim.[Dwelling Time],,-0.0106,Dwell Time
+pnr_lb,Constant,,0.825,Constant
+pnr_lb,Constant,v0,-99,Auto Availability
+pnr_lb,Constant,ilvi,2.03,Low Income
+pnr_lb,Constant,ilvs,2.03,Low Income
+pnr_lb,Constant,ihvs,-99,Unavailable
+pnr_lb,pnr_lb_skim.[In-Vehicle Time],,-0.0106,IVTT
+pnr_lb,pnr_lb_skim.Fare,,-0.05345,Transit fare
+pnr_lb,pnr_lb_skim.[Access Drive Time],,-0.0106,Access drive time
+pnr_lb,pnr_lb_skim.[Egress Walk Time],,-0.0302,Egress walk time
+pnr_lb,pnr_lb_skim.[Transfer Walk Time],,-0.0302,Transfer walk time
+pnr_lb,pnr_lb_skim.[Initial Wait Time],,-0.0212,Initial wait time
+pnr_lb,pnr_lb_skim.[Transfer Wait Time],,-0.0212,Transfer wait time
+pnr_lb,pnr_lb_skim.[Dwelling Time],,-0.0106,Dwell Time
+pnr_eb,Constant,,0.825,Constant
+pnr_eb,Constant,v0,-99,Auto Availability
+pnr_eb,Constant,ilvi,2.03,Low Income
+pnr_eb,Constant,ilvs,2.03,Low Income
+pnr_eb,Constant,ihvs,-99,Unavailable
+pnr_eb,pnr_eb_skim.[In-Vehicle Time],,-0.0106,IVTT
+pnr_eb,pnr_eb_skim.Fare,,-0.05345,Transit fare
+pnr_eb,pnr_eb_skim.[Access Drive Time],,-0.0106,Access drive time
+pnr_eb,pnr_eb_skim.[Egress Walk Time],,-0.0302,Egress walk time
+pnr_eb,pnr_eb_skim.[Transfer Walk Time],,-0.0302,Transfer walk time
+pnr_eb,pnr_eb_skim.[Initial Wait Time],,-0.0212,Initial wait time
+pnr_eb,pnr_eb_skim.[Transfer Wait Time],,-0.0212,Transfer wait time
+pnr_eb,pnr_eb_skim.[Dwelling Time],,-0.0106,Dwell Time
+hov2,Constant,v0,-1.22329,Additional Calibration Constant
+hov3,Constant,v0,0.390046,Additional Calibration Constant
+walk,Constant,v0,-0.779788,Additional Calibration Constant
+pnr,Constant,v0,-0.779788,Additional Calibration Constant
+knr,Constant,v0,-0.779788,Additional Calibration Constant
+auto_pay,Constant,v0,-0.112313,Additional Calibration Constant
+shuttle,Constant,v0,2.515525,Additional Calibration Constant
+sov,Constant,ilvi,0.066959,Additional Calibration Constant
+hov2,Constant,ilvi,0.691075,Additional Calibration Constant
+hov3,Constant,ilvi,0.221391,Additional Calibration Constant
+walk,Constant,ilvi,-3.023054,Additional Calibration Constant
+pnr,Constant,ilvi,-3.023054,Additional Calibration Constant
+knr,Constant,ilvi,-3.023054,Additional Calibration Constant
+auto_pay,Constant,ilvi,-1.022523,Additional Calibration Constant
+shuttle,Constant,ilvi,1.654336,Additional Calibration Constant
+sov,Constant,ilvs,0.109097,Additional Calibration Constant
+hov2,Constant,ilvs,-0.053158,Additional Calibration Constant
+hov3,Constant,ilvs,0.350315,Additional Calibration Constant
+walk,Constant,ilvs,-4.954385,Additional Calibration Constant
+pnr,Constant,ilvs,-4.954385,Additional Calibration Constant
+knr,Constant,ilvs,-4.954385,Additional Calibration Constant
+auto_pay,Constant,ilvs,-1.314108,Additional Calibration Constant
+shuttle,Constant,ilvs,0.125493,Additional Calibration Constant
+sov,Constant,ihvi,0.024025,Additional Calibration Constant
+hov2,Constant,ihvi,-0.256004,Additional Calibration Constant
+hov3,Constant,ihvi,-0.679212,Additional Calibration Constant
+walk,Constant,ihvi,-4.105539,Additional Calibration Constant
+pnr,Constant,ihvi,-4.105539,Additional Calibration Constant
+knr,Constant,ihvi,-4.105539,Additional Calibration Constant
+auto_pay,Constant,ihvi,0.285746,Additional Calibration Constant
+shuttle,Constant,ihvi,-0.704769,Additional Calibration Constant
+sov,Constant,ihvs,-0.004876,Additional Calibration Constant
+hov2,Constant,ihvs,0.29038,Additional Calibration Constant
+hov3,Constant,ihvs,-1.367988,Additional Calibration Constant
+auto_pay,Constant,ihvs,-0.333011,Additional Calibration Constant

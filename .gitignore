@@ -1,0 +1,10 @@
+*.xsl
+*.xml
+*.bak
+*.upx
+.DS_Store
+*.DCC
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata

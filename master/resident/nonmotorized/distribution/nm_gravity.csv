@@ -1,0 +1,7 @@
+purpose,p_field,a_field,constraint,imp_core,a,b,c
+W_HBW,W_HBW,access_walk_attr,Production,WalkTime,5,0.563,0.1896
+W_HBO,W_HBO,access_walk_attr,Production,WalkTime,5,0.563,0.1896
+N_HBSCH,N_HBSCH,access_walk_attr,Production,WalkTime,5,0.563,0.1896
+N_HBO,N_HBO,access_walk_attr,Production,WalkTime,5,0.563,0.1896
+N_HBSHP,N_HBSHP,access_walk_attr,Production,WalkTime,5,0.563,0.1896
+N_HBSR,N_HBSR,access_walk_attr,Production,WalkTime,5,0.563,0.1896

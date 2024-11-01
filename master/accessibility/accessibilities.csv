@@ -1,0 +1,18 @@
+Param,access_general_sov,access_nearby_sov,access_walk,access_transit,access_employment_sov,Description
+skim,sov,sov,walk,transit,sov,defines which skim will be used
+core,FFTime,FFTime,WalkTime,Total Time,FFTime,defines which skim core to use
+b,-0.93,-2.05,0.563,-2.05,-0.3,defines the beta (b) parameter for the gamma function
+c,-0.09,-0.06,-0.1896,-0.06,-0.07,defines the gamma (c) parameter for the gamma function
+HH,1.9,0.5,0,1.9,0,All fields below here create the size/attracation fields
+K12,1.5,0,0,1.5,0,using a sumproduct approach
+College,5.7,0,0,5.7,0,
+StudGQ_UNR,5.7,0,0,5.7,0,
+Retail,18.7,4.1,0,18.7,1,
+Service_RateLow,5.6,1.2,0,5.6,1,
+Service_RateHigh,5.6,1.2,0,5.6,1,
+Office,3,0.5,0,3,1,
+Industry,3,0.5,0,3,1,
+wHH,0,0,0.037543,0,0,These fields are interactions between the zone's walkability score and the attractor
+wK12,0,0,0.005133,0,0,"e.g. ""walkability * K12 enrollment"""
+wCollege,0,0,0.021174,0,0,
+wRetail,0,0,0.007263,0,0,

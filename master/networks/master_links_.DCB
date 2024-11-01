@@ -1,0 +1,8 @@
+RTC Master Network
+24,codepage=1252
+"ID",I,1,4,0,4,0,,"","",,"Sum",
+"TAZ",I,5,4,0,10,0,,"","",,"Blank",
+"Centroid",I,9,4,0,10,0,,"","",,"Blank",
+"FeeDist",I,13,4,0,10,0,,"","This is the district used to determine the average trip length for the VMT-based, impact-fee assessment.  0: None/Excluded  1: North  2: South",,"Blank",
+"External",I,17,4,0,10,0,,"","",,"Sum",
+"PNR",I,21,4,0,10,0,,"","",,"Sum",
