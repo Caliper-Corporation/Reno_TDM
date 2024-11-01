@@ -101,10 +101,10 @@ walk,Constant,vi,-2.423513,Additional Calibration Constant
 pnr,Constant,vi,-2.423513,Additional Calibration Constant
 knr,Constant,vi,-2.423513,Additional Calibration Constant
 auto_pay,Constant,vi,-1.123359,Additional Calibration Constant
-sov,Constant,vs,0.002705,Additional Calibration Constant
-hov2,Constant,vs,0.250683,Additional Calibration Constant
-hov3,Constant,vs,-0.414747,Additional Calibration Constant
+sov,Constant,vs,0.003372,Additional Calibration Constant
+hov2,Constant,vs,0.249991,Additional Calibration Constant
+hov3,Constant,vs,-0.41559,Additional Calibration Constant
 walk,Constant,vs,-3.067718,Additional Calibration Constant
 pnr,Constant,vs,-3.067718,Additional Calibration Constant
 knr,Constant,vs,-3.067718,Additional Calibration Constant
-auto_pay,Constant,vs,-0.744476,Additional Calibration Constant
+auto_pay,Constant,vs,-0.734197,Additional Calibration Constant
