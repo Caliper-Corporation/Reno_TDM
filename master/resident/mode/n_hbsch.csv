@@ -19,13 +19,13 @@ w_lb,w_lb_skim.[Transfer Walk Time],,-0.0725,Transfer walk time
 w_lb,w_lb_skim.[Initial Wait Time],,-0.058,Initial wait time
 w_lb,w_lb_skim.[Transfer Wait Time],,-0.058,Transfer wait time
 w_lb,w_lb_skim.[Dwelling Time],,-0.029,Dwell Time
-hov2,Constant,v0,0.549333,Additional Calibration Constant
-hov3,Constant,v0,-1.150894,Additional Calibration Constant
-school_bus,Constant,v0,-0.505464,Additional Calibration Constant
-hov2,Constant,vi,-0.203393,Additional Calibration Constant
-hov3,Constant,vi,0.078366,Additional Calibration Constant
-school_bus,Constant,vi,0.396395,Additional Calibration Constant
-sov,Constant,vs,0.092398,Additional Calibration Constant
-hov2,Constant,vs,0.451642,Additional Calibration Constant
-hov3,Constant,vs,-0.082919,Additional Calibration Constant
-school_bus,Constant,vs,-0.127817,Additional Calibration Constant
+hov2,Constant,v0,-0.079524,Additional Calibration Constant
+hov3,Constant,v0,-1.781651,Additional Calibration Constant
+school_bus,Constant,v0,-1.11047,Additional Calibration Constant
+hov2,Constant,vi,0.035085,Additional Calibration Constant
+hov3,Constant,vi,0.316844,Additional Calibration Constant
+school_bus,Constant,vi,0.638785,Additional Calibration Constant
+sov,Constant,vs,2.527309,Additional Calibration Constant
+hov2,Constant,vs,2.887965,Additional Calibration Constant
+hov3,Constant,vs,2.357102,Additional Calibration Constant
+school_bus,Constant,vs,2.815252,Additional Calibration Constant
