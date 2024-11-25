@@ -8,12 +8,9 @@ Macro "CalcAQMovesInputs" (Args)
 
 	model_dir = Args.[Base Folder]
 	scenario_path = Args.[Scenario Folder]
-	scen_year = MacroOpts.scen_year
+	scen_year = Args.AQYear
 
-// Macro to compute daily volumes from the assignment output files
-	RunMacro("Compute Daily Volumes")
-
-// Macro to compute daily volumes from the assignment output files
+// Macro to compute average speeds (VMT/VHT) by time periods
 	RunMacro("Calculate Average Speeds")
 
 //0. Dialog box to get inputs

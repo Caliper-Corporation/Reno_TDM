@@ -106,6 +106,14 @@
             "Description":"Scenario output TAZs. Modified during model run.",
             "Value":"%Output Folder%\\tazs\\scenario_tazs.dbd"
         }
+    
+    Section = "AQ Inputs"
+
+        Args.AQYear = {
+            "Type":"int",
+            "Description":"Year to use when creating MOVES input files",
+            "Value":2022
+        }
 	
 	Section = "Network Calculations|Area Type"
 	
