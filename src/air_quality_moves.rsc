@@ -4,13 +4,12 @@ Script to post-process model data to produce input data for MOVES Air Quality To
 
 
 Macro "CalcAQMovesInputs" (MacroOpts)
-    Shared model_dir, scenario_path, scenario, scen_year, iter_num
+    Shared model_dir, scenario_path, scenario, scen_year
 
 	model_dir = MacroOpts.model_dir
 	scenario_path = MacroOpts.scenario_path
 	scenario = MacroOpts.scenario
 	scen_year = MacroOpts.scen_year
-	iter_num = MacroOpts.iter_num
 
 // Macro to compute daily volumes from the assignment output files
 	RunMacro("Compute Daily Volumes")
@@ -30,7 +29,7 @@ Macro "CalcAQMovesInputs" (MacroOpts)
 	hourvmtfile = model_dir + "\\resource\\data\\air_quality\\HourVMTinput.CSV"
 	weekendinput = model_dir + "\\resource\\data\\air_quality\\speedinput_weekend.bin"
 
-	asn_file = scenario_path + "\\" + scenario + "\\" + "outputs\\assignment\\assignment_daily_iteration"+String(iter_num)+".bin"
+	asn_file = scenario_path + "\\" + scenario + "\\" + "outputs\\assignment\\assignment_daily_iteration.bin"
 
 	//Params
 	sourcetypefile = model_dir + "\\resource\\data\\air_quality\\SourceTypepct.CSV"
@@ -276,7 +275,7 @@ EndMacro
 
 // Macro to compute average speeds by time periods
 Macro "Calculate Average Speeds"
-	 Shared scenario_path, scenario, iter_num
+	 Shared scenario_path, scenario
 
      // Time period
      periods = {"AM","MD","PM","NT"}
@@ -288,7 +287,7 @@ Macro "Calculate Average Speeds"
      end
 
      // Open daily assignment file
-     daily_file = scenario_path +"\\" + scenario +"\\outputs\\assignment\\assignment_daily_iteration"+String(iter_num)+".bin"
+     daily_file = scenario_path +"\\" + scenario +"\\outputs\\assignment\\assignment_daily_iteration.bin"
      daily_vw   = OpenTable("asgn_view", "FFB", {daily_file},)
 
      //------------------------------------------------------------------------------------------
