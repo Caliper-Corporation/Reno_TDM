@@ -1,5 +1,5 @@
 RTC Master Network
-629
+629,codepage=1252
 "ID",I,1,4,0,4,0,,"","",,"Sum",
 "RoadName",C,5,50,0,50,0,,"","Name of street/roadway represented by the polyline.",,"Copy",
 "AltName",C,55,50,0,50,0,,"","",,"Copy",
@@ -30,7 +30,7 @@ RTC Master Network
 "p1DTWB",C,301,16,0,16,0,,"","",,"Copy",
 "p1HOV",C,317,16,0,16,0,,"","",,"Copy",
 "p1TollType",C,333,16,0,16,0,,"","",,"Copy",
-"p1year",I,349,4,0,8,0,,"","",,"Copy",
+"year1",I,349,4,0,8,0,,"","Not used by the model",,"Copy",
 "p2ID",I,353,4,0,8,0,,"","",,"Copy",
 "p2Dir",I,357,4,0,8,0,,"","",,"Copy",
 "p2HCMType",C,361,16,0,16,0,,"","",,"Copy",
@@ -41,7 +41,7 @@ RTC Master Network
 "p2DTWB",C,405,16,0,16,0,,"","",,"Copy",
 "p2HOV",C,421,16,0,16,0,,"","",,"Copy",
 "p2TollType",C,437,16,0,16,0,,"","",,"Copy",
-"p2year",I,453,4,0,8,0,,"","",,"Copy",
+"year2",I,453,4,0,8,0,,"","Not used by the model",,"Copy",
 "old_fields-->",C,457,16,0,16,0,,"","",,"Copy",
 "Zone",C,473,11,0,11,0,,"","The string value of the attribute \"NETWORK\" in the \"pavement condition index\" shapefiles provided to the RTC by Washoe County and the Cities of Reno and Sparks, Nevada.",,"Copy",
 "Branch",C,484,8,0,8,0,,"","The string value of the attribute \"BRANCH\" in the \"pavement condition index\" shapefiles provided by Washoe County and the Cities of Reno and Sparks, Nevada.",,"Copy",
