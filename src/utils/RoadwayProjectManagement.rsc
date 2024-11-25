@@ -120,6 +120,7 @@ Macro "Roadway Project Management" (MacroOpts)
       Description: "Project ID that updated the base attributes"
     })
     v = if data.p1position <> null then data.p1ID else null
+    if TypeOf(data.p1ID[1]) <> "string" then v = String(v)
     tbl.UpdatedWithP = v
     tbl = null
   end
