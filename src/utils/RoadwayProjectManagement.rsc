@@ -49,7 +49,6 @@ Macro "Roadway Project Management" (MacroOpts)
   csv_tbl = OpenTable("tbl", "CSV", {proj_list, })
   v_projIDs = GetDataVector(csv_tbl + "|", "ProjID", )
   CloseView(csv_tbl)
-  //DeleteFile(Substitute(output_proj_list, ".csv", ".DCC", ))
 
 
   // Open the roadway dbd
@@ -77,7 +76,7 @@ Macro "Roadway Project Management" (MacroOpts)
   // If there are projects in the project list, then update the base attributes
   if TypeOf(v_projIDs) <> "null" then do
     // Add fields that tell project positions in the project list
-    RunMacro("Add Project Position", llyr, output_proj_list, projGroups)
+    RunMacro("Add Project Position", llyr, proj_list, projGroups)
 
     // Build a named array of vectors to work with
     for p in {""} + projGroups do
@@ -121,6 +120,7 @@ Macro "Roadway Project Management" (MacroOpts)
       Description: "Project ID that updated the base attributes"
     })
     v = if data.p1position <> null then data.p1ID else null
+    if TypeOf(data.p1ID[1]) <> "string" then v = String(v)
     tbl.UpdatedWithP = v
     tbl = null
   end
