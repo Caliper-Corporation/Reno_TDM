@@ -270,21 +270,13 @@ EndMacro
 
 
 // Macro to compute average speeds by time periods
-Macro "Calculate Average Speeds"
-	 Shared scenario_path
+Macro "Calculate Average Speeds" (Args)
 
      // Time period
      periods = {"AM","MD","PM","NT"}
 
-     // Build path to "resource\data" path from the user specified "scenarios" location
-     path_info = ParseString(scenario_path, "\\")
-     for i = 1 to (path_info.length-1) do
-       counts_path_info = counts_path_info+path_info[i]+"\\"
-     end
-
-     // Open daily assignment file
-     daily_file = scenario_path +"outputs\\assignment\\assignment_daily_iteration.bin"
-     daily_vw   = OpenTable("asgn_view", "FFB", {daily_file},)
+     links = CreateObject("Table", Args.Links)
+	 daily_vw = links.GetView()
 
      //------------------------------------------------------------------------------------------
      // Step 1:  Compute Regional Speed by time period
@@ -295,14 +287,12 @@ Macro "Calculate Average Speeds"
                           {"NT_Avg_Speed", "Real", 10, 3}}
      RunMacro("TCB Add View Fields",{daily_vw,daily_fields_type})
 
-     for t = 1 to periods.length do
-        vmt = GetDataVector(daily_vw+"|", periods[t]+"_Tot_VMT",{{"Sort Order", {{"ID", "Ascending"}}}})
-        vht = GetDataVector(daily_vw+"|", periods[t]+"_Tot_VHT",{{"Sort Order", {{"ID", "Ascending"}}}})
+     for period in periods do
+        vmt = GetDataVector(daily_vw+"|", "Tot_VMT_" + period,{{"Sort Order", {{"ID", "Ascending"}}}})
+        vht = GetDataVector(daily_vw+"|", "Tot_VHT_" + period,{{"Sort Order", {{"ID", "Ascending"}}}})
         avg_speed = vmt/vht
 
-        SetDataVector(daily_vw+"|",periods[t]+"_Avg_Speed",avg_speed,{{"Sort Order", {{"ID", "Ascending"}}}})
+        SetDataVector(daily_vw+"|",period+"_Avg_Speed",avg_speed,{{"Sort Order", {{"ID", "Ascending"}}}})
      end // period
 
-    // Close views
-    CloseView(daily_vw)
 EndMacro
