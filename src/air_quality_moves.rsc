@@ -1,119 +1,16 @@
 /*
 Script to post-process model data to produce input data for MOVES Air Quality Tool
-
-This script should be run after 'Performance Measures' step is run first. 
 */
 
-  // Tool box
-	dBox "Produce AQ MOVES Inputs" (model_dir)
 
-	   // Position of DBOX on screen
-	   right, center toolbox NoKeyboard
-	   title: "Reno Air Quality MOVES Input Data Preparation"
+Macro "CalcAQMovesInputs" (MacroOpts)
+    Shared model_dir, scenario_path, scenario, scen_year, iter_num
 
-	   init do
-	      Shared model_dir, scenario_path, scenario, scen_year, iter_num, select_macro, run_status, run_status_a
-	      scenario_path =  "Select Scenario Location"
-	      scenario = Null
-		    ShowItem("run_status")
-		    HideItem("run_status_a")
-	   enditem
-
-	   close do RunMacro("Close All") endItem
-
-	   // Define Buttons
-	   // Display location before selection
-	   Text 1, 3.5, 50, 2 Framed Prompt: "" Variable: scenario_path
-
-	   // Button to choose scenario location
-	   button "Choose Scenario Location" 1, 1, 30, 1.5 do
-	      scenario_info = RunMacro("Choose Scenario")
-	      scenario_path = scenario_info[1]                              // first element is path
-	      list_of_scenarios = ExcludeArrayElements(scenario_info, 1, 1) // remove path
-	   enditem
-
-	   // Display location after selection
-	   Text 1, 3.5, 50, 2 Framed Prompt: "" Variable: scenario_path
-
-	   // Select list of scenarios
-	   text "Select Scenario" 1,7
-	   popdown menu 18,7,25,10 list: list_of_scenarios  variable: num do
-	      scenario = list_of_scenarios[num]
-	   enditem
-
-	   // Select scenario year
-	   text "Scenario Year" 1,9.5
-	   popdown menu 18,9.5,10,10 list: {2015,2020,2025,2030,2035,2040,2045,2050} Editable variable: scen_year
-
-	   // Select highway assignment iteration
-	   text "Iteration Number" 1,12
-	   popdown menu 18,12,10,10 list: {1,2,3}  variable: iter_num
-
-	   // Select macro to run
-	   radio list   1, 14.5, 35, 3 prompt: "Select Procedure" variable: select_macro
-	   radio button 3,15.8 prompt: "Produce AQ MOVES Input Data"         help: "Produce Input data for Air Quality MOVES Tool" do
-	   	  ShowItem("run_status")
-		    HideItem("run_status_a")
-		 enditem
-
-	   // display run status
-	 frame "statusframe" 1, 18, 35, 3 Prompt: "Status"
-     text "run_status" 2,19 Variable: ""
-     text "run_status_a" 2,19 Variable: "Complete!"
-
-	   // Run procedure for the selected procedure
-	   button "Run Procedure" 15, 22.5, 18, 2 do
-	       RunMacro("Run Selected Procedure AQ", select_macro)
-	   enditem
-
-	   // Close all macro
-	   Macro "Close All" do
-	      RunMacro("CloseViews")
-	      if RunMacro("TCP Close Project Dbox") = 1 then return()
-	   endItem
-
-	EndDbox
-
-/*
-  // Macro to select scenarios and read subfolders
-  Macro "Choose Scenario"
-     scenario_path = ChooseDirectory("Select location of scenarios", )
-     subfolder_info = GetDirectoryInfo(scenario_path+"\\*.*", "Folder")
-
-     // Add list of sub-folder after the scenario path
-     for i = 1 to (subfolder_info.length) do
-       if i =1 then return_array = {scenario_path} + {subfolder_info[i][1]}
-       if i > 1 then return_array = return_array + {subfolder_info[i][1]}
-     end
-     return(return_array)
-  EndMacro
-*/
-  // Macro to call procedures
-  Macro "Run Selected Procedure AQ"(select_macro)
-     Shared scenario_path, scenario, iter_num, run_status, run_status_a
-     ok = 1
-     // Show message if user clicks on run without selection
-     if select_macro = Null then do
-     		ShowMessage("Select a procedure")
-     		ok = 0
-     end
-		 if ok = 1 then do
-     		// Call macros based on selection (1 & 2 refer to radio buttons)
-     		if select_macro = 1 then return_value = RunMacro("CalcAQMovesInputs")
-
-     		if !return_value then do
-						ShowMessage("Procedure did not finish successfully!")
-		 		end
-		 		else do
-		 				RunMacro("Update Status AQ", select_macro)
-		 		end
-		 end
-  EndMacro
-
-
-
-Macro "CalcAQMovesInputs"
-     Shared model_dir, scenario_path, scenario, scen_year, iter_num
+	model_dir = MacroOpts.model_dir
+	scenario_path = MacroOpts.scenario_path
+	scenario = MacroOpts.scenario
+	scen_year = MacroOpts.scen_year
+	iter_num = MacroOpts.iter_num
 
 // Macro to compute daily volumes from the assignment output files
 	RunMacro("Compute Daily Volumes")
