@@ -161,7 +161,7 @@
         Args.InitCongTimes = {
             "Type":"File",
             "Description":"Initial travel time estimates",
-            "Value":"%Input Folder%\\networks\\init_cong_time_2020.bin"
+            "Value":"%Input Folder%\\networks\\init_cong_time_2022.bin"
         }
         Args.TurnProhibitions = {
             "Type":"File",
