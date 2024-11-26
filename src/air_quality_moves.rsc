@@ -11,36 +11,40 @@ Macro "CalcAQMovesInputs" (Args)
 	scen_year = Args.AQYear
 
 // Macro to compute average speeds (VMT/VHT) by time periods
-	RunMacro("Calculate Average Speeds")
+	RunMacro("Calculate Average Speeds", Args)
 
-//0. Dialog box to get inputs
-	output_location = scenario_path + "\\outputs\\air_quality\\"
+// Output location
+	output_location = scenario_path + "\\output\\_summaries\\air_quality"
+	if GetDirectoryInfo(output_location, "All") = null then CreateDirectory(output_location)
+	output_location = output_location + "\\"
 	year = scen_year
 	
 //1. setup input file name  
-	hwyDBD = model_dir + "\\resource\\data\\gis\\streets\\MasterNetwork.dbd"
-	rampfile = model_dir + "\\resource\\data\\air_quality\\fixed_data\\Rampinput.csv"
-	rtpfile = model_dir + "\\resource\\data\\air_quality\\fixed_data\\Roadtypeinput.csv"
-	styvmtfile = model_dir + "\\resource\\data\\air_quality\\fixed_data\\SourceTypeDayVMTinput.CSV"
-	hourvmtfile = model_dir + "\\resource\\data\\air_quality\\HourVMTinput.CSV"
-	weekendinput = model_dir + "\\resource\\data\\air_quality\\speedinput_weekend.bin"
+	hwyDBD = Args.Links
+	aq_dir = model_dir + "\\other\\air_quality"
+	rampfile = aq_dir + "\\fixed_data\\Rampinput.csv"
+	rtpfile = aq_dir + "\\fixed_data\\Roadtypeinput.csv"
+	styvmtfile = aq_dir + "\\fixed_data\\SourceTypeDayVMTinput.CSV"
+	hourvmtfile = aq_dir + "\\HourVMTinput.CSV"
+	weekendinput = aq_dir + "\\speedinput_weekend.bin"
 
-	asn_file = scenario_path + "\\outputs\\assignment\\assignment_daily_iteration.bin"
 
 	//Params
-	sourcetypefile = model_dir + "\\resource\\data\\air_quality\\SourceTypepct.CSV"
-	monthfactorfile = model_dir + "\\resource\\data\\air_quality\\Monthfac.CSV"
-	weekendfactorfile = model_dir + "\\resource\\data\\air_quality\\Weekend.CSV"
-	localfactorfile = model_dir + "\\resource\\data\\air_quality\\LocalVMT.CSV"
-	TODfacfile = model_dir + "\\resource\\data\\air_quality\\TODfac.CSV"
-	speedallfile = model_dir + "\\resource\\data\\air_quality\\speeddefault.csv"
+	sourcetypefile = model_dir + "\\other\\air_quality\\SourceTypepct.CSV"
+	monthfactorfile = model_dir + "\\other\\air_quality\\Monthfac.CSV"
+	weekendfactorfile = model_dir + "\\other\\air_quality\\Weekend.CSV"
+	localfactorfile = model_dir + "\\other\\air_quality\\LocalVMT.CSV"
+	TODfacfile = model_dir + "\\other\\air_quality\\TODfac.CSV"
+	speedallfile = model_dir + "\\other\\air_quality\\speeddefault.csv"
 	TODlist = {"AM", "MD", "PM", "NT"}
 	stylist = {11,21,31,32,41,42,43,51,52,53,54,61,62}
 	
 //2. Setup map view
-	RunMacro("G30 new map", hwyDBD, "False")
+	map = CreateObject("Map", hwyDBD)
+	// RunMacro("G30 new map", hwyDBD, "False")
 	{mvw_node, mvw_line} = GetDBLayers(hwyDBD)
 	SetLayer(mvw_line)
+	asnvw = mvw_line
 	// Make sure folder exists before exporting
 	tempout = output_location+"temp"
 	if GetDirectoryInfo(tempout, "All") = null then CreateDirectory(tempout)
@@ -52,17 +56,16 @@ Macro "CalcAQMovesInputs" (Args)
 						})
 						
 //3. Adjust Local VMT
-	asnvw = OpenTable("asnvw", "FFB", {asn_file, })
-	jnvw= JoinViews("jnvw", mvw_line+".ID", asnvw+".ID",)
+	// jnvw= asnvw
 	localfac = OpenTable("localfac", "CSV", {localfactorfile,})
-	adj_jnvw = JoinViews("adj_jnvw", jnvw+".Urban", localfac+".Urban", {{"L",}})
-	adjloc_expr = "if AQClass<>7 and AQClass<>10 then LocalFac/(1-LocalFac)*Daily_Tot_VMT else 0"
-	modloc_expr = "if AQClass=7 then Daily_Tot_VMT else 0"
+	adj_jnvw = JoinViews("adj_jnvw", mvw_line+".Urban", localfac+".Urban", {{"L",}})
+	adjloc_expr = "if AQClass<>7 and AQClass<>10 then LocalFac/(1-LocalFac)*Total_VMT_Daily else 0"
+	modloc_expr = "if AQClass=7 then Total_VMT_Daily else 0"
 	CreateExpression(adj_jnvw, "adjloc", adjloc_expr,)
 	CreateExpression(adj_jnvw, "modloc", modloc_expr,)
 	
-	SelectByQuery("urban", "several", "Select * where jnvw.Urban = 1")
-	SelectByQuery("rural", "several", "Select * where jnvw.Urban = 0")
+	SelectByQuery("urban", "several", "Select * where localfac.Urban = 1")
+	SelectByQuery("rural", "several", "Select * where localfac.Urban = 0")
 	{urbanl, urbanadj} = GetDataVectors(adj_jnvw+"|urban", {"modloc", "adjloc"},NULL)
 	{rurall, ruraladj} = GetDataVectors(adj_jnvw+"|rural", {"modloc", "adjloc"},NULL)
 	
@@ -72,23 +75,19 @@ Macro "CalcAQMovesInputs" (Args)
 	rlfac = r2s(rulocfac)
 	//ShowMessage("urban local adjfac="+ulfac+" and rural local adjfac="+rlfac)
 	CloseView(adj_jnvw)
-	CloseView(jnvw)
 	CloseView(localfac)
-	CloseView(asnvw)
 	
 	for i=0 to 1 do // loop for HA and model area
 		HAid = i2s(i)
 		if i=0 then HAstr = "County" else HAstr = "HA"
-		asnvw = OpenTable("asnvw", "FFB", {asn_file, })
-		jnvw= JoinViews("jnvw", mvw_line+".ID", asnvw+".ID",)
-		CloseView(asnvw)
-		
+		jnvw= mvw_line
+
 		//Eliminate centroid connectors and adjust local
-		daily_expr = "if AQClass<>7 then Daily_Tot_VMT else if Urban=1 then Daily_Tot_VMT*"+ulfac+" else Daily_Tot_VMT*"+rlfac
+		daily_expr = "if AQClass<>7 then Total_VMT_Daily else if Urban=1 then Total_VMT_Daily*"+ulfac+" else Total_VMT_Daily*"+rlfac
 		CreateExpression(jnvw, "adj_Daily_VMT", daily_expr,)
 		for j=1 to 4 do
 			tod = TODlist[j]
-			expr ="if AQClass<>7 then "+tod+"_Tot_VMT else if Urban=1 then "+tod+"_Tot_VMT*"+ulfac+" else "+tod+"_Tot_VMT*"+rlfac
+			expr ="if AQClass<>7 then Tot_VMT_"+tod + " else if Urban=1 then Tot_VMT_"+tod+"*"+ulfac+" else Tot_VMT_"+tod+"*"+rlfac
 			CreateExpression(jnvw, "adj_"+tod+"_VMT", expr,)
 			CreateExpression(jnvw, "adj_"+tod+"_VHT", "adj_"+tod+"_VMT/"+tod+"_Avg_Speed",)
 		end
@@ -103,7 +102,6 @@ Macro "CalcAQMovesInputs" (Args)
 					jnvw+".AM_Avg_Speed",jnvw+".MD_Avg_Speed",jnvw+".PM_Avg_Speed",jnvw+".NT_Avg_Speed"
 					},)
 		jnvw_AQ = OpenTable("jnvw_AQ", "FFB", {tempout+"\\Street_AQ.bin",})
-		CloseView(jnvw)
 		
 		//4. Ramp
 		SetView(jnvw_AQ)
@@ -139,7 +137,7 @@ Macro "CalcAQMovesInputs" (Args)
 		
 		//6. SourcetypeVMT output
 		styvmt = OpenTable("styvmt", "CSV", {styvmtfile, }) 
-		yearID = CreateExpression(styvmt, "yearID", year, {"Integer"})
+		yearID = CreateExpression(styvmt, "yearID", String(year), {"Integer"})
 	
 		//6.1 compute october weekday VMT and allocate to each source type
 		sourcetypefac = OpenTable("sourcetypefac", "CSV", {sourcetypefile, })
@@ -223,7 +221,7 @@ Macro "CalcAQMovesInputs" (Args)
 			
 			tdjnvw = OpenTable("tdjnvw", "FFB", {tempout+"\\"+TOD+"_jnvw.bin",})
 			
-			spdfile = model_dir + "\\resource\\data\\air_quality\\fixed_data\\speedinput_"+TOD+".bin"
+			spdfile = model_dir + "\\other\\air_quality\\fixed_data\\speedinput_"+TOD+".bin"
 			spd = opentable("spd", "FFB", {spdfile, })
 			spdjn =  JoinViewsMulti("spdjn", {"spd.roadTypeID", "spd.avgSpeedBinID"}, {tdjnvw+".Roadtype", tdjnvw+".speedbin"}, {{"A",}}) 
 
@@ -252,12 +250,14 @@ Macro "CalcAQMovesInputs" (Args)
 		//10. Close all views
 		vws = GetViewNames()
 		for k = 4 to vws.length do
+			if vws[k] = "master_links" then continue
+			if vws[k] = "master_nodes" then continue
+			if vws[k] = vmt1 then continue
 			CloseView(vws[k])
 		end
 	end
 	CloseView(vmt1)
 	PutInRecycleBin(tempout)
-	RunMacro("Close All Maps and Views")	
 	return(True)
 endMacro
 
@@ -275,7 +275,7 @@ Macro "Calculate Average Speeds" (Args)
      // Time period
      periods = {"AM","MD","PM","NT"}
 
-     links = CreateObject("Table", Args.Links)
+     links = CreateObject("Table", {FileName: Args.Links, LayerType: "Line"})
 	 daily_vw = links.GetView()
 
      //------------------------------------------------------------------------------------------

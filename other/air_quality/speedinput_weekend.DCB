@@ -1,5 +1,5 @@
 
-24
+24,codepage=65001
 "sourceTypeID",I,1,4,0,11,0,,"","",,"Sum",
 "roadTypeID",I,5,4,0,11,0,,"","",,"Sum",
 "hourDayID",I,9,4,0,11,0,,"","",,"Sum",
