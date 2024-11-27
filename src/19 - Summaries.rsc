@@ -26,7 +26,6 @@ endmacro
 Macro "Other Reports" (Args)
     
     RunMacro("CalcAQMovesInputs", Args)
-    Throw()
     RunMacro("Summarize HB DC and MC", Args)
     RunMacro("Summarize NHB DC and MC", Args)
     RunMacro("Summarize NM", Args)
