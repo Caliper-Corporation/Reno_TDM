@@ -37,7 +37,6 @@ Macro "Other Reports" (Args)
     RunMacro("Congestion Cost Summary", Args)
     RunMacro("Create PA Vehicle Trip Matrices", Args)
     RunMacro("Summarize HH Strata", Args)
-    RunMacro("AQ Summaries", Args)
     //RunMacro("Aggregate Transit Flow by Route", Args)
     return(1)
 endmacro
