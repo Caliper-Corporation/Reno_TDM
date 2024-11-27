@@ -917,8 +917,8 @@ While some purposes are higher or lower than the survey, the model does a good
 job of predicing total trips even before calibration.
 
 ```{r, include=FALSE}
-# Importantly, this file must be from a model run without any calibration
-# factors applied.
+# Importantly, this file must be from a model run with calibration factors
+# set to 1 (no adjustment).
 model_trips <- read_csv(
   "data/input/production_trees/modeled_trips_uncalibrated.csv") %>%
   pivot_longer(
