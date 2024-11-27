@@ -257,6 +257,10 @@ Macro "CalcAQMovesInputs" (Args)
 		end
 	end
 	CloseView(vmt1)
+	vws = GetViewNames()
+	for k = 4 to vws.length do
+		CloseView(vws[k])
+	end
 	PutInRecycleBin(tempout)
 	return(True)
 endMacro
