@@ -6,8 +6,7 @@ Macro "Home-based Productions" (Args)
     RunMacro("Create Production Features", Args)
     RunMacro("Classify Households by Market Segment", Args)
     RunMacro("Apply Production Rates", Args)
-    // TODO: uncomment when factors are updated
-    // RunMacro("Apply Calibration Factors", Args)
+    RunMacro("Apply Calibration Factors", Args)
     RunMacro("Aggregate Productions", Args)
 
     return(1)

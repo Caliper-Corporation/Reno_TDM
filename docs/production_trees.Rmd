@@ -932,8 +932,7 @@ model_trips <- read_csv(
       trip_type == "N_HBSCH" ~ trip_type,
       TRUE ~ str_sub(trip_type, 1, -4)
     )
-  ) %>%
-  rename(purpose = trip_type)
+  )
 ```
 
 ```{r}
