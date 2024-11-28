@@ -25,19 +25,18 @@ endmacro
 
 Macro "Other Reports" (Args)
     
+    RunMacro("CalcAQMovesInputs", Args)
     RunMacro("Summarize HB DC and MC", Args)
     RunMacro("Summarize NHB DC and MC", Args)
     RunMacro("Summarize NM", Args)
     RunMacro("Summarize Total Mode Shares", Args)
     RunMacro("Summarize Links", Args)
     RunMacro("Congested VMT", Args)
-    //RunMacro("Summarize Parking", Args)
     RunMacro("Transit Summary", Args)
     RunMacro("VMT_Delay Summary", Args)
     RunMacro("Congestion Cost Summary", Args)
     RunMacro("Create PA Vehicle Trip Matrices", Args)
     RunMacro("Summarize HH Strata", Args)
-    RunMacro("AQ Summaries", Args)
     //RunMacro("Aggregate Transit Flow by Route", Args)
     return(1)
 endmacro

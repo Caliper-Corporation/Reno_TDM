@@ -106,6 +106,14 @@
             "Description":"Scenario output TAZs. Modified during model run.",
             "Value":"%Output Folder%\\tazs\\scenario_tazs.dbd"
         }
+    
+    Section = "AQ Inputs"
+
+        Args.AQYear = {
+            "Type":"int",
+            "Description":"Year to use when creating MOVES input files",
+            "Value":2022
+        }
 	
 	Section = "Network Calculations|Area Type"
 	
@@ -153,7 +161,7 @@
         Args.InitCongTimes = {
             "Type":"File",
             "Description":"Initial travel time estimates",
-            "Value":"%Input Folder%\\networks\\init_cong_time_2020.bin"
+            "Value":"%Input Folder%\\networks\\init_cong_time_2022.bin"
         }
         Args.TurnProhibitions = {
             "Type":"File",
@@ -449,31 +457,4 @@
             "Type":"int",
             "Caption":"If want to save turns for AM/PM assignment, value = 1. Default value = 0.",
             "Value":0
-        }
-	
-	Section = "AQ Summaries"
-	
-        Args.AQAssign = {
-            "Type":"File",
-            "Caption":"AQAssign",
-            "Description":"Assignment for AQ Analysis",
-            "Value":"%Output Folder%\\_summaries\\AirQuality\\AQAssign.bin"
-        }
-        Args.AQVMT = {
-            "Type":"File",
-            "Caption":"AQVMT",
-            "Description":"VMT aggregations by UrbanCode, Functional Class, and Speed Category for AQ Analysis",
-            "Value":"%Output Folder%\\_summaries\\AirQuality\\AQVMT.xlsx"
-        }
-        Args.AQVHT = {
-            "Type":"File",
-            "Caption":"AQVHT",
-            "Description":"VHT aggregations by UrbanCode, Functional Class, and Speed Category for AQ Analysis",
-            "Value":"%Output Folder%\\_summaries\\AirQuality\\AQVHT.xlsx"
-        }
-        Args.AQSpeed = {
-            "Type":"File",
-            "Caption":"AQSpeed",
-            "Description":"VMT and SpeedVMT aggregations by UrbanCode and Functional Class for AQ Analysis",
-            "Value":"%Output Folder%\\_summaries\\AirQuality\\AQSpeed.xlsx"
         }

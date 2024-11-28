@@ -687,7 +687,7 @@ does a good job of predicing total trips even before calibration.</p>
 <thead>
 <tr>
 <th style="text-align:left;">
-Purpose
+Trip Type
 </th>
 <th style="text-align:right;">
 Observed
@@ -712,13 +712,13 @@ N_HBO
 237,004
 </td>
 <td style="text-align:right;">
-279,456
+271,029
 </td>
 <td style="text-align:right;">
-42,452
+34,026
 </td>
 <td style="text-align:right;">
-18
+14
 </td>
 </tr>
 <tr>
@@ -729,13 +729,13 @@ N_HBSCH
 91,037
 </td>
 <td style="text-align:right;">
-104,383
+105,942
 </td>
 <td style="text-align:right;">
-13,346
+14,905
 </td>
 <td style="text-align:right;">
-15
+16
 </td>
 </tr>
 <tr>
@@ -746,13 +746,13 @@ N_HBSHP
 190,471
 </td>
 <td style="text-align:right;">
-184,977
+182,342
 </td>
 <td style="text-align:right;">
--5,494
+-8,130
 </td>
 <td style="text-align:right;">
--3
+-4
 </td>
 </tr>
 <tr>
@@ -763,13 +763,13 @@ N_HBSR
 215,651
 </td>
 <td style="text-align:right;">
-212,010
+204,147
 </td>
 <td style="text-align:right;">
--3,641
+-11,504
 </td>
 <td style="text-align:right;">
--2
+-5
 </td>
 </tr>
 <tr>
@@ -780,13 +780,13 @@ W_HBO
 111,315
 </td>
 <td style="text-align:right;">
-102,213
+118,982
 </td>
 <td style="text-align:right;">
--9,101
+7,668
 </td>
 <td style="text-align:right;">
--8
+7
 </td>
 </tr>
 <tr>
@@ -797,13 +797,13 @@ W_HBW
 232,059
 </td>
 <td style="text-align:right;">
-199,968
+240,432
 </td>
 <td style="text-align:right;">
--32,091
+8,374
 </td>
 <td style="text-align:right;">
--14
+4
 </td>
 </tr>
 <tr>
@@ -814,13 +814,13 @@ All
 1,077,536
 </td>
 <td style="text-align:right;">
-1,083,007
+1,122,874
 </td>
 <td style="text-align:right;">
-5,472
+45,338
 </td>
 <td style="text-align:right;">
-0
+4
 </td>
 </tr>
 </tbody>
@@ -833,7 +833,7 @@ weight).</p>
 <thead>
 <tr>
 <th style="text-align:left;">
-Purpose
+Trip Type
 </th>
 <th style="text-align:left;">
 segment
@@ -852,7 +852,7 @@ N_HBO
 v0
 </td>
 <td style="text-align:right;">
-0.64
+0.78
 </td>
 </tr>
 <tr>
@@ -863,7 +863,7 @@ N_HBO
 vi
 </td>
 <td style="text-align:right;">
-1.19
+1.35
 </td>
 </tr>
 <tr>
@@ -874,7 +874,7 @@ N_HBO
 vs
 </td>
 <td style="text-align:right;">
-0.78
+0.76
 </td>
 </tr>
 <tr>
@@ -884,7 +884,7 @@ N_HBSCH
 <td style="text-align:left;">
 </td>
 <td style="text-align:right;">
-0.87
+0.86
 </td>
 </tr>
 <tr>
@@ -895,7 +895,7 @@ N_HBSHP
 v0
 </td>
 <td style="text-align:right;">
-1.60
+2.10
 </td>
 </tr>
 <tr>
@@ -906,7 +906,7 @@ N_HBSHP
 vi
 </td>
 <td style="text-align:right;">
-1.37
+1.50
 </td>
 </tr>
 <tr>
@@ -917,7 +917,7 @@ N_HBSHP
 vs
 </td>
 <td style="text-align:right;">
-0.83
+0.80
 </td>
 </tr>
 <tr>
@@ -928,7 +928,7 @@ N_HBSR
 v0
 </td>
 <td style="text-align:right;">
-1.62
+1.86
 </td>
 </tr>
 <tr>
@@ -939,12 +939,45 @@ N_HBSR
 vi
 </td>
 <td style="text-align:right;">
-1.41
+1.56
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
 N_HBSR
+</td>
+<td style="text-align:left;">
+vs
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+W_HBO
+</td>
+<td style="text-align:left;">
+v0
+</td>
+<td style="text-align:right;">
+0.87
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+W_HBO
+</td>
+<td style="text-align:left;">
+vi
+</td>
+<td style="text-align:right;">
+1.33
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+W_HBO
 </td>
 <td style="text-align:left;">
 vs
@@ -955,46 +988,13 @@ vs
 </tr>
 <tr>
 <td style="text-align:left;">
-W_HBO
-</td>
-<td style="text-align:left;">
-v0
-</td>
-<td style="text-align:right;">
-0.65
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-W_HBO
-</td>
-<td style="text-align:left;">
-vi
-</td>
-<td style="text-align:right;">
-1.68
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-W_HBO
-</td>
-<td style="text-align:left;">
-vs
-</td>
-<td style="text-align:right;">
-0.98
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 W_HBW
 </td>
 <td style="text-align:left;">
 v0
 </td>
 <td style="text-align:right;">
-1.47
+1.27
 </td>
 </tr>
 <tr>
@@ -1005,7 +1005,7 @@ W_HBW
 vi
 </td>
 <td style="text-align:right;">
-1.74
+1.38
 </td>
 </tr>
 <tr>
@@ -1016,7 +1016,7 @@ W_HBW
 vs
 </td>
 <td style="text-align:right;">
-0.93
+0.79
 </td>
 </tr>
 </tbody>

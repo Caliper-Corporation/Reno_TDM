@@ -21,7 +21,7 @@
 "College",R,149,8,0,16,2,,"","",,"Sum",
 "StudGQ_UNR",R,157,8,0,16,2,,"","",,"Sum",
 "StudOff_UNR",R,165,8,0,16,2,,"","",,"Sum",
-"BuildingS_UNR",R,173,8,0,16,2,,"","",,"Sum",
+"BuildingS_UNR",R,173,8,0,16,2,,"","Building square footage (1000s)",,"Sum",
 "NAICS11",R,181,8,0,16,2,,"","",,"Sum",
 "NAICS21",R,189,8,0,16,2,,"","",,"Sum",
 "NAICS22",R,197,8,0,16,2,,"","",,"Sum",
