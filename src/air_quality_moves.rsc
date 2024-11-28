@@ -258,7 +258,9 @@ Macro "CalcAQMovesInputs" (Args)
 	end
 	CloseView(vmt1)
 	vws = GetViewNames()
-	for k = 4 to vws.length do
+	for k = 1 to vws.length do
+		if vws[k] = "master_links" then continue
+		if vws[k] = "master_nodes" then continue
 		CloseView(vws[k])
 	end
 	PutInRecycleBin(tempout)
