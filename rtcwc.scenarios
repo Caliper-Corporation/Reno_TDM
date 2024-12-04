@@ -9,3 +9,38 @@ Scenario "base_2022"
     FeedbackConvergence = 1
 EndScenario
     
+    
+Scenario "2025"
+    
+    [Master SE] = "%Master Folder%\\sedata\\se_2025.bin"
+    [Scenario Folder] = "%Scenarios Folder%\\2025"
+EndScenario
+    
+    
+Scenario "2030"
+    
+    [Master SE] = "%Master Folder%\\sedata\\se_2030.bin"
+    [Scenario Folder] = "%Scenarios Folder%\\2030"
+EndScenario
+    
+    
+Scenario "2035"
+    
+    [Master SE] = "%Master Folder%\\sedata\\se_2035.bin"
+    [Scenario Folder] = "%Scenarios Folder%\\2035"
+EndScenario
+    
+    
+Scenario "2040"
+    
+    [Master SE] = "%Master Folder%\\sedata\\se_2040.bin"
+    [Scenario Folder] = "%Scenarios Folder%\\2040"
+EndScenario
+    
+    
+Scenario "2050"
+    
+    [Master SE] = "%Master Folder%\\sedata\\se_2050.bin"
+    [Scenario Folder] = "%Scenarios Folder%\\2050"
+EndScenario
+    
