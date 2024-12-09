@@ -1,3 +1,21 @@
+    Section = "Define Scenario"
+        
+        Args.[Scenario Folder] = {
+            "Type":"Folder",
+            "Description":"Scenario folder",
+            "Value":"%Scenarios Folder%\\base_2020"
+        }
+        Args.[Master SE] = {
+            "Type":"File",
+            "Description":"Master SE data bin file",
+            "Value":"%Master Folder%\\sedata\\se_2020.bin"
+        }
+        Args.AQYear = {
+            "Type":"int",
+            "Description":"Year to use when creating MOVES input files",
+            "Value":2022
+        }
+
 	Section = "Master Files"
 	
         Args.[Base Folder] = {
@@ -25,11 +43,7 @@
             "Description":"Master TAZs",
             "Value":"%Master Folder%\\tazs\\master_tazs.dbd"
         }
-        Args.[Master SE] = {
-            "Type":"File",
-            "Description":"Master SE data bin file",
-            "Value":"%Master Folder%\\sedata\\se_2020.bin"
-        }
+
 	
 	Section = "Main Scenario Inputs"
 	
@@ -37,11 +51,6 @@
             "Type":"Folder",
             "Description":"Directory that holds all scenario folders",
             "Value":"%Base Folder%\\scenarios"
-        }
-        Args.[Scenario Folder] = {
-            "Type":"Folder",
-            "Description":"Scenario folder",
-            "Value":"%Scenarios Folder%\\base_2020"
         }
         Args.[Input Folder] = {
             "Type":"Folder",
@@ -105,14 +114,6 @@
             "Type":"File",
             "Description":"Scenario output TAZs. Modified during model run.",
             "Value":"%Output Folder%\\tazs\\scenario_tazs.dbd"
-        }
-    
-    Section = "AQ Inputs"
-
-        Args.AQYear = {
-            "Type":"int",
-            "Description":"Year to use when creating MOVES input files",
-            "Value":2022
         }
 	
 	Section = "Network Calculations|Area Type"
