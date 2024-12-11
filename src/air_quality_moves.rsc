@@ -105,6 +105,13 @@ Macro "CalcAQMovesInputs" (Args)
 		
 		//4. Ramp
 		SetView(jnvw_AQ)
+		// set uprban ramps to roadtype 8
+		table = CreateObject("Table", jnvw_AQ)
+		v_roadtype = table.RoadType
+		v_urban = table.Urban
+		v_newrt = if v_roadtype = 8 and v_urban = 1 then 9 else v_roadtype
+		table.roadtype = v_newrt
+		table = null
 		ramp = OpenTable("ramp", "CSV", {rampfile, })
 		rampjn = JoinViewsMulti("rampjn", {ramp+".roadTypeID", ramp+".Ramp"}, {jnvw_AQ+".Roadtype",jnvw_AQ+".IsRamp"}, {{"A",}}) 
 		CreateExpression(rampjn, "Ur", "if roadTypeID =4 or roadTypeID =5 then '1' else '0'",)
@@ -114,7 +121,7 @@ Macro "CalcAQMovesInputs" (Args)
 		rampout = JoinViews("rampout", rampjn+".Ur", rampagg+".GroupedBy(Ur)", {{"L",}})
 		CreateExpression(rampout, "rampFraction", "adj_Daily_VHT/[Sum(adj_Daily_VHT)]",)
 		SetView(rampout)
-		SelectByQuery("ramp", "several", "Select * where (roadTypeID=2 or roadTypeID=4) and Ramp = 'Ramp'") //newadded
+		SelectByQuery("ramp", "several", "Select * where (roadTypeID=8 or roadTypeID=9)") //newadded
 		ExportView(rampout+"|ramp", "CSV", output_location+"Ramp_"+HAstr+".csv", {"roadTypeID","rampFraction"}, {{"CSV Header", "True"}})
 		CloseView(ramp)
 		CloseView(rampjn)
@@ -224,7 +231,6 @@ Macro "CalcAQMovesInputs" (Args)
 			spdfile = model_dir + "\\other\\air_quality\\fixed_data\\speedinput_"+TOD+".bin"
 			spd = opentable("spd", "FFB", {spdfile, })
 			spdjn =  JoinViewsMulti("spdjn", {"spd.roadTypeID", "spd.avgSpeedBinID"}, {tdjnvw+".Roadtype", tdjnvw+".speedbin"}, {{"A",}}) 
-
 			//ExportView(spdjn+"|", "FFB", tempout+"\\"+TOD+"_spdjn.bin", {"sourceTypeID", "roadTypeID", "hourDayID", "avgSpeedBinID","Tot_VHT"}, )
 			
 			spdagg = SelfAggregate("tdjnvw", tdjnvw+".Roadtype", )
@@ -234,7 +240,6 @@ Macro "CalcAQMovesInputs" (Args)
 			CreateExpression(spdout, "avgSpeedFraction", "if SpeedFraction>0 then SpeedFraction else 0",) //fill in zero
 			
 			ExportView(spdout+"|", "FFB", outputname, {"sourceTypeID", "roadTypeID", "hourDayID", "avgSpeedBinID", "avgSpeedFraction"} , )
-
 			CloseView(spdout)
 			CloseView(spdagg)
 			CloseView(spdjn)
