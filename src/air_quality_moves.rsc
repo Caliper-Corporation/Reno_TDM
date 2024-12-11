@@ -174,7 +174,7 @@ Macro "CalcAQMovesInputs" (Args)
 		
 		SetView(jnvw_AQ)
 		hourvmtjn = JoinViews("hourvmt", hourinput+".roadTypeID", jnvw_AQ+".Roadtype", {{"A",}})
-		vmt_expr = "if TOD='NT' then adj_NT_VMT/11 else if TOD='AM' then adj_AM_VMT/3 else if TOD='MD' then adj_MD_VMT/7 else if TOD='PM' then adj_PM_VMT/3" 
+		vmt_expr = "if TOD='NT' then adj_NT_VMT/13 else if TOD='AM' then adj_AM_VMT/2 else if TOD='MD' then adj_MD_VMT/6 else if TOD='PM' then adj_PM_VMT/3" 
 		CreateExpression(hourvmtjn, "hourlyVMT", vmt_expr,)
 		pct_expr = "if dayID = 5 then hourlyVMT/adj_Daily_VMT else hourVMTFraction" //weekend data should be left as is
 		CreateExpression(hourvmtjn, "hourVMTFraction", pct_expr,)
