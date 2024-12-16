@@ -96,7 +96,9 @@ Macro "CalcAQMovesInputs" (Args)
 		CreateExpression(jnvw, "IsRamp", "if AQClass =8 or AQClass =9 then 'Ramp' else 'NonRamp'",)
 		SelectByQuery("AQ", "several", "Select * where HA>=" + HAid + " and Roadtype>0")
 		ExportView(jnvw+"|AQ", "FFB", tempout+"\\Street_AQ.bin", 
-					{mvw_line+".ID", mvw_line+".Length", mvw_line+".Urban", mvw_line+".Roadtype", jnvw+".IsRamp", jnvw+".adj_Daily_VMT", jnvw+".adj_Daily_VHT",
+					{mvw_line+".ID", mvw_line+".Length", mvw_line+".Urban", mvw_line+".Roadtype",
+					mvw_line+".AQclass",
+					jnvw+".IsRamp", jnvw+".adj_Daily_VMT", jnvw+".adj_Daily_VHT",
 					jnvw+".adj_AM_VMT", jnvw+".adj_MD_VMT", jnvw+".adj_PM_VMT", jnvw+".adj_NT_VMT", 
 					jnvw+".adj_AM_VHT", jnvw+".adj_MD_VHT", jnvw+".adj_PM_VHT", jnvw+".adj_NT_VHT", 
 					jnvw+".AM_Avg_Speed",jnvw+".MD_Avg_Speed",jnvw+".PM_Avg_Speed",jnvw+".NT_Avg_Speed"
@@ -197,10 +199,9 @@ Macro "CalcAQMovesInputs" (Args)
 			{"Total_VMT", TotVMT}
 		})
 		
-		vmt2 = SelfAggregate("vmt2", jnvw_AQ+".Roadtype", {"Fields", {"adj_Daily_VMT", {{"Sum"}}}, {"AM_Avg_Speed", {{"Avg", Length}}} }) //Fields option is not working
-		ExportView(vmt2+"|", "CSV", output_location+"Report_byRoadtype_"+HAstr+".csv", {"GroupedBy(Roadtype)", "Sum(adj_Daily_VMT)", "Avg(AM_Avg_Speed)", "Avg(MD_Avg_Speed)", "Avg(PM_Avg_Speed)","Avg(NT_Avg_Speed)"} , {{"CSV Header", "True"}})
+		vmt2 = SelfAggregate("vmt2", jnvw_AQ+".AQclass", {"Fields", {"adj_Daily_VMT", {{"Sum"}}}, {"AM_Avg_Speed", {{"Avg", Length}}} }) //Fields option is not working
+		ExportView(vmt2+"|", "CSV", output_location+"Report_byAQclass_"+HAstr+".csv", {"GroupedBy(AQclass)", "Sum(adj_Daily_VMT)", "Avg(AM_Avg_Speed)", "Avg(MD_Avg_Speed)", "Avg(PM_Avg_Speed)","Avg(NT_Avg_Speed)"} , {{"CSV Header", "True"}})
 		//ExportView(vmt2+"|", "CSV", output_location+"Report_byRoadtype_"+HAstr+".csv",  , {{"CSV Header", "True"}})
-		
 		CloseView(jnvw_AQ)
 		
 		//8. Speed output	
