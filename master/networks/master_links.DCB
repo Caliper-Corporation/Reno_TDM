@@ -16,7 +16,7 @@ RTC Master Network
 "WalkSpeed",R,213,8,0,10,2,,"","Use this field to override the default walk speed (3 mph)|Faster speeds can be used to represent sidewalks.",,"Copy",
 "BikeSpeed",R,221,8,0,10,2,,"","Use this field to override the default bike speed (15 mph).|Faster speeds can be used to represent bike lanes or other accommodations.",,"Copy",
 "CountID",I,229,4,0,8,0,,"","",,"Copy",
-"DailyCount",I,233,4,0,8,0,,"","2020 AWDT count volume",,"Copy",
+"DailyCount",I,233,4,0,8,0,,"","2022 AWDT count volume (October)",,"Copy",
 "TruckCount",I,237,4,0,8,0,,"","",,"Copy",
 "Screenline",I,241,4,0,8,0,,"","The screenline this link belongs to (if any)",,"Copy",
 "Cutline",I,245,4,0,8,0,,"","",,"Copy",
