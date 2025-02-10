@@ -29,6 +29,34 @@ veh_summary <- hh %>%
   mutate(
     model = round(weight / sum(weight) * 100, 0),
     survey = c(7, 28, 42, 16, 7)
-  )
+  ) %>%
+  select(-weight)
+
+
+size_summary <- hh %>%
+  mutate(
+    hhsize = Number_Persons,
+    hhsize = ifelse(hhsize > 6, 6, hhsize)
+  ) %>%
+  group_by(hhsize) %>%
+  summarize(weight = sum(Weight_Factor, na.rm = TRUE)) %>%
+  mutate(
+    model = round(weight / sum(weight) * 100, 0),
+    survey = c(27, 34,15,12,6,5)
+  ) %>%
+  select(-weight)
+
+wrk_summary <- hh %>%
+  mutate(
+    workers = Number_Employed,
+    workers = ifelse(workers > 3, 3, workers)
+  ) %>%
+  group_by(workers) %>%
+  summarize(weight = sum(Weight_Factor, na.rm = TRUE)) %>%
+  mutate(
+    model = round(weight / sum(weight) * 100, 0),
+    survey = c(17, 34, 40, 9)
+  ) %>%
+  select(-weight)
 ```
 
