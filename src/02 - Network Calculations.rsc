@@ -1217,7 +1217,7 @@ Macro "Create Route Networks" (Args)
                     TransferWait: 3,
                     Dwelling: 2,
                     WalkTimeFactor: 3,
-                    DriveTimeFactor: 1
+                    DriveTimeFactor: 2
                 })
                 o.Fare({
                     Type: "Flat",
