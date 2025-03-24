@@ -8,6 +8,7 @@ Macro "Disaggregate Curves" (Args)
 endmacro
 
 Macro "IPU Synthesis" (Args)
+    RunMacro("Check Household Fields", Args)
     RunMacro("Synthesize Population", Args)
     RunMacro("PopSynth Post Process", Args)
     return(1)
@@ -154,6 +155,34 @@ Macro "Disaggregate SE HH Data"(opt)
 
     DestroyExpression(GetFieldFullSpec(vw, exprFinal))
 endMacro
+
+/*
+Ensures that the HH and the HH by size fields (e.g. HHOF1) are consistent
+*/
+
+Macro "Check Household Fields" (Args)
+
+    se_file = Args.SEDMarginals
+
+    se = CreateObject("Table", se_file)
+    tot_sizes = se.HHOF1 + se.HHOF2 + se.HHOF3 + se.HHOF4 + se.HHOF5 + se.HHOF6 + se.HHOF7
+    v_check = Vector(tot_sizes.Length, "Long", {{"Constant", 0}})
+    v_check = if tot_sizes <> se.HH then 1 else 0
+    if v_check.sum() > 0 then do
+        se.AddField("HH_Check")
+        se.HH_Check = v_check
+        se.SelectByQuery({
+            SetName: "HH Issues",
+            Query: "HH_Check = 1"
+        })
+        se.View("SE Table")
+        SetEditorView("SE Table", se.GetView() + "|HH Issues")
+        Throw(
+            "Household fields are inconsistent. Check HH and HH by size fields." +
+            "Use 'HH_Check = 1' in the SE table to see which zones don't match."
+        )
+    end
+endmacro
 
 /*
     * Macro that performs population synthesis using the TransCAD (9.0) built-in procedure. 
