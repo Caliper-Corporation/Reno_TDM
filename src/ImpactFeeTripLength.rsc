@@ -90,7 +90,7 @@ Macro "ImpactFeeTripLength" (Args)
     // Trips and Weighted Distance by time period and district (periods x districts x 2)
     dim a_results[a_period.length,num_dist,2]
 
-    WriteLine(report, "TOD,Avg Trip Length to North, Avg Trip Length to South")
+    WriteLine(report, "TOD,Avg Trip Length to Other,Avg Trip Length to North, Avg Trip Length to South")
 
 	// Loop over TOD
 
