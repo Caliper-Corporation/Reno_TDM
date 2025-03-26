@@ -39,7 +39,7 @@ Macro "ImpactFeeTripLength" (Args)
 	// Fill in the RegLength field
     link_tbl.SelectByQuery({
         SetName: "regroads",
-        Filter: "Regional_Road <> 0"
+        Filter: "Regional_Road = 1"
     })
 
     link_tbl.RegLength = link_tbl.Length
@@ -178,8 +178,8 @@ Macro "ImpactFeeTripLength" (Args)
         a_column_labels = mtx_aggRLxTRP.GetVector({Core: "RLxTRIPS", Index: "Row"})
 
         // Get matrix marginals
-        a_tripto = mtx_aggavg.GetVector({Core: "nontransit", Marginal: "Row Sum"})
-        a_wghtdistto = mtx_aggRLxTRP.GetVector({Core: "RLxTRIPS", Marginal: "Row Sum"})
+        a_tripto = mtx_aggavg.GetVector({Core: "nontransit", Marginal: "Column Sum"})
+        a_wghtdistto = mtx_aggRLxTRP.GetVector({Core: "RLxTRIPS", Marginal: "Column Sum"})
 
         // Calculate the final averages
         string = a_period[t]
