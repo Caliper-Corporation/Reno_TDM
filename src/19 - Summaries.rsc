@@ -25,6 +25,7 @@ endmacro
 
 Macro "Other Reports" (Args)
     
+    RunMacro("ImpactFeeTripLength", Args)
     RunMacro("CalcAQMovesInputs", Args)
     RunMacro("Summarize HB DC and MC", Args)
     RunMacro("Summarize NHB DC and MC", Args)

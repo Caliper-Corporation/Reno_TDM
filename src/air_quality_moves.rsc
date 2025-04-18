@@ -96,7 +96,9 @@ Macro "CalcAQMovesInputs" (Args)
 		CreateExpression(jnvw, "IsRamp", "if AQClass =8 or AQClass =9 then 'Ramp' else 'NonRamp'",)
 		SelectByQuery("AQ", "several", "Select * where HA>=" + HAid + " and Roadtype>0")
 		ExportView(jnvw+"|AQ", "FFB", tempout+"\\Street_AQ.bin", 
-					{mvw_line+".ID", mvw_line+".Length", mvw_line+".Urban", mvw_line+".Roadtype", jnvw+".IsRamp", jnvw+".adj_Daily_VMT", jnvw+".adj_Daily_VHT",
+					{mvw_line+".ID", mvw_line+".Length", mvw_line+".Urban", mvw_line+".Roadtype",
+					mvw_line+".AQclass",
+					jnvw+".IsRamp", jnvw+".adj_Daily_VMT", jnvw+".adj_Daily_VHT",
 					jnvw+".adj_AM_VMT", jnvw+".adj_MD_VMT", jnvw+".adj_PM_VMT", jnvw+".adj_NT_VMT", 
 					jnvw+".adj_AM_VHT", jnvw+".adj_MD_VHT", jnvw+".adj_PM_VHT", jnvw+".adj_NT_VHT", 
 					jnvw+".AM_Avg_Speed",jnvw+".MD_Avg_Speed",jnvw+".PM_Avg_Speed",jnvw+".NT_Avg_Speed"
@@ -105,6 +107,13 @@ Macro "CalcAQMovesInputs" (Args)
 		
 		//4. Ramp
 		SetView(jnvw_AQ)
+		// set uprban ramps to roadtype 8
+		table = CreateObject("Table", jnvw_AQ)
+		v_roadtype = table.RoadType
+		v_urban = table.Urban
+		v_newrt = if v_roadtype = 8 and v_urban = 1 then 9 else v_roadtype
+		table.roadtype = v_newrt
+		table = null
 		ramp = OpenTable("ramp", "CSV", {rampfile, })
 		rampjn = JoinViewsMulti("rampjn", {ramp+".roadTypeID", ramp+".Ramp"}, {jnvw_AQ+".Roadtype",jnvw_AQ+".IsRamp"}, {{"A",}}) 
 		CreateExpression(rampjn, "Ur", "if roadTypeID =4 or roadTypeID =5 then '1' else '0'",)
@@ -114,7 +123,7 @@ Macro "CalcAQMovesInputs" (Args)
 		rampout = JoinViews("rampout", rampjn+".Ur", rampagg+".GroupedBy(Ur)", {{"L",}})
 		CreateExpression(rampout, "rampFraction", "adj_Daily_VHT/[Sum(adj_Daily_VHT)]",)
 		SetView(rampout)
-		SelectByQuery("ramp", "several", "Select * where (roadTypeID=2 or roadTypeID=4) and Ramp = 'Ramp'") //newadded
+		SelectByQuery("ramp", "several", "Select * where (roadTypeID=8 or roadTypeID=9)") //newadded
 		ExportView(rampout+"|ramp", "CSV", output_location+"Ramp_"+HAstr+".csv", {"roadTypeID","rampFraction"}, {{"CSV Header", "True"}})
 		CloseView(ramp)
 		CloseView(rampjn)
@@ -174,7 +183,7 @@ Macro "CalcAQMovesInputs" (Args)
 		
 		SetView(jnvw_AQ)
 		hourvmtjn = JoinViews("hourvmt", hourinput+".roadTypeID", jnvw_AQ+".Roadtype", {{"A",}})
-		vmt_expr = "if TOD='NT' then adj_NT_VMT/11 else if TOD='AM' then adj_AM_VMT/3 else if TOD='MD' then adj_MD_VMT/7 else if TOD='PM' then adj_PM_VMT/3" 
+		vmt_expr = "if TOD='NT' then adj_NT_VMT/13 else if TOD='AM' then adj_AM_VMT/2 else if TOD='MD' then adj_MD_VMT/6 else if TOD='PM' then adj_PM_VMT/3" 
 		CreateExpression(hourvmtjn, "hourlyVMT", vmt_expr,)
 		pct_expr = "if dayID = 5 then hourlyVMT/adj_Daily_VMT else hourVMTFraction" //weekend data should be left as is
 		CreateExpression(hourvmtjn, "hourVMTFraction", pct_expr,)
@@ -190,10 +199,9 @@ Macro "CalcAQMovesInputs" (Args)
 			{"Total_VMT", TotVMT}
 		})
 		
-		vmt2 = SelfAggregate("vmt2", jnvw_AQ+".Roadtype", {"Fields", {"adj_Daily_VMT", {{"Sum"}}}, {"AM_Avg_Speed", {{"Avg", Length}}} }) //Fields option is not working
-		ExportView(vmt2+"|", "CSV", output_location+"Report_byRoadtype_"+HAstr+".csv", {"GroupedBy(Roadtype)", "Sum(adj_Daily_VMT)", "Avg(AM_Avg_Speed)", "Avg(MD_Avg_Speed)", "Avg(PM_Avg_Speed)","Avg(NT_Avg_Speed)"} , {{"CSV Header", "True"}})
+		vmt2 = SelfAggregate("vmt2", jnvw_AQ+".AQclass", {"Fields", {"adj_Daily_VMT", {{"Sum"}}}, {"AM_Avg_Speed", {{"Avg", Length}}} }) //Fields option is not working
+		ExportView(vmt2+"|", "CSV", output_location+"Report_byAQclass_"+HAstr+".csv", {"GroupedBy(AQclass)", "Sum(adj_Daily_VMT)", "Avg(AM_Avg_Speed)", "Avg(MD_Avg_Speed)", "Avg(PM_Avg_Speed)","Avg(NT_Avg_Speed)"} , {{"CSV Header", "True"}})
 		//ExportView(vmt2+"|", "CSV", output_location+"Report_byRoadtype_"+HAstr+".csv",  , {{"CSV Header", "True"}})
-		
 		CloseView(jnvw_AQ)
 		
 		//8. Speed output	
@@ -224,7 +232,6 @@ Macro "CalcAQMovesInputs" (Args)
 			spdfile = model_dir + "\\other\\air_quality\\fixed_data\\speedinput_"+TOD+".bin"
 			spd = opentable("spd", "FFB", {spdfile, })
 			spdjn =  JoinViewsMulti("spdjn", {"spd.roadTypeID", "spd.avgSpeedBinID"}, {tdjnvw+".Roadtype", tdjnvw+".speedbin"}, {{"A",}}) 
-
 			//ExportView(spdjn+"|", "FFB", tempout+"\\"+TOD+"_spdjn.bin", {"sourceTypeID", "roadTypeID", "hourDayID", "avgSpeedBinID","Tot_VHT"}, )
 			
 			spdagg = SelfAggregate("tdjnvw", tdjnvw+".Roadtype", )
@@ -234,7 +241,6 @@ Macro "CalcAQMovesInputs" (Args)
 			CreateExpression(spdout, "avgSpeedFraction", "if SpeedFraction>0 then SpeedFraction else 0",) //fill in zero
 			
 			ExportView(spdout+"|", "FFB", outputname, {"sourceTypeID", "roadTypeID", "hourDayID", "avgSpeedBinID", "avgSpeedFraction"} , )
-
 			CloseView(spdout)
 			CloseView(spdagg)
 			CloseView(spdjn)
