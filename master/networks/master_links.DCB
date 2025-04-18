@@ -1,5 +1,5 @@
 RTC Master Network
-629,codepage=1252
+634,codepage=1252
 "ID",I,1,4,0,4,0,,"","",,"Sum",
 "RoadName",C,5,50,0,50,0,,"","Name of street/roadway represented by the polyline.",,"Copy",
 "AltName",C,55,50,0,50,0,,"","",,"Copy",
@@ -16,7 +16,7 @@ RTC Master Network
 "WalkSpeed",R,213,8,0,10,2,,"","Use this field to override the default walk speed (3 mph)|Faster speeds can be used to represent sidewalks.",,"Copy",
 "BikeSpeed",R,221,8,0,10,2,,"","Use this field to override the default bike speed (15 mph).|Faster speeds can be used to represent bike lanes or other accommodations.",,"Copy",
 "CountID",I,229,4,0,8,0,,"","",,"Copy",
-"DailyCount",I,233,4,0,8,0,,"","2020 AWDT count volume",,"Copy",
+"DailyCount",I,233,4,0,8,0,,"","2022 AWDT count volume (October)",,"Copy",
 "TruckCount",I,237,4,0,8,0,,"","",,"Copy",
 "Screenline",I,241,4,0,8,0,,"","The screenline this link belongs to (if any)",,"Copy",
 "Cutline",I,245,4,0,8,0,,"","",,"Copy",
@@ -83,3 +83,5 @@ RTC Master Network
 "Urban",S,619,2,0,1,0,,"","If the link is in the urban boundary. 1=yes; 0= no. For AQ Analysis.",,"Copy",
 "RoadType",S,621,2,0,1,0,,"","MOVES road type. 1:Off-Network, 2=Rural Restricted Access, 3=Rural Unrestricted Access, 4=Urban Restricted Access, 5=Urban Unrestricted Access, 7=local, 8=ramp",,"Copy",
 "NewProject",C,623,7,0,7,0,,"","",,"Copy",
+"Pvm",I,630,4,0,1,0,,"","",,"Sum",
+"RRIFType",C,634,1,0,1,0,,"","",,"Copy",

@@ -917,8 +917,8 @@ While some purposes are higher or lower than the survey, the model does a good
 job of predicing total trips even before calibration.
 
 ```{r, include=FALSE}
-# Importantly, this file must be from a model run without any calibration
-# factors applied.
+# Importantly, this file must be from a model run with calibration factors
+# set to 1 (no adjustment).
 model_trips <- read_csv(
   "data/input/production_trees/modeled_trips_uncalibrated.csv") %>%
   pivot_longer(
@@ -932,8 +932,7 @@ model_trips <- read_csv(
       trip_type == "N_HBSCH" ~ trip_type,
       TRUE ~ str_sub(trip_type, 1, -4)
     )
-  ) %>%
-  rename(purpose = trip_type)
+  )
 ```
 
 ```{r}
@@ -954,7 +953,8 @@ survey_trips <- trips %>%
   summarize(survey = sum(Weight_Factor) * pop_factor)
 
 calibration_trips <- survey_trips %>%
-  left_join(model_trips, by = c("purpose", "segment")) %>%
+  rename(trip_type = purpose) %>%
+  left_join(model_trips, by = c("trip_type", "segment")) %>%
   mutate(
     diff = model - survey,
     `pct_diff` = round(diff / survey * 100, 1)
@@ -962,7 +962,7 @@ calibration_trips <- survey_trips %>%
   ungroup()
 
 rollup <- calibration_trips %>%
-  group_by(purpose) %>%
+  group_by(trip_type) %>%
   summarize(
     survey = sum(survey),
     model = sum(model)
@@ -975,7 +975,7 @@ rollup <- calibration_trips %>%
 
 total <- rollup %>%
   summarize(
-    purpose = "All",
+    trip_type = "All",
     survey = sum(survey),
     model = sum(model)
   ) %>%
@@ -988,7 +988,7 @@ total <- bind_rows(rollup, total)
 
 total %>%
   rename(
-    Purpose = purpose,
+    `Trip Type` = trip_type,
     Observed = survey,
     Modelled = model,
     Difference = diff,
@@ -1005,14 +1005,14 @@ making matches the survey (based on trip weight).
 ```{r}
 calib_factors <- calibration_trips %>%
   mutate(factor = survey / model) %>%
-  select(purpose, segment, factor) %>%
+  select(trip_type, segment, factor) %>%
   mutate(
     # factor = factor * 0.963, # final validation factor based on counts
     factor = round(factor, 3)
   ) 
 
 calib_factors %>%
-  rename(Purpose = purpose, Factor = factor) %>%
+  rename(`Trip Type` = trip_type, Factor = factor) %>%
   kable(digits = 2) %>%
   kable_styling(full_width = FALSE)
 ```
