@@ -1217,7 +1217,7 @@ Macro "Create Route Networks" (Args)
                     TransferWait: 3,
                     Dwelling: 2,
                     WalkTimeFactor: 3,
-                    DriveTimeFactor: 2
+                    DriveTimeFactor: 10 // enforces drive to nearest lot or knr stop
                 })
                 o.Fare({
                     Type: "Flat",
