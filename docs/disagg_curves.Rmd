@@ -36,8 +36,8 @@ taz <- sf::read_sf("data/input/tazs/master_tazs.shp") %>%
 taz <- st_transform(taz, st_crs(acs_bg)) %>% st_make_valid()
 ```
 
-The first step in synthesizing the population of residents in the TRMG2 is to 
-develop univariate or one-dimensional marginal distributions describing the 
+The first step in synthesizing the population of residents in the model is to 
+develop univariate, or one-dimensional, marginal distributions describing the 
 population in each zone based on the limited demographic variables forecast 
 for each zone, typically averages. In other words, the model starts by 
 determining the number of single person, two person, three person, etc., 
@@ -51,14 +51,13 @@ data development for future year scenarios which is difficult for agencies
 lacking staff dedicated to demographic forecasting. 
 
 Therefore, to keep the data development burden as light as possible, Caliper has
-retained the approach of using stratification curves in the TRMG2, although the
-specific implementation has changed. These curves simply encode information on
-the extent to which, for example, a zone with 3.5 persons-per-household on
+opted to use stratification curves in the model. These curves encode information
+on the extent to which, for example, a zone with 3.5 persons-per-household on
 average will have a high percentage of 3- and 4-person households and a zone
 with an average of 1.5 persons-per- household will have more 1- and 2-person
 households.
 
-In the Triangle, the marginal distribution curves estimated are:
+In the model, the marginal distribution curves estimated are:
 
   * Size (1-4+)
   * Income
@@ -71,31 +70,30 @@ In the Triangle, the marginal distribution curves estimated are:
 These curves are estimated from Census data, and the data is taken from
 different data products and geographies depending on availability. For example,
 the data needed to estimate the worker curve is only available from the American
-Community Survey (ACS) product known as the Census Transportation Planning
-Package (CTPP). Vehicle and income information is available from the ACS 5-year
-file directly, and size information is available from multiple products.
+Community Survey (ACS) 5-year at the tract level. Vehicle and income information
+is available from the ACS at the block group level.
 
 ```{r, include=FALSE}
-# Read in worker data from CTPP table A112109 at the TAZ level.
-# It isn't available from the ACS at anything below tract, which is too coarse.
-ctpp_tbl <- read_csv(
-  "data/input/census_data/2012_2016_ctpp_workers.csv", skip = 2
-) %>%
-  rename(variable = `Number of Workers in Household 6`, value = Households) %>%
-  select(RESIDENCE, variable, value) %>%
-  mutate(
-    variable = case_when(
-      variable == "Total, number of workers in household" ~ "hh_tot",
-      variable == "0 workers" ~ "wrk0",
-      variable == "1 worker" ~ "wrk1",
-      variable == "2 workers" ~ "wrk2",
-      variable == "3 workers" ~ "wrk3", 
-      variable == "4-or-more workers" ~ "wrk4"
-    )
-  ) %>%
-  filter(!is.na(variable)) %>%
-  spread(key = variable, value = value) %>%
-  filter(hh_tot > 0)
+# # Read in worker data from CTPP table A112109 at the TAZ level.
+# # It isn't available from the ACS at anything below tract, which is too coarse.
+# ctpp_tbl <- read_csv(
+#   "data/input/census_data/2012_2016_ctpp_workers.csv", skip = 2
+# ) %>%
+#   rename(variable = `Number of Workers in Household 6`, value = Households) %>%
+#   select(RESIDENCE, variable, value) %>%
+#   mutate(
+#     variable = case_when(
+#       variable == "Total, number of workers in household" ~ "hh_tot",
+#       variable == "0 workers" ~ "wrk0",
+#       variable == "1 worker" ~ "wrk1",
+#       variable == "2 workers" ~ "wrk2",
+#       variable == "3 workers" ~ "wrk3", 
+#       variable == "4-or-more workers" ~ "wrk4"
+#     )
+#   ) %>%
+#   filter(!is.na(variable)) %>%
+#   spread(key = variable, value = value) %>%
+#   filter(hh_tot > 0)
 ```
 
 ## Household Size
@@ -110,11 +108,7 @@ regional average of 2.5 persons per household implies their consistency.
 
 ```{r size range, warning=FALSE}
 se_tbl <- read_csv(
-  "data/output/se_data/se_2016.csv",
-  col_types = cols(
-    .default = col_double(),
-    Type = col_character()
-  )
+  "data/input/se_data/se_2022.csv",
 ) %>%
   filter(Type == "Internal")
 
@@ -176,7 +170,7 @@ mean_size <- mean_size %>% gather(size, share, -avg_size)
 
 # smooth and predict
 size_min <- 1
-size_max <- 4
+size_max <- 3.5
 size_functions <- fit_models(
   mean_size, "avg_size", "size", 
   x = seq(size_min, size_max, 0.01),  degree = 3
@@ -238,7 +232,7 @@ p <- ggplot(data = NULL, aes(x = avg_size, y = share, color = size)) +
   geom_line(data = size_functions, size = 2) +
   xlab("Average Household Size") +
   scale_color_brewer("Size", type = "qual", palette = "Dark2") +
-  scale_x_continuous(lim = c(1, 3.5)) +
+  scale_x_continuous(lim = c(1, size_max)) +
   theme_bw()
 
 ggplotly(p) %>%
@@ -292,15 +286,13 @@ se_tbl <- se_tbl %>%
   )
 
 # census distribution
-workers <- ctpp_tbl %>%
+workers <- acs_tract %>%
   mutate(
-    avg_workers = (wrk0 * 0 + wrk1 * 1 + wrk2 * 2 + wrk3 * 3 + wrk4 * 4) / hh_tot,
-    wrk3 = wrk3 + wrk4
+    avg_workers = (wrk0 * 0 + wrk1 * 1 + wrk2 * 2 + wrk3 * 3) / hh_tot
   ) %>%
-  select(-wrk4) %>%
   filter(hh_tot > 0) %>%
-  select(RESIDENCE, avg_workers, hh_tot, wrk0:wrk3) %>%
-  group_by(RESIDENCE) %>%
+  select(GEOID, avg_workers, hh_tot, wrk0:wrk3) %>%
+  group_by(GEOID) %>%
   gather(key = workers, n, wrk0:wrk3) %>%
   mutate(share = n / hh_tot)
 
@@ -331,7 +323,9 @@ mean_workers <- calc_mean_share(
   workers, "avg_workers", "workers", bin_width = 0.1
 ) %>%
   spread(group, share) %>%
-  rename(avg_workers = bin)
+  rename(avg_workers = bin) %>%
+  as.data.frame() %>%
+  select(-geometry)
 
 # manual adjustments
 adjustment_table <- tribble(
@@ -344,10 +338,12 @@ mean_workers <- bind_rows(mean_workers, adjustment_table) %>%
 mean_workers <- mean_workers %>% gather(workers, share, -avg_workers)
 
 # smooth and predict
-min = 0
-max = 2
-workers_functions <- fit_models(mean_workers, "avg_workers", "workers", 
-                             x = seq(min, max, 0.01),  degree = 3) %>%
+worker_min = 0
+worker_max = 1.5
+workers_functions <- fit_models(
+  mean_workers, "avg_workers", "workers", 
+  x = seq(worker_min, worker_max, 0.01),  degree = 3
+) %>%
   rename(avg_workers = avg, workers = group)
 
 # Check that the shares of each bin add to 1, which they will not after 
@@ -377,7 +373,7 @@ p <- ggplot(data = NULL, aes(x = avg_workers, y = share, color = workers)) +
   geom_line(data = workers_functions, size = 2) +
   xlab("Average Household workers") +
   scale_color_brewer("Workers", type = "qual", palette = "Dark2") +
-  scale_x_continuous(lim = c(0, 2)) +
+  scale_x_continuous(lim = c(0, worker_max)) +
   theme_bw()
 
 ggplotly(p) %>%
@@ -433,8 +429,8 @@ plot_ly() %>%
 
 ```{r}
 # regional median income
-# source: https://data.census.gov/cedsci/table?q=median%20income&g=0500000US37063,37135,37183&tid=ACSST1Y2019.S1901&hidePreview=true
-regional_median <- 65317
+# source: https://data.census.gov/table?q=median+income&g=050XX00US32031
+regional_median <- 84183
 
 se_tbl <- se_tbl %>%
   mutate(inc_ratio = Median_Inc / regional_median)
@@ -509,8 +505,8 @@ mean_income <- calc_mean_share(income, "inc_ratio", "income", bin_width = 0.1) %
 mean_income <- mean_income %>% gather(income, share, -inc_ratio)
 
 # smooth and predict
-inc_min <- .22
-inc_max <- 2.5
+inc_min <- .5
+inc_max <- 2.25
 income_functions <- fit_models(mean_income, "inc_ratio", "income", 
                              x = seq(inc_min, inc_max, 0.01),  degree = 4) %>%
   rename(inc_ratio = avg, income = group)
@@ -551,11 +547,6 @@ ggplotly(p) %>%
   layout(title = "Income by Proportion of Regional Income") %>%
   layout(margin = list(t = 30))
 ```
-
-## Household Vehicles
-
-The Reno model utilizes an auto-ownership model, and as a result does
-not require disaggregation by household vehicles.
 
 ```{r write_output, eval=FALSE}
 write_csv(spread_size, "data/output/disagg_model/size_curves.csv")
