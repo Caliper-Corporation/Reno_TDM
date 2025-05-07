@@ -16,12 +16,16 @@ load_census_data <- function(state = "NV", acs_year = 2023){
   tazs <- st_read("data/input/tazs/master_tazs.shp")
   suppressWarnings(
     model_boundary <- tazs %>%
+      st_buffer(.0001) %>%
       mutate(temp = 1) %>%
       group_by(temp) %>%
       summarize(count = n()) %>%
       st_buffer(.0001)
   )
+  model_boundary <- st_make_valid(model_boundary)
+  # must be names or 3-digit FIPS
   counties <- unique(tazs$COUNTY)
+  counties <- str_sub(counties, start = str_length(counties) - 2)
 
   
   bg_file <- "data/input/census_data/shapes/acs_blockgroups.shp"
@@ -41,12 +45,16 @@ load_census_data <- function(state = "NV", acs_year = 2023){
     model_boundary <- st_transform(model_boundary, st_crs(acs_raw))
     intersect_bg <- acs_raw[st_intersects(acs_raw, model_boundary, sparse = FALSE), ]
     
-    # Join variable names, sum any repeats, and then spread. Vehicle variable
+    # Join variable names, sum any repeats, and then spread. Variable
     # names can be repeated if (e.g.) age has to be summed over two categories
     # (65 - 74 and 75+)
     acs_tbl <- intersect_bg %>%
       as.data.frame() %>%
-      left_join(acs_vars, by = "variable") %>%
+      left_join(
+        acs_vars %>%
+          mutate(variable = str_sub(variable, 1, str_length(variable) - 1)),
+        by = "variable"
+      ) %>%
       group_by(GEOID, name) %>%
       summarize(estimate = sum(estimate)) %>%
       spread(key = name, value = estimate) %>%
@@ -58,11 +66,12 @@ load_census_data <- function(state = "NV", acs_year = 2023){
           veh1 * 1 + 
           veh2 * 2 + 
           veh3 * 3 + 
-          veh4 * 4 + 
-          veh5 * 5,
+          veh4 * 4,
         veh_tot = ifelse(is.na(veh_tot), veh_tot_temp, veh_tot)
       ) %>%
-      select(-veh_tot_temp)
+      select(-veh_tot_temp) %>%
+      # Calculate group quarters population by subtracting household pop from tot
+      mutate(gq_pop = total_pop - hh_pop)
     
     acs_bg <- intersect_bg %>%
       group_by(GEOID) %>%
