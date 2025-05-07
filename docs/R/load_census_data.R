@@ -140,7 +140,8 @@ load_census_data <- function(state = "NV", acs_year = 2023){
     dec_vars <- read_csv("data/input/census_data/dec_bg_variables.csv")
     decennial_raw <- get_decennial(
       year = 2020, geography = "block group", state = state,
-      county = counties, variables = dec_vars$variable, geometry = TRUE
+      county = counties, variables = dec_vars$variable, geometry = TRUE,
+      sumfile = "dhc"
     )
     model_boundary <- st_transform(model_boundary, st_crs(decennial_raw))
     decennial_shp <- decennial_raw[
@@ -149,10 +150,21 @@ load_census_data <- function(state = "NV", acs_year = 2023){
     decennial_tbl <- decennial_shp %>%
       as.data.frame() %>%
       left_join(dec_vars, by = "variable") %>%
-      select(-variable, -NAME) %>%
+      group_by(GEOID, name) %>%
+      summarize(value = sum(value)) %>%
       spread(key = name, value = value)
-    decennial_shp <- st_as_sf(decennial_tbl) %>%
-      st_make_valid()
+    
+    decennial_shp <- decennial_shp %>%
+      group_by(GEOID) %>%
+      slice(1) %>%
+      ungroup() %>%
+      select(GEOID) %>%
+      as.data.frame() %>%
+      left_join(decennial_tbl, by = "GEOID") %>%
+      st_as_sf() %>%
+      st_make_valid() %>%
+      mutate(County = substr(GEOID, 1, 5)) %>%
+      relocate(County, .after = GEOID)
     
     st_write(decennial_shp, dec_file)
   } else {
