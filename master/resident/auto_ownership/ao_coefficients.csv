@@ -48,7 +48,7 @@ v4,hh.Income2,,0,Income Category 2 HHs
 v4,hh.Income3,,1.7812,Income Category 3 HHs
 v4,hh.Income4,,3.5767,Income Category 4 HHs
 v4,Constant,,2.1977,Constant
-v1,Constant,,0,Calibration constant
-v2,Constant,,0,Calibration constant
-v3,Constant,,0,Calibration constant
-v4,Constant,,0,Calibration constant
+v1,Constant,,-0.4245,Calibration constant
+v2,Constant,,-0.8112,Calibration constant
+v3,Constant,,-0.9183,Calibration constant
+v4,Constant,,-1.2053,Calibration constant
