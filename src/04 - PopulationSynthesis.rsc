@@ -8,7 +8,6 @@ Macro "Disaggregate Curves" (Args)
 endmacro
 
 Macro "IPU Synthesis" (Args)
-    RunMacro("Check Household Fields", Args)
     RunMacro("Synthesize Population", Args)
     RunMacro("PopSynth Post Process", Args)
     return(1)
@@ -35,7 +34,7 @@ Macro "DisaggregateSED"(Args)
     // Open SED Data and check table for missing fields
     obj = CreateObject("AddTables", {TableName: Args.SE})
     vwSED = obj.TableView
-    flds = {"TAZ", "Type", "HH", "HH_Pop", "Median_Inc", "Pct_Worker", "Pct_Child", "Pct_Senior", "HHOF1", "HHOF2", "HHOF3", "HHOF4", "HHOF5", "HHOF6", "HHOF7"}
+    flds = {"TAZ", "Type", "HH", "HH_Pop", "Median_Inc", "Pct_Worker", "Pct_Child", "Pct_Senior"}
     expOpts.[Additional Fields] = {{"Kids", "Integer", 12,,,,},
                                    {"AdultsUnder65", "Integer", 12,,,,},
                                    {"Seniors", "Integer", 12,,,,},
@@ -48,8 +47,8 @@ Macro "DisaggregateSED"(Args)
 
     // Run models to disaggregate curves - replaced with input distribution
     // 1. ==== Size
-    //opt = {View: vw, Curve: Args.SizeCurves, KeyExpression: "HH_Pop/HH", LookupField: "avg_size"}
-    //RunMacro("Disaggregate SE HH Data", opt)
+    opt = {View: vw, Curve: Args.SizeCurves, KeyExpression: "HH_Pop/HH", LookupField: "avg_size"}
+    RunMacro("Disaggregate SE HH Data", opt)
 
     // 2. ==== Income
     opt = {View: vw, Curve: Args.IncomeCurves, KeyExpression: "Median_Inc/" + String(Args.RegionalMedianIncome), LookupField: "inc_ratio"}
@@ -157,34 +156,6 @@ Macro "Disaggregate SE HH Data"(opt)
 endMacro
 
 /*
-Ensures that the HH and the HH by size fields (e.g. HHOF1) are consistent
-*/
-
-Macro "Check Household Fields" (Args)
-
-    se_file = Args.SEDMarginals
-
-    se = CreateObject("Table", se_file)
-    tot_sizes = se.HHOF1 + se.HHOF2 + se.HHOF3 + se.HHOF4 + se.HHOF5 + se.HHOF6 + se.HHOF7
-    v_check = Vector(tot_sizes.Length, "Long", {{"Constant", 0}})
-    v_check = if tot_sizes <> se.HH then 1 else 0
-    if v_check.sum() > 0 then do
-        se.AddField("HH_Check")
-        se.HH_Check = v_check
-        se.SelectByQuery({
-            SetName: "HH Issues",
-            Query: "HH_Check = 1"
-        })
-        se.View("SE Table")
-        SetEditorView("SE Table", se.GetView() + "|HH Issues")
-        Throw(
-            "Household fields are inconsistent. Check HH and HH by size fields." +
-            "Use 'HH_Check = 1' in the SE table to see which zones don't match."
-        )
-    end
-endmacro
-
-/*
     * Macro that performs population synthesis using the TransCAD (9.0) built-in procedure. 
         * Marginal Data - Disaggregated SED Marginals (by TAZ)
         * HH Dimensions are:
@@ -216,13 +187,10 @@ Macro "Synthesize Population"(Args)
     // 'Value': The above array, that specifies the marginal fields and how they are mapped to the seed field
     // 'NewFieldName': The field name in the synthesized outout HH file for this variable
     // Also specify the matching field in the seed data
-    HHDimSize = {{Name: "HHOF1", Value: {1, 2}}, 
-                 {Name: "HHOF2", Value: {2, 3}}, 
-                 {Name: "HHOF3", Value: {3, 4}}, 
-                 {Name: "HHOF4", Value: {4, 5}}, 
-                 {Name: "HHOF5", Value: {5, 6}}, 
-                 {Name: "HHOF6", Value: {6, 7}}, 
-                 {Name: "HHOF7", Value: {7, 99}}}
+    HHDimSize = {{Name: "HH_siz1", Value: {1, 2}}, 
+                 {Name: "HH_siz2", Value: {2, 3}}, 
+                 {Name: "HH_siz3", Value: {3, 4}}, 
+                 {Name: "HH_siz4", Value: {4, 99}}} 
     HHbySizeSpec = {Field: "NP", Value: HHDimSize, NewFieldName: "HHSize"}
     o.AddHHMarginal(HHbySizeSpec)
 
