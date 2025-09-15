@@ -10,6 +10,11 @@
             "Description":"Master SE data bin file",
             "Value":"%Master Folder%\\sedata\\se_2020.bin"
         }
+        Args.[Master MZ] = {
+            "Type":"File",
+            "Description":"Master Microzones data bin file",
+            "Value":"%Master Folder%\\mzdata\\mz_2022.bin"
+        }
         Args.AQYear = {
             "Type":"int",
             "Description":"Year to use when creating MOVES input files",
@@ -76,6 +81,11 @@
             "Type":"File",
             "Description":"Scenario input se data. Created during scenario creation.",
             "Value":"%Input Folder%\\sedata\\scenario_se.bin"
+        }
+        Args.[Input MZ] = {
+            "Type":"File",
+            "Description":"Scenario input microzones data. Created during scenario creation.",
+            "Value":"%Input Folder%\\mzdata\\scenario_mz.bin"
         }
 	
 	Section = "Main Scenario Outputs"
@@ -251,6 +261,11 @@
             "Type":"File",
             "Description":"Table of output marginals from the disagg model.",
             "Value":"%Output Folder%\\resident\\disagg_model\\SEDMarginals.bin"
+        }
+        Args.MZMarginals = {
+            "Type":"File",
+            "Description":"Table of output marginals from the disagg model.",
+            "Value":"%Output Folder%\\resident\\disagg_model\\MZMarginals.bin"
         }
         Args.Households = {
             "Type":"File",
