@@ -39,7 +39,8 @@ Macro "Create NonMotorized Features" (Args)
     per_fields = {
         {"age_16_18", "Integer", 10, ,,,, "If person's age is 16-18"},
         {"veh_per_adult", "Real", 10, 2,,,, "Vehicles per Adult in household"},
-        {"inc_per_capita", "Real", 10, 2,,,, "Income per person in household"}
+        {"inc_per_capita", "Real", 10, 2,,,, "Income per person in household"},
+        {"HHKids", "Real", 10, 2,,,, "Num kids in household"}
     }
     RunMacro("Add Fields", {view: per_vw, a_fields: per_fields})
 
@@ -70,6 +71,7 @@ Macro "Create NonMotorized Features" (Args)
     })
     joined.(per_specs.veh_per_adult) = joined.(hh_specs.veh_per_adult)
     joined.(per_specs.inc_per_capita) = joined.(hh_specs.inc_per_capita)
+    joined.(per_specs.HHKids) = joined.(hh_specs.HHKids)
 endmacro
 
 /*
