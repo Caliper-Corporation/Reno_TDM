@@ -1,7 +1,9 @@
 Alternative,Expression,Segment,Coefficient,Description
 motorized,Constant,,0,
-nonmotorized,person.is_senior,,-0.6613,Person is a senior
-nonmotorized,person.veh_per_adult,,-3.05387,HH vehicles per adult
-nonmotorized,se.access_walk.O,,0.25333,Interzonal walk accessiblity
-nonmotorized,Constant,,-1.3146,Estimated constant
-nonmotorized,Constant,,0.66,Calibration constant
+bike,person.veh_per_adult,,-3.043,HH vehicles per adult
+bike,Constant,,-2.438,Estimated constant
+bike,Constant,,0,Calibration constant
+walk,person.veh_per_adult,,-3.043,HH vehicles per adult
+walk,se.access_walk.O,,0.345,Interzonal walk accessiblity
+walk,Constant,,-1.93,Estimated constant
+walk,Constant,,0,Calibration constant
