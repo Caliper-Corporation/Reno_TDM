@@ -26,7 +26,11 @@ per <- read_csv("data/_private/hh_survey/output/output_persons.csv")
 ```{r}
 est_tbl <- trips %>%
   select(Sample_Number, Person_Number, purpose, mode) %>%
-  mutate(nonmotorized = ifelse(mode %in% c("bike", "walk"), 1, 0)) %>%
+  mutate(
+    nonmotorized = 0,
+    nonmotorized = ifelse(mode == "bike", 1, nonmotorized),
+    nonmotorized = ifelse(mode == "walk", 2, nonmotorized)
+  ) %>%
   left_join(
     hh %>%
       select(Sample_Number, HomeTAZ, Number_Persons, HHKids, Vehicles_Available),
