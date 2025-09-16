@@ -142,45 +142,55 @@ Macro "Separate NM Trips" (Args, trip_types)
     output_dir = Args.[Output Folder] + "/resident/nonmotorized"
     per_file = Args.Persons
     
-    per_vw = OpenTable("persons", "FFB", {per_file})
+    per = CreateObject("Table", per_file)
 
     if trip_types = null then trip_types = Args.HBTripTypes
 
     for trip_type in trip_types do
-        
         // Add field to person table
         per_out_field = trip_type + "_m"
-        nm_field = trip_type + "_nm"
-        per_fields_to_add = per_fields_to_add + {
-            {per_out_field, "Real", 10, 2,,,, "Motorized " + trip_type + " person trips"},
-            {nm_field, "Real", 10, 2,,,, "NonMotorized " + trip_type + " person trips"}
-        }
-        RunMacro("Add Fields", {view: per_vw, a_fields: per_fields_to_add})
+        bike_field = trip_type + "_bike"
+        walk_field = trip_type + "_walk"
+        per.AddFields({Fields: {
+            {FieldName: per_out_field, Description: "Motorized " + trip_type + " person trips"},
+            {FieldName: bike_field, Description: "Bike " + trip_type + " person trips"},
+            {FieldName: walk_field, Description: "Walk " + trip_type + " person trips"}
+        }})
         
         nm_file = output_dir + "/" + trip_type + ".bin"
-        nm_vw = OpenTable("nm", "FFB", {nm_file})
+        nm = CreateObject("Table", nm_file)
         
         // Add field to nm table
-        nm_fields_to_add = {
-            {trip_type, "Real", 10, 2,,,, "Non-motorized person trips"}
-        }
-        RunMacro("Add Fields", {view: nm_vw, a_fields: nm_fields_to_add})
+        nm.AddFields({Fields: {
+            {FieldName: trip_type + "_bike", Description: "Bike person trips"},
+            {FieldName: trip_type + "_walk", Description: "Walk person trips"}
+        }})
 
         // Join tables and calculate results
-        jv = JoinViews("jv", per_vw + ".PersonID", nm_vw + ".ID", )
-        v_pct_nm = GetDataVector(jv + "|", "nonmotorized Probability", )
-        v_person = GetDataVector(jv + "|", per_vw + "." + trip_type, )
-        v_nm = v_person * v_pct_nm
-        v_person = v_person * (1 - v_pct_nm)
+        per_specs = per.GetFieldSpecs({NamedArray: true})
+        nm_specs = nm.GetFieldSpecs({NamedArray: true})
+        join = per.Join({
+            Table: nm,
+            LeftFields: {"PersonID"},
+            RightFields: {"ID"}
+        })
+        v_pct_bike = join.(nm_specs.("bike Probability"))
+        v_pct_walk = join.(nm_specs.("walk Probability"))
+        v_person = join.(per_specs.(trip_type))
         
-        SetDataVector(jv + "|", nm_vw + "." + trip_type, v_nm, )
-        SetDataVector(jv + "|", per_vw + "." + per_out_field, v_person, )
-        SetDataVector(jv + "|", per_vw + "." + nm_field, v_nm, )
-        CloseView(jv)
-        CloseView(nm_vw)
-    end
+        v_bike = v_person * v_pct_bike
+        v_walk = v_person * v_pct_walk
+        v_person = v_person * (1 - v_pct_bike - v_pct_walk)
+        
+        join.(per_specs.(per_out_field)) = v_person
+        join.(per_specs.(bike_field)) = v_bike
+        join.(per_specs.(walk_field)) = v_walk
+        join.(nm_specs.(bike_field)) = v_bike
+        join.(nm_specs.(walk_field)) = v_walk
 
-    CloseView(per_vw)
+        join = null
+        nm = null
+    end
 endmacro
 
 
