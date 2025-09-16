@@ -6,11 +6,11 @@ bike,person.veh_per_adult,,-2.378,HH vehicles per adult
 bike,se.access_walk.O,,0.3199,Interzonal walk accessiblity
 bike,person.is_senior,,-0.6117,Person is a senior
 bike,Constant,,-3.465,Estimated constant
-bike,Constant,,0,Calibration constant
+bike,Constant,,-0.16,Calibration constant
 walk,person.HHKids,,0.3694,Kids in HH
 walk,person.HHAdults,,-0.117,Adults in HH
 walk,person.veh_per_adult,,-2.378,HH vehicles per adult
 walk,se.access_walk.O,,0.4769,Interzonal walk accessiblity
 walk,person.is_senior,,-0.6117,Person is a senior
 walk,Constant,,-2.0234,Estimated constant
-walk,Constant,,0,Calibration constant
+walk,Constant,,-0.13,Calibration constant

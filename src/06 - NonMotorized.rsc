@@ -162,8 +162,8 @@ Macro "Separate NM Trips" (Args, trip_types)
         
         // Add field to nm table
         nm.AddFields({Fields: {
-            {FieldName: trip_type + "_bike", Description: "Bike person trips"},
-            {FieldName: trip_type + "_walk", Description: "Walk person trips"}
+            {FieldName: bike_field, Description: "Bike person trips"},
+            {FieldName: walk_field, Description: "Walk person trips"}
         }})
 
         // Join tables and calculate results
@@ -176,13 +176,13 @@ Macro "Separate NM Trips" (Args, trip_types)
         })
         v_pct_bike = join.(nm_specs.("bike Probability"))
         v_pct_walk = join.(nm_specs.("walk Probability"))
-        v_person = join.(per_specs.(trip_type))
+        v_total = join.(per_specs.(trip_type))
         
-        v_bike = v_person * v_pct_bike
-        v_walk = v_person * v_pct_walk
-        v_person = v_person * (1 - v_pct_bike - v_pct_walk)
+        v_bike = v_total * v_pct_bike
+        v_walk = v_total * v_pct_walk
+        v_moto = v_total * (1 - v_pct_bike - v_pct_walk)
         
-        join.(per_specs.(per_out_field)) = v_person
+        join.(per_specs.(per_out_field)) = v_moto
         join.(per_specs.(bike_field)) = v_bike
         join.(per_specs.(walk_field)) = v_walk
         join.(nm_specs.(bike_field)) = v_bike

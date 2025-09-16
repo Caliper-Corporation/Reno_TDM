@@ -5,10 +5,10 @@ bike,person.HHAdults,,-0.0628,Adults in HH
 bike,person.veh_per_adult,,-2.9698,HH vehicles per adult
 bike,se.access_walk.O,,-0.1936,walk accessiblity
 bike,Constant,,-1.168,Estimated constant
-bike,Constant,,0,Calibration constant
+bike,Constant,,-0.12,Calibration constant
 walk,person.HHKids,,0.1897,Kids in HH
 walk,person.HHAdults,,-0.0628,Adults in HH
 walk,person.veh_per_adult,,-2.9698,HH vehicles per adult
 walk,se.access_walk.O,,0.3723,walk accessiblity
 walk,Constant,,-2.3054,Estimated constant
-walk,Constant,,0,Calibration constant
+walk,Constant,,-0.004,Calibration constant

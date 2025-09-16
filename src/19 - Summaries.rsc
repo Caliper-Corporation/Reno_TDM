@@ -11,7 +11,7 @@ Macro "Maps" (Args)
     RunMacro("VOC Maps", Args)
     RunMacro("Speed Maps", Args)
     //RunMacro("Isochrones", Args)
-      RunMacro("Accessibility Maps", Args)
+    RunMacro("Accessibility Maps", Args)
     
     return(1)
 endmacro
@@ -1058,7 +1058,7 @@ Macro "Summarize NM" (Args, trip_types)
 
   if trip_types = null then trip_types = Args.HBTripTypes
   for trip_type in trip_types do
-    moto_v = GetDataVector(per_vw + "|", trip_type, )
+    moto_v = GetDataVector(per_vw + "|", trip_type + "_m", )
     moto_total = VectorStatistic(moto_v, "Sum", )
     v_bike = GetDataVector(nm_vw + "|", trip_type + "_bike", )
     v_walk = GetDataVector(nm_vw + "|", trip_type + "_walk", )

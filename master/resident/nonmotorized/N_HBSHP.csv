@@ -2,8 +2,8 @@ Alternative,Expression,Segment,Coefficient,Description
 motorized,Constant,,0,
 bike,person.veh_per_adult,,-3.043,HH vehicles per adult
 bike,Constant,,-2.438,Estimated constant
-bike,Constant,,0,Calibration constant
+bike,Constant,,-0.087,Calibration constant
 walk,person.veh_per_adult,,-3.043,HH vehicles per adult
 walk,se.access_walk.O,,0.345,Interzonal walk accessiblity
 walk,Constant,,-1.93,Estimated constant
-walk,Constant,,0,Calibration constant
+walk,Constant,,-0.002,Calibration constant

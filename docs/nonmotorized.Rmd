@@ -50,30 +50,37 @@ est_tbl <- trips %>%
 # Calibration
 
 ```{r}
-temp <- read_csv("data/input/nonmotorized/uncalibrated_nm_model_results.csv")
+# Make sure to run "Summarize NM" macro after running the NM model
+temp <- read_csv("data/input/nonmotorized/synth_per_summarized.csv")
 
 model <- temp %>%
-  pivot_longer(cols = W_HBW_m:N_HBSR_nm, names_to = "purpose", values_to = "trips") %>%
+  select(Field, Sum) %>%
+  separate(Field, into = c("tour", "purp", "mode")) %>%
+  unite(purpose, tour:purp) %>%
   group_by(purpose) %>%
-  summarize(trips = sum(trips, na.rm = TRUE)) %>%
-  separate(purpose, into = c("tour_type", "purpose", "motorized")) %>%
-  unite("purpose", tour_type:purpose) %>%
-  pivot_wider(names_from = "motorized", values_from = "trips") %>%
-  mutate(model_pct = nm / (m + nm)) %>%
-  select(-m, -nm)
+  mutate(
+    total = sum(Sum),
+    model_pct = Sum / total
+  ) %>%
+  select(-Sum, -total)
 
 survey <- est_tbl %>%
-  group_by(purpose) %>%
-  summarize(
-    total = n(),
-    nm = sum(nonmotorized, na.rm = TRUE)
+  mutate(nonmotorized = case_when(
+    nonmotorized == 1 ~ "bike",
+    nonmotorized == 2 ~ "walk",
+    TRUE ~ "m"
+  )) %>%
+  group_by(purpose, mode = nonmotorized) %>%
+  summarize(trips = n()) %>%
+  mutate(
+    total = sum(trips),
+    survey_pct = trips / total
   ) %>%
-  mutate(survey_pct = nm / total) %>%
-  filter(!grepl("NHB", purpose), purpose != "N_HBH") %>%
-  select(-total, -nm)
+  select(-trips, -total)
 
-calib_tbl <- survey %>%
-  left_join(model, by = "purpose") %>%
+
+calib_tbl <- model %>%
+  left_join(survey, by = c("purpose", "mode")) %>%
   mutate(factor = log(survey_pct/model_pct))
   
 ```
