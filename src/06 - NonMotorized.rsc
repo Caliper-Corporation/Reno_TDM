@@ -222,13 +222,16 @@ Macro "Aggregate HB NonMotorized Walk Trips" (Args, trip_types)
     for trip_type in trip_types do
         file = nm_dir + "/" + trip_type + ".bin"
         vw = OpenTable("temp", "FFB", {file})
-        v = GetDataVector(vw + "|", trip_type, {{"Sort Order",{{"ID","Ascending"}}}})
+        v_bike = GetDataVector(vw + "|", trip_type + "_bike", {{"Sort Order",{{"ID","Ascending"}}}})
+        v_walk = GetDataVector(vw + "|", trip_type + "_walk", {{"Sort Order",{{"ID","Ascending"}}}})
         CloseView(vw)
-        per_df.tbl.(trip_type) = v
+        per_df.tbl.(trip_type + "_bike") = v_bike
+        per_df.tbl.(trip_type + "_walk") = v_walk
     end
     per_df.group_by("ZoneID")
-    per_df.summarize(trip_types, "sum")
-    for trip_type in trip_types do
+    to_summarize = V2A(A2V(trip_types) + "_bike") + V2A(A2V(trip_types) + "_walk")
+    per_df.summarize(to_summarize, "sum")
+    for trip_type in to_summarize do
         per_df.rename("sum_" + trip_type, trip_type)
     end
     
@@ -246,7 +249,7 @@ Macro "Aggregate HB NonMotorized Walk Trips" (Args, trip_types)
     n = SelectByQuery("Selection", "several", "Select * where access_walk = 0",)
     v0 = GetDataVector(agg_vw + "|Selection", "access_walk", )
     for trip_type in trip_types do
-        SetDataVector(agg_vw + "|Selection", trip_type, v0, )
+        SetDataVector(agg_vw + "|Selection", trip_type + "_walk", v0, )
     end
 
 endmacro
