@@ -23,6 +23,7 @@ Macro "Capacities" (Args)
 endmacro
 
 Macro "Speeds & Tolls" (Args)
+    RunMacro("Add MAZ Connectors", Args) // for bike network
     RunMacro("Set CC Speeds", Args)
     RunMacro("Other Attributes", Args)
     RunMacro("Calculate Bus Speeds", Args)
@@ -1247,3 +1248,45 @@ Macro "Create Route Networks" (Args)
         end
     end
 endmacro
+
+/*
+This macro adds centroid connectors from each MAZ to the nearest valid node.
+*/
+
+Macro "Add MAZ Connectors" (Args)
+    
+    link_dbd = Args.Links
+    output_dir = Args.[Output Folder] + "/networks"
+    maz_file = Args.[Input Folder] + "/mzs/RenoMicroZones.dbd"
+
+    map = CreateObject("Map", link_dbd)
+    {nlyr, llyr} = map.GetLayerNames()
+    {maz_lyr} = map.AddLayer({FileName: maz_file})
+
+    node_tbl = CreateObject("Table", nlyr)
+    node_tbl.AddField("MAZID")
+    link_tbl = CreateObject("Table", llyr)
+    // Create set of links that new centroids can connect to
+    link_tbl.SelectByQuery({
+        SetName: "ValidLinks",
+        Query: "D = 1 and HCMType <> 'Freeway' and HCMType <> 'Ramp'"
+    })
+
+    SetLayer(llyr)
+    opts = null
+    opts.[Snap Distance] = 50
+    // opts.Threshold = 0.2
+    opts.Node = GetFieldFullSpec(nlyr, "MAZID")
+    opts.[Split Links] = "False"
+    opts.[Target Links] = llyr + "|ValidLinks"
+    opts.Slices = 2
+    ConnectCentroid(llyr, maz_lyr + "|", opts)
+    opts = null
+
+    link_tbl.SelectByQuery({
+        SetName: "MAZLinks",
+        Query: "HCMType = null"
+    })
+    link_tbl.HCMType = "MAZLinks"
+    link_tbl.DTWB = "WB"
+EndMacro
