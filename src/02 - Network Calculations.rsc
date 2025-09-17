@@ -1014,13 +1014,22 @@ Macro "Create Link Networks" (Args)
     nm_nets = null
     nm_nets.walk.filter = "W = 1"
     nm_nets.walk.time_field = "WalkTime"
+    nm_nets.walk.centroid_filter = "TAZ <> null"
+    nm_nets.walk_mz.filter = "W = 1"
+    nm_nets.walk_mz.time_field = "WalkTime"
+    nm_nets.walk_mz.centroid_filter = "MAZID <> null"
     nm_nets.bike.filter = "B = 1"
     nm_nets.bike.time_field = "BikeTime"
+    nm_nets.bike.centroid_filter = "TAZ <> null"
+    nm_nets.bike_mz.filter = "B = 1"
+    nm_nets.bike_mz.time_field = "BikeTime"
+    nm_nets.bike_mz.centroid_filter = "MAZID <> null"
     for i = 1 to nm_nets.length do
         name = nm_nets[i][1]
         
         filter = nm_nets.(name).filter
         time_field = nm_nets.(name).time_field
+        centroid_filter = nm_nets.(name).centroid_filter
         net_file = output_dir + "/net_" + name + ".net"
 
         o = CreateObject("Network.Create")
@@ -1033,7 +1042,7 @@ Macro "Create Link Networks" (Args)
         netSetObj = CreateObject("Network.Settings")
         netSetObj.LayerDB = link_dbd
         netSetObj.LoadNetwork(net_file)
-        netSetObj.CentroidFilter = "Centroid = 1"
+        netSetObj.CentroidFilter = centroid_filter
         netSetObj.Run()
     end
 endmacro
