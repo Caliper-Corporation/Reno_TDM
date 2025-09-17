@@ -5,7 +5,7 @@ Macro "NonMotorized Choice" (Args)
     RunMacro("Create NonMotorized Features", Args)
     RunMacro("Calculate NM Probabilities", Args)
     RunMacro("Separate NM Trips", Args)
-    RunMacro("Aggregate HB NonMotorized Walk Trips", Args)
+    RunMacro("Aggregate HB NonMotorized Trips", Args)
     return(1)
 endmacro
 
@@ -205,17 +205,17 @@ Inputs
         * Used by calibration macros
 */
 
-Macro "Aggregate HB NonMotorized Walk Trips" (Args, trip_types)
+Macro "Aggregate HB NonMotorized Trips" (Args, trip_types)
 
     hh_file = Args.Households
     per_file = Args.Persons
-    se_file = Args.SE
+    mz_file = Args.[Input MZ]
     nm_dir = Args.[Output Folder] + "/resident/nonmotorized"
 
     per_df = CreateObject("df", per_file)
     per_df.select({"PersonID", "HouseholdID"})
     hh_df = CreateObject("df", hh_file)
-    hh_df.select({"HouseholdID", "ZoneID"})
+    hh_df.select({"HouseholdID", "ZoneID", "MZ"})
     per_df.left_join(hh_df, "HouseholdID", "HouseholdID")
 
     if trip_types = null then trip_types = Args.HBTripTypes
@@ -228,29 +228,30 @@ Macro "Aggregate HB NonMotorized Walk Trips" (Args, trip_types)
         per_df.tbl.(trip_type + "_bike") = v_bike
         per_df.tbl.(trip_type + "_walk") = v_walk
     end
-    per_df.group_by("ZoneID")
+    per_df.group_by("MZ")
     to_summarize = V2A(A2V(trip_types) + "_bike") + V2A(A2V(trip_types) + "_walk")
     per_df.summarize(to_summarize, "sum")
     for trip_type in to_summarize do
         per_df.rename("sum_" + trip_type, trip_type)
     end
     
-    // Add the walk accessibility attractions from the SE bin file, which will
+    // Add the NM attractions from the MZ bin file, which will
     // be used in the gravity application.
-    se_df = CreateObject("df", se_file)
-    se_df.select({"TAZ", "access_walk_attr", "access_walk"})
-    se_df.left_join(per_df, "TAZ", "ZoneID")
+    mz_df = CreateObject("df", mz_file)
+    mz_df.tbl.NMAttractions = mz_df.tbl.HH + mz_df.tbl.TOTJOBS
+    mz_df.select({"ID", "NMAttractions"})
+    mz_df.left_join(per_df, "ID", "MZ")
+    mz_df.write_bin(nm_dir + "/_agg_nm_trips_daily.bin")
+    mz_df = null
 
-    se_df.write_bin(nm_dir + "/_agg_nm_trips_daily.bin")
-
-    // Suppress demand for walk trips in zones with no walk accessibility
-    agg_vw = OpenTable("aggnm", "FFB", {nm_dir + "/_agg_nm_trips_daily.bin"})
-    SetView(agg_vw)
-    n = SelectByQuery("Selection", "several", "Select * where access_walk = 0",)
-    v0 = GetDataVector(agg_vw + "|Selection", "access_walk", )
-    for trip_type in trip_types do
-        SetDataVector(agg_vw + "|Selection", trip_type + "_walk", v0, )
-    end
+    // // Suppress demand for walk trips in zones with no walk accessibility
+    // agg_vw = OpenTable("aggnm", "FFB", {nm_dir + "/_agg_nm_trips_daily.bin"})
+    // SetView(agg_vw)
+    // n = SelectByQuery("Selection", "several", "Select * where access_walk = 0",)
+    // v0 = GetDataVector(agg_vw + "|Selection", "access_walk", )
+    // for trip_type in trip_types do
+    //     SetDataVector(agg_vw + "|Selection", trip_type + "_walk", v0, )
+    // end
 
 endmacro
 
