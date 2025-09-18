@@ -270,12 +270,16 @@ Macro "NM Gravity" (Args)
     RunMacro("Gravity", {
         se_file: prod_file,
         skim_file: out_dir + "/skims/nonmotorized/walk_skim_mz.mtx",
+        row_index: "MZ",
+        col_index: "MZ",
         param_file: walk_params,
         output_matrix: nm_dir + "/walk_gravity.mtx"
     })
     RunMacro("Gravity", {
         se_file: prod_file,
         skim_file: out_dir + "/skims/nonmotorized/bike_skim_mz.mtx",
+        row_index: "MZ",
+        col_index: "MZ",
         param_file: bike_params,
         output_matrix: nm_dir + "/bike_gravity.mtx"
     })
