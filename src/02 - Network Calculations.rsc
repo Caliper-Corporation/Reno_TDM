@@ -1294,7 +1294,7 @@ Macro "Add MAZ Connectors" (Args)
 
     link_tbl.SelectByQuery({
         SetName: "MAZLinks",
-        Query: "HCMType = null"
+        Query: "HCMType = null or HCMType = 'MAZLinks'"
     })
     link_tbl.HCMType = "MAZLinks"
     link_tbl.DTWB = "WB"
