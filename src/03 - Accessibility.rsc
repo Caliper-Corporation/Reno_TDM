@@ -315,6 +315,24 @@ Macro "Create Accessibility Skims" (Args)
     }
     RunMacro("Create Transit Skims", Args, overrides)
 
+    // Walk and bike mz skims need indices that match the MAZ ids
+    node_tbl = CreateObject("Table", {FileName: link_dbd, LayerType: "Node"})
+    modes = {"walk", "bike"}
+    for mode in modes do
+        file = out_files.(mode + "_mz")
+        mtx = null
+        mtx = CreateObject("Matrix", file)
+        mtx.AddIndex({
+            ViewName: node_tbl.GetView(),
+            Dimension: "Both",
+            OriginalID: "ID",
+            NewID: "MAZID",
+            IndexName: "MZ"
+        })
+    end
+    node_tbl = null
+    mtx = null
+
     // intrazonals
     obj = null
     obj = CreateObject("Distribution.Intrazonal")
