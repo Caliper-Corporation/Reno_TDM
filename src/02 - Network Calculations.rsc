@@ -1271,10 +1271,21 @@ Macro "Add MAZ Connectors" (Args)
     map = CreateObject("Map", link_dbd)
     {nlyr, llyr} = map.GetLayerNames()
     {maz_lyr} = map.AddLayer({FileName: maz_file})
-
     node_tbl = CreateObject("Table", nlyr)
     node_tbl.AddField("MAZID")
     link_tbl = CreateObject("Table", llyr)
+    
+    // find and remove any existing MAZ connectors
+    n = node_tbl.SelectByQuery({
+        SetName: "MAZNodes",
+        Query: "MAZID <> null"
+    })
+    if n > 0 then do
+        SetLayer(llyr)
+        SelectByNodes("maz links", "several", "MAZNodes", )
+        DeleteRecordsInSet("maz links")
+    end
+    
     // Create set of links that new centroids can connect to
     link_tbl.SelectByQuery({
         SetName: "ValidLinks",
@@ -1294,7 +1305,7 @@ Macro "Add MAZ Connectors" (Args)
 
     link_tbl.SelectByQuery({
         SetName: "MAZLinks",
-        Query: "HCMType = null or HCMType = 'MAZLinks'"
+        Query: "HCMType = null"
     })
     link_tbl.HCMType = "MAZLinks"
     link_tbl.DTWB = "WB"
