@@ -16,6 +16,7 @@ endmacro
 
 Macro "NM Time-of-Day" (Args)
     RunMacro("NM TOD", Args)
+    RunMacro("NM Integerization", Args)
     return(1)
 endmacro
 
@@ -292,23 +293,38 @@ the motorized trips.
 
 Macro "NM TOD" (Args)
 
-    nm_file = Args.[Output Folder] + "/resident/nonmotorized/nm_gravity.mtx"
+    nm_dir = Args.[Output Folder] + "/resident/nonmotorized"
     tod_file = Args.ResTODFactors
     
-    nm_mtx = CreateObject("Matrix", nm_file)
     fac_vw = OpenTable("tod_fac", "CSV", {tod_file})
     v_type = GetDataVector(fac_vw + "|", "trip_type", )
     v_tod = GetDataVector(fac_vw + "|", "tod", )
     v_fac = GetDataVector(fac_vw + "|", "factor", )
 
-    for i = 1 to v_type.length do
-        type = v_type[i]
-        tod = v_tod[i]
-        fac = v_fac[i]
+    modes = {"walk", "bike"}
+    for mode in modes do
+        nm_file = nm_dir + "/" + mode + "_gravity.mtx"
+        nm_mtx = CreateObject("Matrix", nm_file)
+        for i = 1 to v_type.length do
+            type = v_type[i]
+            tod = v_tod[i]
+            fac = v_fac[i]
 
-        core_name = type + "_" + tod
-        nm_mtx.AddCores({core_name})
-        cores = nm_mtx.GetCores()
-        cores.(core_name) := cores.(type) * fac
+            core_name = type + "_" + tod
+            nm_mtx.AddCores({core_name})
+            cores = nm_mtx.GetCores()
+            cores.(core_name) := cores.(type) * fac
+        end
+        nm_mtx = null
     end
 endmacro
+
+Macro "NM Integerization" (Args)
+
+    nm_file = Args.[Output Folder] + "/resident/nonmotorized/nm_gravity.mtx"
+    out_dir = Args.[Output Folder] + "/resident/nonmotorized"
+    int_file = out_dir + "/nm_gravity_integerized.mtx"
+
+    
+
+EndMacro

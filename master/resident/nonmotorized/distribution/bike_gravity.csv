@@ -1,7 +1,7 @@
 purpose,p_field,a_field,constraint,imp_core,a,b,c
-W_HBW_bike,W_HBW_bike,NMAttractions,Production,BikeTime,5,0.3,0.1
-W_HBO_bike,W_HBO_bike,NMAttractions,Production,BikeTime,5,0.3,0.1
-N_HBSCH_bike,N_HBSCH_bike,NMAttractions,Production,BikeTime,5,0.3,0.1
-N_HBO_bike,N_HBO_bike,NMAttractions,Production,BikeTime,5,0.3,0.1
-N_HBSHP_bike,N_HBSHP_bike,NMAttractions,Production,BikeTime,5,0.3,0.1
-N_HBSR_bike,N_HBSR_bike,NMAttractions,Production,BikeTime,5,0.3,0.1
+W_HBW,W_HBW_bike,NMAttractions,Production,BikeTime,5,0.3,0.1
+W_HBO,W_HBO_bike,NMAttractions,Production,BikeTime,5,0.3,0.1
+N_HBSCH,N_HBSCH_bike,NMAttractions,Production,BikeTime,5,0.3,0.1
+N_HBO,N_HBO_bike,NMAttractions,Production,BikeTime,5,0.3,0.1
+N_HBSHP,N_HBSHP_bike,NMAttractions,Production,BikeTime,5,0.3,0.1
+N_HBSR,N_HBSR_bike,NMAttractions,Production,BikeTime,5,0.3,0.1
