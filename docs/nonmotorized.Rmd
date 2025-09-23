@@ -86,7 +86,46 @@ calib_tbl <- model %>%
 ```
 
 
+
 ```{r}
 write_csv(est_tbl, "../../working_files/nonmotorized/estimation_tbl.csv")
 ```
 
+```{r}
+library(rpart)
+library(rpart.plot)
+
+se_tbl <- read_csv("data/input/se_data/output_se.csv")
+
+tree_tbl <- est_tbl %>%
+  left_join(se_tbl %>% select(TAZ, AreaType), by = c("HomeTAZ" = "TAZ")) %>%
+  left_join(
+    per %>% 
+      select(
+        Sample_Number, Person_Number, Licensed_Driver, Gender,
+        Employment, Age, School_Type
+      ),
+    by = c("Sample_Number", "Person_Number")
+  ) %>%
+  mutate(bike_trip = ifelse(nonmotorized == 1, 1, 0)) %>%
+  select(-c(purpose:mode), -ID) %>%
+  group_by(across(Sample_Number:School_Type)) %>%
+  summarize(bike_trips = sum(bike_trip)) %>%
+  ungroup() %>%
+  select(-c(Sample_Number:HomeTAZ))
+
+tree <- rpart(
+  bike_trips ~ .,
+  data = tree_tbl, 
+  method = "anova",
+  maxdepth = 5,
+  cp = .001,
+  minbucket = 40#,
+  # weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+# tree <- snip.rpart(tree, 2)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+```
