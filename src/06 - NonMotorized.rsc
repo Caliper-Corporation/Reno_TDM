@@ -319,12 +319,59 @@ Macro "NM TOD" (Args)
     end
 endmacro
 
+/*
+Integerizes the bike matrix by iteratively lowering the rounding threshold
+until the rounded sums are close to the true sums.
+*/
+
 Macro "NM Integerization" (Args)
 
-    nm_file = Args.[Output Folder] + "/resident/nonmotorized/nm_gravity.mtx"
     out_dir = Args.[Output Folder] + "/resident/nonmotorized"
-    int_file = out_dir + "/nm_gravity_integerized.mtx"
-
+    nm_file = out_dir + "/bike_gravity.mtx"
+    int_file = out_dir + "/bike_int.mtx"    
+    tod_file = Args.ResTODFactors
+    v_tod = Args.Periods
     
+    fac_tbl = CreateObject("Table", tod_file)
+    v_type = fac_tbl.trip_type
+    v_type = SortVector(v_type, {Unique: true})
+    
+    CopyFile(nm_file, int_file)
+    mtx = CreateObject("Matrix", int_file)
+    mtx.AddCores("floor")
+    mtx.AddCores("rem")
+    mtx.AddCores("temp_sum")
+    
+    for type in v_type do
+        for tod in v_tod do
+            core_name = type + "_" + tod
+            row_sums = mtx.GetVector({
+                Core: core_name,
+                Marginal: "Row Sum"
+            })
+            true_sum = row_sums.Sum()
 
+            mtx.floor := Floor(mtx.(core_name))
+            mtx.rem := mtx.(core_name) - mtx.floor
+            round_threshold = .02
+            for i = 1 to 100 do
+                mtx.temp_sum := if mtx.rem >= round_threshold then mtx.floor + 1 else mtx.floor
+                row_sums = mtx.GetVector({
+                    Core: "temp_sum",
+                    Marginal: "Row Sum"
+                })
+                temp_sum = row_sums.Sum()
+                ratio = (temp_sum - true_sum) / true_sum
+                thresholds = thresholds + {round_threshold} // for debugging speed of convergence
+                ratios = ratios + {ratio} // for debugging speed of convergence
+                if abs(ratio) < .015 or i = 100 then do
+                    mtx.(core_name) := mtx.temp_sum
+                    break
+                end else if ratio < -.015
+                    then round_threshold = round_threshold / 1.10
+                    else round_threshold = round_threshold * 1.07
+            end
+        end
+    end
+    mtx.DropCores({"floor", "rem", "temp_sum"})
 EndMacro
