@@ -1,12 +1,11 @@
 Alternative,Expression,Coefficient,Description
-AM,person.veh_per_adult = 0.0,-0.6674,Zero Vehicle HH
-AM,person.HHKids > 0,-0.4854,HH with kids
-AM,person.HHIncCat > 4,0.4338,High Income > 100k
-AM ,person.t_access,0.079,Transit Accessibility at home TAZ
-AM,person.GSIndex,0.0886,Gini Simpson Diversity Index at home TAZ
-MD,Constant,-4.0334,Constant
-MD,person.e_access,0.3496,SOV Accessibility to employment at home TAZ
-PM,Constant,0.1688,Constant
-NT,Constant,-0.2957,Constant
+AM,person.veh_per_adult = 0.0,-0.6652,Zero Vehicle HH
+AM,person.HHKids > 0,-0.4858,HH with kids
+AM,person.HHIncCat > 4,0.4328,High Income > 100k
+AM ,person.t_access,0.0793,Transit Accessibility at home TAZ
+MD,Constant,-4.0708,Constant
+MD,person.e_access,0.3493,SOV Accessibility to employment at home TAZ
+PM,Constant,0.1283,Constant
+NT,Constant,-0.3362,Constant
 NT,person.HHKids > 0,0.4527,HH with kids
-NT,person.HHIncCat < 4,0.5209,Low Income < 75k
+NT,person.HHIncCat < 4,0.521,Low Income < 75k
