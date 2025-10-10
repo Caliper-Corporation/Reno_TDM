@@ -11,7 +11,7 @@ Macro "Maps" (Args)
     RunMacro("VOC Maps", Args)
     RunMacro("Speed Maps", Args)
     //RunMacro("Isochrones", Args)
-      RunMacro("Accessibility Maps", Args)
+    RunMacro("Accessibility Maps", Args)
     
     return(1)
 endmacro
@@ -1054,17 +1054,20 @@ Macro "Summarize NM" (Args, trip_types)
 
   summary_file = out_dir + "/_summaries/resident_hb/hb_nm_summary.csv"
   f = OpenFile(summary_file, "w")
-  WriteLine(f, "trip_type,moto_total,moto_share,nm_total,nm_share")
+  WriteLine(f, "trip_type,moto_total,moto_share,bike_total,bike_share,walk_total,walk_share")
 
   if trip_types = null then trip_types = Args.HBTripTypes
   for trip_type in trip_types do
-    moto_v = GetDataVector(per_vw + "|", trip_type, )
+    moto_v = GetDataVector(per_vw + "|", trip_type + "_m", )
     moto_total = VectorStatistic(moto_v, "Sum", )
-    nm_v = GetDataVector(nm_vw + "|", trip_type, )
-    nm_total = VectorStatistic(nm_v, "Sum", )
-    moto_share = round(moto_total / (moto_total + nm_total) * 100, 2)
-    nm_share = round(nm_total / (moto_total + nm_total) * 100, 2)
-    WriteLine(f, trip_type + "," + String(moto_total) + "," + String(moto_share) + "," + String(nm_total) + "," + String(nm_share))
+    v_bike = GetDataVector(nm_vw + "|", trip_type + "_bike", )
+    v_walk = GetDataVector(nm_vw + "|", trip_type + "_walk", )
+    bike_total = VectorStatistic(v_bike, "Sum", )
+    walk_total = VectorStatistic(v_walk, "Sum", )
+    moto_share = round(moto_total / (moto_total + bike_total + walk_total) * 100, 2)
+    bike_share = round(bike_total / (moto_total + bike_total + walk_total) * 100, 2)
+    walk_share = round(walk_total / (moto_total + bike_total + walk_total) * 100, 2)
+    WriteLine(f, trip_type + "," + String(moto_total) + "," + String(moto_share) + "," + String(bike_total) + "," + String(bike_share) + "," + String(walk_total) + "," + String(walk_share))
   end
 
   CloseView(per_vw)

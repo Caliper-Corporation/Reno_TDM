@@ -26,7 +26,11 @@ per <- read_csv("data/_private/hh_survey/output/output_persons.csv")
 ```{r}
 est_tbl <- trips %>%
   select(Sample_Number, Person_Number, purpose, mode) %>%
-  mutate(nonmotorized = ifelse(mode %in% c("bike", "walk"), 1, 0)) %>%
+  mutate(
+    nonmotorized = 0,
+    nonmotorized = ifelse(mode == "bike", 1, nonmotorized),
+    nonmotorized = ifelse(mode == "walk", 2, nonmotorized)
+  ) %>%
   left_join(
     hh %>%
       select(Sample_Number, HomeTAZ, Number_Persons, HHKids, Vehicles_Available),
@@ -46,36 +50,82 @@ est_tbl <- trips %>%
 # Calibration
 
 ```{r}
-temp <- read_csv("data/input/nonmotorized/uncalibrated_nm_model_results.csv")
+# Make sure to run "Summarize NM" macro after running the NM model
+temp <- read_csv("data/input/nonmotorized/synth_per_summarized.csv")
 
 model <- temp %>%
-  pivot_longer(cols = W_HBW_m:N_HBSR_nm, names_to = "purpose", values_to = "trips") %>%
+  select(Field, Sum) %>%
+  separate(Field, into = c("tour", "purp", "mode")) %>%
+  unite(purpose, tour:purp) %>%
   group_by(purpose) %>%
-  summarize(trips = sum(trips, na.rm = TRUE)) %>%
-  separate(purpose, into = c("tour_type", "purpose", "motorized")) %>%
-  unite("purpose", tour_type:purpose) %>%
-  pivot_wider(names_from = "motorized", values_from = "trips") %>%
-  mutate(model_pct = nm / (m + nm)) %>%
-  select(-m, -nm)
+  mutate(
+    total = sum(Sum),
+    model_pct = Sum / total
+  ) %>%
+  select(-Sum, -total)
 
 survey <- est_tbl %>%
-  group_by(purpose) %>%
-  summarize(
-    total = n(),
-    nm = sum(nonmotorized, na.rm = TRUE)
+  mutate(nonmotorized = case_when(
+    nonmotorized == 1 ~ "bike",
+    nonmotorized == 2 ~ "walk",
+    TRUE ~ "m"
+  )) %>%
+  group_by(purpose, mode = nonmotorized) %>%
+  summarize(trips = n()) %>%
+  mutate(
+    total = sum(trips),
+    survey_pct = trips / total
   ) %>%
-  mutate(survey_pct = nm / total) %>%
-  filter(!grepl("NHB", purpose), purpose != "N_HBH") %>%
-  select(-total, -nm)
+  select(-trips, -total)
 
-calib_tbl <- survey %>%
-  left_join(model, by = "purpose") %>%
+
+calib_tbl <- model %>%
+  left_join(survey, by = c("purpose", "mode")) %>%
   mutate(factor = log(survey_pct/model_pct))
   
 ```
+
 
 
 ```{r}
 write_csv(est_tbl, "../../working_files/nonmotorized/estimation_tbl.csv")
 ```
 
+```{r}
+library(rpart)
+library(rpart.plot)
+
+se_tbl <- read_csv("data/input/se_data/output_se.csv")
+
+tree_tbl <- est_tbl %>%
+  left_join(se_tbl %>% select(TAZ, AreaType), by = c("HomeTAZ" = "TAZ")) %>%
+  left_join(
+    per %>% 
+      select(
+        Sample_Number, Person_Number, Licensed_Driver, Gender,
+        Employment, Age, School_Type
+      ),
+    by = c("Sample_Number", "Person_Number")
+  ) %>%
+  mutate(bike_trip = ifelse(nonmotorized == 1, 1, 0)) %>%
+  select(-c(purpose:mode), -ID) %>%
+  group_by(across(Sample_Number:School_Type)) %>%
+  summarize(bike_trips = sum(bike_trip)) %>%
+  ungroup() %>%
+  select(-c(Sample_Number:HomeTAZ))
+
+tree <- rpart(
+  bike_trips ~ .,
+  data = tree_tbl, 
+  method = "anova",
+  maxdepth = 5,
+  cp = .001,
+  minbucket = 40#,
+  # weights = est_tbl$WeightCaliper
+)
+
+# Snip to remove specific nodes from the tree
+# summary(tree) # to find node numbers
+# tree <- snip.rpart(tree, 2)
+rpart.plot(tree, type = 1, under = TRUE, extra = 1)
+```

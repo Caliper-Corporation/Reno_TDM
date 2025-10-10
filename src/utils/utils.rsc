@@ -2125,6 +2125,8 @@ Macro "Gravity" (MacroOpts)
 
   se_file = MacroOpts.se_file
   skim_file = MacroOpts.skim_file
+  row_index = MacroOpts.row_index
+  col_index = MacroOpts.col_index
   param_file = MacroOpts.param_file
   output_matrix = MacroOpts.output_matrix
 
@@ -2155,9 +2157,9 @@ Macro "Gravity" (MacroOpts)
       Attraction: param_vw.a_field,
       ImpedanceMatrix: {
         MatrixFile: skim_file,
-        Matrix: param_vw.imp_core
-        // RowIndex: ri,
-        // ColIndex: ci
+        Matrix: param_vw.imp_core,
+        RowIndex: row_index,
+        ColIndex: col_index
       },
       Gamma: {param_vw.a, param_vw.b, param_vw.c},
       ConstraintType: param_vw.constraint

@@ -1,8 +1,13 @@
 Alternative,Expression,Segment,Coefficient,Description
 motorized,Constant,,0,
-nonmotorized,person.HHAdults,,0.14902,
-nonmotorized,person.HHKids,,-0.28976,
-nonmotorized,person.veh_per_adult,,-3.80686,HH vehicles per adult
-nonmotorized,se.access_walk.O,,0.0928,Interzonal walk accessiblity
-nonmotorized,Constant,,-1.1555,Estimated constant
-nonmotorized,Constant,,1.032,Calibration constant
+bike,person.HHKids,,-0.268,Kids in HH
+bike,person.HHAdults,,0.1566,Adults in HH
+bike,person.veh_per_adult,,-3.7503,HH vehicles per adult
+bike,Constant,,-1.7583,Estimated constant
+bike,Constant,,0.34,Calibration constant
+walk,person.HHKids,,-0.268,Kids in HH
+walk,person.HHAdults,,0.1566,Adults in HH
+walk,person.veh_per_adult,,-3.7503,HH vehicles per adult
+walk,se.access_walk.O,,0.3671,Interzonal walk accessiblity
+walk,Constant,,-2.4725,Estimated constant
+walk,Constant,,0.456,Calibration constant
