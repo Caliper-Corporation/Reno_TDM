@@ -1,0 +1,13 @@
+Alternative,Expression,Coefficient,Description
+AM,person.HHKids > 0,0.5542,HH with kids
+AM,person.HHIncCat > 4,0.5498,High Income > 100K
+MD,Constant,0.4325,Constant
+MD,person.n_access,0.0843,SOV Accessibility to nearby attractions at home TAZ
+MD,person.is_senior,0.8939,Senior (Age >= 65)
+MD,person.Gender = 2,0.1846,Female
+PM,Constant,0.4095,Constant
+PM,person.HHKids > 0,0.5542,HH with kids
+NT,Constant,-0.6151,Constant
+NT,person.n_access,0.0843,SOV Accessibility to nearby attractions at home TAZ
+NT,person.Employed,0.202,Employed person
+NT,person.veh_per_adult > 0.0 and person.veh_per_adult < 1.0,0.2728,Vehicle Insufficient HH

@@ -1,0 +1,12 @@
+Alternative,Expression,Coefficient,Description
+AM,person.HHKids > 0,0.4866,HH with kids
+MD,Constant,-1.0146,Constant
+MD,person.n_access,0.1735,SOV Accessibility to nearby attractions at home TAZ
+MD,person.veh_per_adult > 1.0,0.2333,Vehicle Sufficient HH
+PM,Constant,0.2828,Constant
+PM,person.n_access,0.1735,SOV Accessibility to nearby attractions at home TAZ
+PM,person.HHKids > 0,-0.9257,HH with kids
+NT,Constant,0.382,Constant
+NT,person.n_access,0.1735,SOV Accessibility to nearby attractions at home TAZ
+NT,person.HHKids > 0,-1.0712,HH with kids
+NT,person.HHIncCat < 4,-0.3347,Low Income < 75k

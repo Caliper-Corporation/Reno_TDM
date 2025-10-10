@@ -326,11 +326,6 @@
 	
 	Section = "Time of Day"
 	
-        Args.ResTODFactors = {
-            "Type":"File",
-            "Description":"Resident time of day factor file.",
-            "Value":"%Input Folder%\\resident\\tod\\time_of_day_factors.csv"
-        }
         Args.DirectionFactors = {
             "Type":"File",
             "Description":"Resident time of day factor file.",
