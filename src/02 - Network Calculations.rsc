@@ -23,6 +23,7 @@ Macro "Capacities" (Args)
 endmacro
 
 Macro "Speeds & Tolls" (Args)
+    RunMacro("Add MAZ Connectors", Args) // for bike network
     RunMacro("Set CC Speeds", Args)
     RunMacro("Other Attributes", Args)
     RunMacro("Calculate Bus Speeds", Args)
@@ -1013,13 +1014,22 @@ Macro "Create Link Networks" (Args)
     nm_nets = null
     nm_nets.walk.filter = "W = 1"
     nm_nets.walk.time_field = "WalkTime"
+    nm_nets.walk.centroid_filter = "TAZ <> null"
+    nm_nets.walk_mz.filter = "W = 1"
+    nm_nets.walk_mz.time_field = "WalkTime"
+    nm_nets.walk_mz.centroid_filter = "MAZID <> null"
     nm_nets.bike.filter = "B = 1"
     nm_nets.bike.time_field = "BikeTime"
+    nm_nets.bike.centroid_filter = "TAZ <> null"
+    nm_nets.bike_mz.filter = "B = 1"
+    nm_nets.bike_mz.time_field = "BikeTime"
+    nm_nets.bike_mz.centroid_filter = "MAZID <> null"
     for i = 1 to nm_nets.length do
         name = nm_nets[i][1]
         
         filter = nm_nets.(name).filter
         time_field = nm_nets.(name).time_field
+        centroid_filter = nm_nets.(name).centroid_filter
         net_file = output_dir + "/net_" + name + ".net"
 
         o = CreateObject("Network.Create")
@@ -1032,7 +1042,7 @@ Macro "Create Link Networks" (Args)
         netSetObj = CreateObject("Network.Settings")
         netSetObj.LayerDB = link_dbd
         netSetObj.LoadNetwork(net_file)
-        netSetObj.CentroidFilter = "Centroid = 1"
+        netSetObj.CentroidFilter = centroid_filter
         netSetObj.Run()
     end
 endmacro
@@ -1247,3 +1257,56 @@ Macro "Create Route Networks" (Args)
         end
     end
 endmacro
+
+/*
+This macro adds centroid connectors from each MAZ to the nearest valid node.
+*/
+
+Macro "Add MAZ Connectors" (Args)
+    
+    link_dbd = Args.Links
+    output_dir = Args.[Output Folder] + "/networks"
+    maz_file = Args.[Input Folder] + "/mzs/RenoMicroZones.dbd"
+
+    map = CreateObject("Map", link_dbd)
+    {nlyr, llyr} = map.GetLayerNames()
+    {maz_lyr} = map.AddLayer({FileName: maz_file})
+    node_tbl = CreateObject("Table", nlyr)
+    node_tbl.AddField("MAZID")
+    link_tbl = CreateObject("Table", llyr)
+    
+    // find and remove any existing MAZ connectors
+    n = node_tbl.SelectByQuery({
+        SetName: "MAZNodes",
+        Query: "MAZID <> null"
+    })
+    if n > 0 then do
+        SetLayer(llyr)
+        SelectByNodes("maz links", "several", "MAZNodes", )
+        DeleteRecordsInSet("maz links")
+    end
+    
+    // Create set of links that new centroids can connect to
+    link_tbl.SelectByQuery({
+        SetName: "ValidLinks",
+        Query: "D = 1 and HCMType <> 'Freeway' and HCMType <> 'Ramp'"
+    })
+
+    SetLayer(llyr)
+    opts = null
+    opts.[Snap Distance] = 50
+    // opts.Threshold = 0.2
+    opts.Node = GetFieldFullSpec(nlyr, "MAZID")
+    opts.[Split Links] = "False"
+    opts.[Target Links] = llyr + "|ValidLinks"
+    opts.Slices = 2
+    ConnectCentroid(llyr, maz_lyr + "|", opts)
+    opts = null
+
+    link_tbl.SelectByQuery({
+        SetName: "MAZLinks",
+        Query: "HCMType = null"
+    })
+    link_tbl.HCMType = "MAZLinks"
+    link_tbl.DTWB = "WB"
+EndMacro

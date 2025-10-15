@@ -5,7 +5,7 @@ Macro "NonMotorized Choice" (Args)
     RunMacro("Create NonMotorized Features", Args)
     RunMacro("Calculate NM Probabilities", Args)
     RunMacro("Separate NM Trips", Args)
-    RunMacro("Aggregate HB NonMotorized Walk Trips", Args)
+    RunMacro("Aggregate HB NonMotorized Trips", Args)
     return(1)
 endmacro
 
@@ -16,6 +16,7 @@ endmacro
 
 Macro "NM Time-of-Day" (Args)
     RunMacro("NM TOD", Args)
+    RunMacro("NM Integerization", Args)
     return(1)
 endmacro
 
@@ -39,7 +40,10 @@ Macro "Create NonMotorized Features" (Args)
     per_fields = {
         {"age_16_18", "Integer", 10, ,,,, "If person's age is 16-18"},
         {"veh_per_adult", "Real", 10, 2,,,, "Vehicles per Adult in household"},
-        {"inc_per_capita", "Real", 10, 2,,,, "Income per person in household"}
+        {"inc_per_capita", "Real", 10, 2,,,, "Income per person in household"},
+        {"HHKids", "Real", 10, 2,,,, "Num kids in household"},
+        {"HHSize", "Real", 10, 2,,,, "Num persons in household"},
+        {"HHAdults", "Real", 10, 2,,,, "Num adults in household"}
     }
     RunMacro("Add Fields", {view: per_vw, a_fields: per_fields})
 
@@ -70,6 +74,9 @@ Macro "Create NonMotorized Features" (Args)
     })
     joined.(per_specs.veh_per_adult) = joined.(hh_specs.veh_per_adult)
     joined.(per_specs.inc_per_capita) = joined.(hh_specs.inc_per_capita)
+    joined.(per_specs.HHKids) = joined.(hh_specs.HHKids)
+    joined.(per_specs.HHSize) = joined.(hh_specs.HHSize)
+    joined.(per_specs.HHAdults) = joined.(hh_specs.HHAdults)
 endmacro
 
 /*
@@ -136,45 +143,55 @@ Macro "Separate NM Trips" (Args, trip_types)
     output_dir = Args.[Output Folder] + "/resident/nonmotorized"
     per_file = Args.Persons
     
-    per_vw = OpenTable("persons", "FFB", {per_file})
+    per = CreateObject("Table", per_file)
 
     if trip_types = null then trip_types = Args.HBTripTypes
 
     for trip_type in trip_types do
-        
         // Add field to person table
         per_out_field = trip_type + "_m"
-        nm_field = trip_type + "_nm"
-        per_fields_to_add = per_fields_to_add + {
-            {per_out_field, "Real", 10, 2,,,, "Motorized " + trip_type + " person trips"},
-            {nm_field, "Real", 10, 2,,,, "NonMotorized " + trip_type + " person trips"}
-        }
-        RunMacro("Add Fields", {view: per_vw, a_fields: per_fields_to_add})
+        bike_field = trip_type + "_bike"
+        walk_field = trip_type + "_walk"
+        per.AddFields({Fields: {
+            {FieldName: per_out_field, Description: "Motorized " + trip_type + " person trips"},
+            {FieldName: bike_field, Description: "Bike " + trip_type + " person trips"},
+            {FieldName: walk_field, Description: "Walk " + trip_type + " person trips"}
+        }})
         
         nm_file = output_dir + "/" + trip_type + ".bin"
-        nm_vw = OpenTable("nm", "FFB", {nm_file})
+        nm = CreateObject("Table", nm_file)
         
         // Add field to nm table
-        nm_fields_to_add = {
-            {trip_type, "Real", 10, 2,,,, "Non-motorized person trips"}
-        }
-        RunMacro("Add Fields", {view: nm_vw, a_fields: nm_fields_to_add})
+        nm.AddFields({Fields: {
+            {FieldName: bike_field, Description: "Bike person trips"},
+            {FieldName: walk_field, Description: "Walk person trips"}
+        }})
 
         // Join tables and calculate results
-        jv = JoinViews("jv", per_vw + ".PersonID", nm_vw + ".ID", )
-        v_pct_nm = GetDataVector(jv + "|", "nonmotorized Probability", )
-        v_person = GetDataVector(jv + "|", per_vw + "." + trip_type, )
-        v_nm = v_person * v_pct_nm
-        v_person = v_person * (1 - v_pct_nm)
+        per_specs = per.GetFieldSpecs({NamedArray: true})
+        nm_specs = nm.GetFieldSpecs({NamedArray: true})
+        join = per.Join({
+            Table: nm,
+            LeftFields: {"PersonID"},
+            RightFields: {"ID"}
+        })
+        v_pct_bike = join.(nm_specs.("bike Probability"))
+        v_pct_walk = join.(nm_specs.("walk Probability"))
+        v_total = join.(per_specs.(trip_type))
         
-        SetDataVector(jv + "|", nm_vw + "." + trip_type, v_nm, )
-        SetDataVector(jv + "|", per_vw + "." + per_out_field, v_person, )
-        SetDataVector(jv + "|", per_vw + "." + nm_field, v_nm, )
-        CloseView(jv)
-        CloseView(nm_vw)
-    end
+        v_bike = v_total * v_pct_bike
+        v_walk = v_total * v_pct_walk
+        v_moto = v_total * (1 - v_pct_bike - v_pct_walk)
+        
+        join.(per_specs.(per_out_field)) = v_moto
+        join.(per_specs.(bike_field)) = v_bike
+        join.(per_specs.(walk_field)) = v_walk
+        join.(nm_specs.(bike_field)) = v_bike
+        join.(nm_specs.(walk_field)) = v_walk
 
-    CloseView(per_vw)
+        join = null
+        nm = null
+    end
 endmacro
 
 
@@ -189,49 +206,53 @@ Inputs
         * Used by calibration macros
 */
 
-Macro "Aggregate HB NonMotorized Walk Trips" (Args, trip_types)
+Macro "Aggregate HB NonMotorized Trips" (Args, trip_types)
 
     hh_file = Args.Households
     per_file = Args.Persons
-    se_file = Args.SE
+    mz_file = Args.[Input MZ]
     nm_dir = Args.[Output Folder] + "/resident/nonmotorized"
 
     per_df = CreateObject("df", per_file)
     per_df.select({"PersonID", "HouseholdID"})
     hh_df = CreateObject("df", hh_file)
-    hh_df.select({"HouseholdID", "ZoneID"})
+    hh_df.select({"HouseholdID", "ZoneID", "MZ"})
     per_df.left_join(hh_df, "HouseholdID", "HouseholdID")
 
     if trip_types = null then trip_types = Args.HBTripTypes
     for trip_type in trip_types do
         file = nm_dir + "/" + trip_type + ".bin"
         vw = OpenTable("temp", "FFB", {file})
-        v = GetDataVector(vw + "|", trip_type, {{"Sort Order",{{"ID","Ascending"}}}})
+        v_bike = GetDataVector(vw + "|", trip_type + "_bike", {{"Sort Order",{{"ID","Ascending"}}}})
+        v_walk = GetDataVector(vw + "|", trip_type + "_walk", {{"Sort Order",{{"ID","Ascending"}}}})
         CloseView(vw)
-        per_df.tbl.(trip_type) = v
+        per_df.tbl.(trip_type + "_bike") = v_bike
+        per_df.tbl.(trip_type + "_walk") = v_walk
     end
-    per_df.group_by("ZoneID")
-    per_df.summarize(trip_types, "sum")
-    for trip_type in trip_types do
+    per_df.group_by("MZ")
+    to_summarize = V2A(A2V(trip_types) + "_bike") + V2A(A2V(trip_types) + "_walk")
+    per_df.summarize(to_summarize, "sum")
+    for trip_type in to_summarize do
         per_df.rename("sum_" + trip_type, trip_type)
     end
     
-    // Add the walk accessibility attractions from the SE bin file, which will
+    // Add the NM attractions from the MZ bin file, which will
     // be used in the gravity application.
-    se_df = CreateObject("df", se_file)
-    se_df.select({"TAZ", "access_walk_attr", "access_walk"})
-    se_df.left_join(per_df, "TAZ", "ZoneID")
+    mz_df = CreateObject("df", mz_file)
+    mz_df.tbl.NMAttractions = mz_df.tbl.HH + mz_df.tbl.TOTJOBS
+    mz_df.select({"ID", "NMAttractions"})
+    mz_df.left_join(per_df, "ID", "MZ")
+    mz_df.write_bin(nm_dir + "/_agg_nm_trips_daily.bin")
+    mz_df = null
 
-    se_df.write_bin(nm_dir + "/_agg_nm_trips_daily.bin")
-
-    // Suppress demand for walk trips in zones with no walk accessibility
-    agg_vw = OpenTable("aggnm", "FFB", {nm_dir + "/_agg_nm_trips_daily.bin"})
-    SetView(agg_vw)
-    n = SelectByQuery("Selection", "several", "Select * where access_walk = 0",)
-    v0 = GetDataVector(agg_vw + "|Selection", "access_walk", )
-    for trip_type in trip_types do
-        SetDataVector(agg_vw + "|Selection", trip_type, v0, )
-    end
+    // // Suppress demand for walk trips in zones with no walk accessibility
+    // agg_vw = OpenTable("aggnm", "FFB", {nm_dir + "/_agg_nm_trips_daily.bin"})
+    // SetView(agg_vw)
+    // n = SelectByQuery("Selection", "several", "Select * where access_walk = 0",)
+    // v0 = GetDataVector(agg_vw + "|Selection", "access_walk", )
+    // for trip_type in trip_types do
+    //     SetDataVector(agg_vw + "|Selection", trip_type + "_walk", v0, )
+    // end
 
 endmacro
 
@@ -241,16 +262,27 @@ endmacro
 
 Macro "NM Gravity" (Args)
 
-    grav_params = Args.[Input Folder] + "/resident/nonmotorized/distribution/nm_gravity.csv"
+    walk_params = Args.[Input Folder] + "/resident/nonmotorized/distribution/walk_gravity.csv"
+    bike_params = Args.[Input Folder] + "/resident/nonmotorized/distribution/bike_gravity.csv"
     out_dir = Args.[Output Folder] 
     nm_dir = out_dir + "/resident/nonmotorized"
     prod_file = nm_dir + "/_agg_nm_trips_daily.bin"
 
     RunMacro("Gravity", {
         se_file: prod_file,
-        skim_file: out_dir + "/skims/nonmotorized/walk_skim.mtx",
-        param_file: grav_params,
-        output_matrix: nm_dir + "/nm_gravity.mtx"
+        skim_file: out_dir + "/skims/nonmotorized/walk_skim_mz.mtx",
+        row_index: "MZ",
+        col_index: "MZ",
+        param_file: walk_params,
+        output_matrix: nm_dir + "/walk_gravity.mtx"
+    })
+    RunMacro("Gravity", {
+        se_file: prod_file,
+        skim_file: out_dir + "/skims/nonmotorized/bike_skim_mz.mtx",
+        row_index: "MZ",
+        col_index: "MZ",
+        param_file: bike_params,
+        output_matrix: nm_dir + "/bike_gravity.mtx"
     })
 endmacro
 
@@ -261,23 +293,85 @@ the motorized trips.
 
 Macro "NM TOD" (Args)
 
-    nm_file = Args.[Output Folder] + "/resident/nonmotorized/nm_gravity.mtx"
+    nm_dir = Args.[Output Folder] + "/resident/nonmotorized"
     tod_file = Args.ResTODFactors
     
-    nm_mtx = CreateObject("Matrix", nm_file)
     fac_vw = OpenTable("tod_fac", "CSV", {tod_file})
     v_type = GetDataVector(fac_vw + "|", "trip_type", )
     v_tod = GetDataVector(fac_vw + "|", "tod", )
     v_fac = GetDataVector(fac_vw + "|", "factor", )
 
-    for i = 1 to v_type.length do
-        type = v_type[i]
-        tod = v_tod[i]
-        fac = v_fac[i]
+    modes = {"walk", "bike"}
+    for mode in modes do
+        nm_file = nm_dir + "/" + mode + "_gravity.mtx"
+        nm_mtx = CreateObject("Matrix", nm_file)
+        for i = 1 to v_type.length do
+            type = v_type[i]
+            tod = v_tod[i]
+            fac = v_fac[i]
 
-        core_name = type + "_" + tod
-        nm_mtx.AddCores({core_name})
-        cores = nm_mtx.GetCores()
-        cores.(core_name) := cores.(type) * fac
+            core_name = type + "_" + tod
+            nm_mtx.AddCores({core_name})
+            cores = nm_mtx.GetCores()
+            cores.(core_name) := cores.(type) * fac
+        end
+        nm_mtx = null
     end
 endmacro
+
+/*
+Integerizes the bike matrix by iteratively lowering the rounding threshold
+until the rounded sums are close to the true sums.
+*/
+
+Macro "NM Integerization" (Args)
+
+    out_dir = Args.[Output Folder] + "/resident/nonmotorized"
+    nm_file = out_dir + "/bike_gravity.mtx"
+    int_file = out_dir + "/bike_int.mtx"    
+    tod_file = Args.ResTODFactors
+    v_tod = Args.Periods
+    
+    fac_tbl = CreateObject("Table", tod_file)
+    v_type = fac_tbl.trip_type
+    v_type = SortVector(v_type, {Unique: true})
+    
+    CopyFile(nm_file, int_file)
+    mtx = CreateObject("Matrix", int_file)
+    mtx.AddCores("floor")
+    mtx.AddCores("rem")
+    mtx.AddCores("temp_sum")
+    
+    for type in v_type do
+        for tod in v_tod do
+            core_name = type + "_" + tod
+            row_sums = mtx.GetVector({
+                Core: core_name,
+                Marginal: "Row Sum"
+            })
+            true_sum = row_sums.Sum()
+
+            mtx.floor := Floor(mtx.(core_name))
+            mtx.rem := mtx.(core_name) - mtx.floor
+            round_threshold = .02
+            for i = 1 to 100 do
+                mtx.temp_sum := if mtx.rem >= round_threshold then mtx.floor + 1 else mtx.floor
+                row_sums = mtx.GetVector({
+                    Core: "temp_sum",
+                    Marginal: "Row Sum"
+                })
+                temp_sum = row_sums.Sum()
+                ratio = (temp_sum - true_sum) / true_sum
+                thresholds = thresholds + {round_threshold} // for debugging speed of convergence
+                ratios = ratios + {ratio} // for debugging speed of convergence
+                if abs(ratio) < .015 or i = 100 then do
+                    mtx.(core_name) := mtx.temp_sum
+                    break
+                end else if ratio < -.015
+                    then round_threshold = round_threshold / 1.10
+                    else round_threshold = round_threshold * 1.07
+            end
+        end
+    end
+    mtx.DropCores({"floor", "rem", "temp_sum"})
+EndMacro
