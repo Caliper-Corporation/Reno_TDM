@@ -9,3 +9,6 @@ PM,Constant,0.1283,Constant
 NT,Constant,-0.3362,Constant
 NT,person.HHKids > 0,0.4527,HH with kids
 NT,person.HHIncCat < 4,0.521,Low Income < 75k
+MD,Constant,-0.2099,ASC Adjustment
+PM,Constant,0.0618,ASC Adjustment
+NT,Constant,0.0525,ASC Adjustment

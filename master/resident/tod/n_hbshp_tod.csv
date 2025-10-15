@@ -12,3 +12,6 @@ NT,Constant,3.5747,Constant
 NT,person.HHKids > 0,0.4384,HH with kids
 NT,person.Employed,0.6816,Employed person
 NT,person.veh_per_adult > 0.0 and person.veh_per_adult < 1.0,0.2388,Vehicle Insufficient HH
+MD,Constant,-0.2693,ASC Adjustment
+PM,Constant,-0.0825,ASC Adjustment
+NT,Constant,-0.0681,ASC Adjustment

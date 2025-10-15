@@ -12,3 +12,6 @@ NT,Constant,-0.454,Constant
 NT,person.g_access,0.2089,General Accessibility to nearby attractions at home TAZ
 NT,person.HHKids > 0,0.523,HH with kids
 NT,person.veh_per_adult > 0.0 and person.veh_per_adult < 1.0,-0.3928,Vehicle Insufficient HH
+MD,Constant,-0.4621,ASC Adjustment
+PM,Constant,-0.193,ASC Adjustment
+NT,Constant,-0.3327,ASC Adjustment

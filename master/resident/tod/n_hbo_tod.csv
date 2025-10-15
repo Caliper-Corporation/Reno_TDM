@@ -11,3 +11,6 @@ NT,Constant,-0.6151,Constant
 NT,person.n_access,0.0843,SOV Accessibility to nearby attractions at home TAZ
 NT,person.Employed,0.202,Employed person
 NT,person.veh_per_adult > 0.0 and person.veh_per_adult < 1.0,0.2728,Vehicle Insufficient HH
+MD,Constant,0.0354,ASC Adjustment
+PM,Constant,-0.0315,ASC Adjustment
+NT,Constant,-0.3008,ASC Adjustment
