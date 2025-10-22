@@ -1289,7 +1289,7 @@ Macro "Add MAZ Connectors" (Args)
     // Create set of links that new centroids can connect to
     link_tbl.SelectByQuery({
         SetName: "ValidLinks",
-        Query: "D = 1 and HCMType <> 'Freeway' and HCMType <> 'Ramp'"
+        Query: "DTWB contains 'D' and HCMType <> 'Freeway' and HCMType <> 'Ramp'"
     })
 
     SetLayer(llyr)
