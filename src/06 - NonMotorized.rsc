@@ -20,6 +20,11 @@ Macro "NM Time-of-Day" (Args)
     return(1)
 endmacro
 
+Macro "NM Assignment" (Args)
+    RunMacro("Assign Bike Trips", Args)
+    return(1)
+endmacro
+
 /*
 This macro creates features on the synthetic household and person tables
 needed by the non-motorized model.
@@ -374,4 +379,53 @@ Macro "NM Integerization" (Args)
         end
     end
     mtx.DropCores({"floor", "rem", "temp_sum"})
+
+    // Create a single "bike" core for assignment
+    mtx.AddCores("bike")
+    mtx.bike := 0
+    for type in v_type do
+        for tod in v_tod do
+            core_name = type + "_" + tod
+            mtx.bike := mtx.bike + nz(mtx.(core_name))
+        end
+    end
 EndMacro
+
+/*
+Assigns the non-motorized trips to the network
+*/
+Macro "Assign Bike Trips" (Args)
+    
+    hwy_dbd = Args.Links
+    net_dir = Args.[Output Folder] + "\\networks\\"
+    net_file = net_dir + "net_bike.net"
+    assn_dir = Args.[Output Folder] + "\\assignment\\nonmotorized"
+    if GetDirectoryInfo(assn_dir, "All") = null then CreateDirectory(assn_dir)
+    od_dir = Args.[Output Folder] + "/resident/nonmotorized"
+    od_mtx = od_dir + "/bike_int.mtx"
+
+    // Add NodeID index to matrix
+    node_tbl = CreateObject("Table", {FileName: hwy_dbd, LayerType: "Node"})
+    mtx = CreateObject("Matrix", od_mtx)
+    mtx.AddIndex({
+        ViewName: node_tbl.GetView(),
+        Dimension: "Both",
+        OriginalID: "MAZID",
+        NewID: "ID",
+        IndexName: "NodeID"
+    })
+    node_tbl = null
+    mtx = null
+
+    o = CreateObject("Network.Assignment")
+    o.Network = net_file
+    o.LayerDB = hwy_dbd
+    o.ResetClasses()
+    o.Method = "AON"
+    o.DemandMatrix({MatrixFile: od_mtx, RowIndex: "NodeID", ColIndex: "NodeID"})
+    o.AddClass({Demand: "bike"})
+    o.Minimize = "BikeTime"
+    o.FlowTable = assn_dir + "\\bike_flow.bin"
+    ret_value = o.Run()
+    results = o.GetResults()
+endmacro
