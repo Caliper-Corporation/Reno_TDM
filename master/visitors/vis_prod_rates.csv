@@ -1,0 +1,26 @@
+﻿trip_type,rule,rate
+BLB,Purpose < 2,0
+BLB,Purpose >= 2 and Income < 100000 and PartySize < 2,1.46
+BLB,Purpose >= 2 and Income >= 100000 and PartySize < 2,1.33
+BLB,Purpose >= 2 and Income < 100000 and PartySize >=2,0.22
+BLB,Purpose >= 2 and Income >= 100000 and PartySize >=2,0.91
+TLBES,Purpose >= 2,0
+TLBES,Purpose < 2  and Income < 50000 and PartySize < 3,0.17
+TLBES,Purpose < 2  and Income >= 50000 and Income < 100000 and PartySize < 3,0.15
+TLBES,Purpose < 2  and Income >=100000 and PartySize < 3,0.33
+TLBES,Purpose < 2  and Income < 50000 and PartySize >= 3,0.26
+TLBES,Purpose < 2  and Income >= 50000 and Income < 100000 and PartySize >= 3,0.37
+TLBES,Purpose < 2  and Income >=100000 and PartySize >= 3,0.46
+TLBGD,Purpose >= 2,0
+TLBGD,Purpose < 2 and Downtown = 1 and PartySize <3,0.62
+TLBGD,Purpose < 2 and Downtown = 0 and PartySize <3,0.25
+TLBGD,Purpose < 2 and Downtown = 1 and PartySize >=3,0.33
+TLBGD,Purpose < 2 and Downtown = 0 and PartySize >=3,0.21
+TLBOTH,Purpose >= 2,0
+TLBOTH,Purpose < 2 and Income < 75000 and PartySize <3,0.11
+TLBOTH,Purpose < 2 and  Income >= 75000 and Income < 100000 and PartySize <3,0.34
+TLBOTH,Purpose < 2 and Income >= 100000 and PartySize <3,0.33
+TLBOTH,Purpose < 2 and Downtown = 1 and Income < 75000 and PartySize >=3,0.18
+TLBOTH,Purpose < 2 and Downtown = 1 and Income >= 75000 and Income < 100000 and PartySize >=3,0.37
+TLBOTH,Purpose < 2 and Downtown = 1 and Income >= 100000 and PartySize >=3,0.47
+TLBOTH,Purpose < 2 and Downtown = 0 and PartySize >=3,0.21

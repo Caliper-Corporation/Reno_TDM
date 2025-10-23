@@ -1,0 +1,11 @@
+﻿trip_type,beta,skim
+BNLBSOV,0.6,Auto
+BNLBHOV,0.6,Auto
+BNLBTNC,0.6,Auto
+BNLBBUS,3,Transit
+BNLBWLK,2,Walk
+TNLBSOV,0.6,Auto
+TNLBHOV,0.6,Auto
+TNLBTNC,0.6,Auto
+TNLBBUS,3.5,Transit
+TNLBWLK,1.5,Walk

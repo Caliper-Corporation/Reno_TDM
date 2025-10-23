@@ -1,0 +1,17 @@
+﻿trip_type,rate,factor
+BNLBSOV,0.092167012,constant
+BNLBSOV,1.334784,access_nearby_sov
+BNLBHOV ,0.092167012,constant
+BNLBHOV ,1.334784,access_nearby_sov
+BNLBTNC ,0.768037284,constant
+BNLBTNC ,0.227005,access_nearby_sov
+BNLBWLK ,0.576977505,constant
+BNLBWLK ,0.168417,access_walk
+TNLBSOV ,1,constant
+TNLBSOV ,0.104718,access_nearby_sov
+TNLBHOV ,1,constant
+TNLBHOV ,0.104718,access_nearby_sov
+TNLBTNC ,0.442266782,constant
+TNLBTNC ,0.496602,access_nearby_sov
+TNLBWLK ,0.576977505,constant
+TNLBWLK ,0.168417,access_walk
