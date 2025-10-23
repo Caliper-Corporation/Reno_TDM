@@ -29,6 +29,7 @@ Body:
     FlowChartNode(model,"Special Market DC & MC",,,)
     FlowChartNode(model,"Transit Assignment",,,)
     FlowChartNode(model,"Summaries",,,)
+    FlowChartNode(model,"Visitor Trips",,,)
     //
     // Links
     //
@@ -44,7 +45,8 @@ Body:
     FlowChartLink(model,"Skimming","Home-based Choice Models",True,,)
     FlowChartLink(model,"Home-based Choice Models","Non-Home-based Models",True,,)
     FlowChartLink(model,"Non-Home-based Models","Special Market DC & MC",True,,)
-    FlowChartLink(model,"Special Market DC & MC","Roadway Assignment",True,,)
+    FlowChartLink(model,"Special Market DC & MC","Visitor Trips",True,,)
+    FlowChartLink(model,"Visitor Trips","Roadway Assignment",True,,)
     FlowChartLink(model,"Transit Assignment","Summaries",True,,)
     Return(model)
 EndMacro
@@ -975,3 +977,12 @@ Macro "NM Assignment" (Args,Result)
     }
 EndMacro
 
+Macro "Visitor Trips" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"VisitorModel"}},
+        {"Picture", "bmp\\planwork_v3.bmp"}
+    }
+Data:
+    InSections({"Visitor Model"})
+EndMacro
