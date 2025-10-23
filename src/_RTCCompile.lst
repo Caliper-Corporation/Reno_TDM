@@ -21,6 +21,7 @@ Airport.rsc
 University.rsc
 External Models.rsc
 air_quality_moves.rsc
+Visitors.rsc
 utils/NestedDC.rsc
 utils/DesireLines.rsc
 utils/utils.rsc
