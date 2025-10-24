@@ -983,6 +983,4 @@ Macro "Visitor Trips" (Args,Result)
         {"MacroNames", {"VisitorModel"}},
         {"Picture", "bmp\\planwork_v3.bmp"}
     }
-Data:
-    InSections({"Visitor Model"})
 EndMacro
