@@ -2329,21 +2329,23 @@ Macro "Create Intra Cluster Matrix"(Args)
   outMtx = Args.[Output Folder] + "/skims/IntraCluster.mtx"
   // Create empty matrix
   obj = CreateObject("Matrix", {Empty: True}) 
-  obj.SetMatrixOptions({Compressed: 1, DataType: "Short", FileName: outMtx, MatrixLabel: "IntraCluster"})
+  NewInfo = {FileName: outMtx, 
+                MatrixLabel: "IntraCluster", 
+                Compressed: 1, 
+                DataType: "Short"}
   opts.RowIds = v2a(vTAZ) 
   opts.ColIds = v2a(vTAZ)
   opts.MatrixNames = {"IC", "IZ"}
   opts.RowIndexName = "All Zones"
   opts.ColIndexName = "All Zones"
-  mat = obj.CreateFromArrays(opts)
-  obj = null
+  opts.NewMatrixInfo = NewInfo
+  mtx = obj.CreateFromArrays(opts)
   
   // Intialize IC and IZ cores
-  mtx = CreateObject("Matrix", mat)
-  mc = mtx.GetCore("IC")
+  mc = mtx.IC
   mc := 0
   
-  mc = mtx.GetCore("IZ")
+  mc = mtx.IZ
   mc := 0
   v = Vector(nTAZ, "Short", {{"Constant", 1}})
   SetMatrixVector(mc, v, {{"Diagonal"}})
@@ -2370,11 +2372,10 @@ Macro "Create Intra Cluster Matrix"(Args)
       
       mtx.SetRowIndex(cluster_name)
       mtx.SetColIndex(cluster_name)
-      mc = mtx.GetCore("IC")
+      mc = mtx.IC
       mc := 1
   end
   mc = null
-  mat = null
 endMacro
 /*
 Used by the convergence macro to write out the %RMSE in each iteration
