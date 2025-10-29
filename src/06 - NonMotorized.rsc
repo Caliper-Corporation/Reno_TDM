@@ -300,6 +300,7 @@ Macro "NM TOD" (Args)
 
     nm_dir = Args.[Output Folder] + "/resident/nonmotorized"
     tod_file = Args.ResTODFactors
+    maz_file = Args.[Input MZ]
     
     fac_vw = OpenTable("tod_fac", "CSV", {tod_file})
     v_type = GetDataVector(fac_vw + "|", "trip_type", )
@@ -322,6 +323,41 @@ Macro "NM TOD" (Args)
         end
         nm_mtx = null
     end
+
+    // Create the combined matrix used by the NHB model
+    // Combine the MAZ matrices
+    CopyFile(nm_dir + "/walk_gravity.mtx", nm_dir + "/nm_gravity_mz.mtx")
+    nm_mtx = CreateObject("Matrix", nm_dir + "/nm_gravity_mz.mtx")
+    bike_mtx = CreateObject("Matrix", nm_dir + "/bike_gravity.mtx")
+    core_names = nm_mtx.GetCoreNames()
+    for core_name in core_names do
+        nm_mtx.(core_name) := nz(nm_mtx.(core_name)) + nz(bike_mtx.(core_name))
+    end
+    // Aggregate to TAZ level
+    // mz_tbl = CreateObject("Table", maz_file)
+    agg_mtx = nm_mtx.Aggregate({
+        Method: "Sum",
+        Rows: {
+            Data: maz_file,
+            MatrixID: "ID",
+            AggregationID: "TAZ_ID"
+        },
+        Cols: {
+            Data: maz_file,
+            MatrixID: "ID",
+            AggregationID: "TAZ_ID"
+        }
+    })
+    core_names = agg_mtx.GetCoreNames()
+    for core_name in core_names do
+        new_names = new_names + {Substitute(core_name, "Sum of ", "", )}
+    end
+    agg_mtx.RenameCores({CurrentNames: core_names, NewNames: new_names})
+    CopyMatrix(agg_mtx.(new_names[1]), {
+        "File Name": nm_dir + "/nm_gravity.mtx",
+        Label: "Combined Bike-Walk Matrix"
+    })
+    agg_mtx = null
 endmacro
 
 /*
