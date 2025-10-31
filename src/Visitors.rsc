@@ -1,28 +1,14 @@
 macro "VisitorModel" (Args, Result)
-    ret_value = 1
 
-    ret_value = RunMacro("VisitorPopSynth", Args)
-    if !ret_value then goto quit
-
-    ret_value = RunMacro("VisitorTripGen", Args)
-    if !ret_value then goto quit
-
-    ret_value = RunMacro("VisitorChoices", Args)
-    if !ret_value then goto quit
-
-    ret_value = RunMacro("VisitorNLB", Args)
-    if !ret_value then goto quit
-
-    ret_value = RunMacro("VisitorTOD", Args)
-    if !ret_value then goto quit
-
-        quit:
-    Return(ret_value)
-
+    RunMacro("VisitorPopSynth", Args)
+    RunMacro("VisitorTripGen", Args)
+    RunMacro("VisitorChoices", Args)
+    RunMacro("VisitorNLB", Args)
+    RunMacro("VisitorTOD", Args)
+    Return(1)
 endmacro
 
 macro "VisitorPopSynth" (Args)
-    ret_value = 1
 
     // Add fields to SED file for occupied hotel rooms and dummy district   
     SEDfile = Args.SE
@@ -75,12 +61,9 @@ macro "VisitorPopSynth" (Args)
 
     ret_value = o.Run()
 
-    quit:
-    Return(ret_value)
 endMacro
 
 macro "VisitorTripGen" (Args)
-    ret_value = 1
     outputFolder = Args.[Output Folder] + "\\visitors\\"
     hhfile = outputFolder + "VisitorParties.bin"
     perfile = outputFolder + "VisitorPersons.bin"
@@ -142,13 +125,9 @@ macro "VisitorTripGen" (Args)
     end
     SEDPHH = null
     PHH = null
-
-    quit:
-    Return(ret_value)
 endMacro
 
 macro "VisitorChoices" (Args)
-    ret_value = 1
 
     // Prepare skim variables for choices
     askim = CreateObject("Matrix", Args.AvgRoadwaySkimMDhov)
@@ -249,13 +228,9 @@ macro "VisitorChoices" (Args)
             SED.(purp+"_"+modes[j]) = pa.GetVector({Core: modes[j], Marginal: "Column Sum"})
         end
     end
-
-    quit:
-    Return(ret_value)
 endMacro
 
 macro "VisitorNLB" (Args)
-    ret_value = 1
 
     // Get rates
     ratesfile = Args.VisitorNLBRates
@@ -339,13 +314,9 @@ macro "VisitorNLB" (Args)
     obj.OutputMatrix({MatrixFile: Args.[Output Folder] + "\\visitors\\NLB.mtx", MatrixLabel : "Gravity",             
             Compression: true, ColumnMajor: false})         
     ret_value = obj.Run()         
-
-    quit:
-    Return(ret_value)
 endMacro    
 
 macro "VisitorTOD" (Args)
-    ret_value = 1
 
     vpath = Args.[Master Folder] + "\\visitors\\"
     voutpath = Args.[Output Folder] + "\\visitors\\"
@@ -405,7 +376,4 @@ macro "VisitorTOD" (Args)
             end
         end
     end
-
-    quit:
-    Return(ret_value)
 endMacro    
