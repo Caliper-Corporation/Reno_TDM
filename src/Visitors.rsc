@@ -163,7 +163,7 @@ macro "VisitorChoices" (Args)
     tskim.WTT := tskim.[In-Vehicle Time] + 1.5*(tskim.[Initial Wait Time] + tskim.[Transfer Wait Time] + tskim.[Transfer Penalty Time] + tskim.[Transfer Walk Time] + tskim.[Access Walk Time] + tskim.[Egress Walk Time] + tskim.[Dwelling Time])
     
     // Get and loop over LB trip purposes 
-    mcpath = Args.[Master Folder] + "\\parameters\\visitors\\mc\\"
+    mcpath = Args.[Master Folder] + "\\visitors\\mc\\"
     voutpath = Args.[Output Folder] + "\\visitors\\"
     mcfiles = GetDirectoryInfo(mcpath + "*.mdl", "File")
     for i = 1 to mcfiles.length do
@@ -221,7 +221,7 @@ macro "VisitorChoices" (Args)
     SED.SetDataVectors({FieldData: data})
 
     // Apply LB Destination Choice models
-    dcpath = Args.[Master Folder] + "\\parameters\\visitors\\dc\\"
+    dcpath = Args.[Master Folder] + "\\visitors\\dc\\"
     dcfiles = GetDirectoryInfo(dcpath + "*.dcm", "File")
     for i = 1 to dcfiles.length do
         o = CreateObject("Choice.Destination")     
