@@ -48,7 +48,8 @@ Macro "Create Production Features" (Args)
         {"e_access", "Real", 10, 2,,,, "Employment accessibility of home zone"},
         {"w_access", "Real", 10, 2,,,, "Walk accessibility of home zone"},
         {"t_access", "Real", 10, 2,,,, "Transit accessibility of home zone"},
-        {"t_access_lt_61", "Integer", 10, 2,,,, "Is transit access < 6.1?"}
+        {"t_access_lt_61", "Integer", 10, 2,,,, "Is transit access < 6.1?"},
+        {"GSIndex", "Real", 12, 2,,,,"Gini-Simpson Diversity Index"}
     }
     RunMacro("Add Fields", {view: per_vw, a_fields: per_fields})
     {, hh_specs} = RunMacro("Get Fields", {view_name: hh_vw})
@@ -60,7 +61,7 @@ Macro "Create Production Features" (Args)
     jv = JoinViews("per+hh+se", temp_specs.ZoneID, se_specs.TAZ, )
     CloseView(temp_vw)
     {v_taz, v_size, v_workers, v_inc, v_kids, v_seniors, v_workers,  
-    v_emp_status, v_age, v_ga, v_na, v_ea, v_wa, v_ta} = GetDataVectors(jv + "|", {
+    v_emp_status, v_age, v_ga, v_na, v_ea, v_wa, v_ta, v_gini} = GetDataVectors(jv + "|", {
         hh_specs.ZoneID,
         hh_specs.HHSize,
         hh_specs.NumberWorkers,
@@ -74,7 +75,8 @@ Macro "Create Production Features" (Args)
         se_specs.access_nearby_sov,
         se_specs.access_employment_sov,
         se_specs.access_walk,
-        se_specs.access_transit
+        se_specs.access_transit,
+        se_specs.GSIndex
     },)
 
     data.(per_specs.HHTAZ) = v_taz
@@ -110,6 +112,7 @@ Macro "Create Production Features" (Args)
     data.(per_specs.w_access) = v_wa
     data.(per_specs.t_access) = v_ta
     data.(per_specs.t_access_lt_61) = if v_ta < 3.1 then 1 else 0
+    data.(per_specs.GSIndex) = nz(v_gini)
     SetDataVectors(jv + "|", data, )
     
     CloseView(jv)
