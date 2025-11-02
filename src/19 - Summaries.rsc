@@ -1090,7 +1090,7 @@ Macro "Summarize Total Mode Shares" (Args)
 
   v_auto = RunMacro("Summarize Matrix RowSums", {trip_dir: out_dir + "/assignment/roadway"})
   v_transit = RunMacro("Summarize Matrix RowSums", {trip_dir: out_dir + "/assignment/transit"})
-  v_nm = RunMacro("Summarize Matrix RowSums", {trip_dir: out_dir + "/resident/nonmotorized"})
+  v_nm = RunMacro("Summarize Matrix RowSums", {mtx_files: {out_dir + "/resident/nonmotorized/nm_gravity.mtx"}})
   
   // Get a vector of IDs from one of the matrices
   mtx_files = RunMacro("Catalog Files", {dir: out_dir + "/assignment/roadway", ext: "mtx"})
@@ -1161,7 +1161,10 @@ and returns a vector.
 Inputs
   * trip_dir
     * String
-    * The directory holding the matrices to summarize
+    * The directory holding the matrices to summarize. All matrices will be summarized.
+  * mtx_files
+    * String or array of strings
+    * use to specify specific matrix files to summarize instead of all in a directory.
   * result
     * Vector of summed row totals
 */
@@ -1171,8 +1174,10 @@ Macro "Summarize Matrix RowSums" (MacroOpts)
   equiv = MacroOpts.equiv
   trip_dir = MacroOpts.trip_dir
   result = MacroOpts.result
+  mtx_files = MacroOpts.mtx_files
+  if mtx_files = null 
+    then mtx_files = RunMacro("Catalog Files", {dir: trip_dir, ext: "mtx"})
 
-  mtx_files = RunMacro("Catalog Files", {dir: trip_dir, ext: "mtx"})
   counter = 1
   for mtx_file in mtx_files do
     mtx = CreateObject("Matrix", mtx_file)

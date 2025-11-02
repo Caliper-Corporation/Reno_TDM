@@ -300,6 +300,8 @@ Macro "NM TOD" (Args)
 
     nm_dir = Args.[Output Folder] + "/resident/nonmotorized"
     tod_file = Args.ResTODFactors
+    links_dbd = Args.Links
+    maz_file = Args.[Input MZ]
     
     fac_vw = OpenTable("tod_fac", "CSV", {tod_file})
     v_type = GetDataVector(fac_vw + "|", "trip_type", )
@@ -322,6 +324,73 @@ Macro "NM TOD" (Args)
         end
         nm_mtx = null
     end
+
+    // Create the combined matrix used by the NHB model
+    // Combine the MAZ matrices
+    CopyFile(nm_dir + "/walk_gravity.mtx", nm_dir + "/nm_gravity_mz.mtx")
+    nm_mtx = CreateObject("Matrix", nm_dir + "/nm_gravity_mz.mtx")
+    bike_mtx = CreateObject("Matrix", nm_dir + "/bike_gravity.mtx")
+    core_names = nm_mtx.GetCoreNames()
+    for core_name in core_names do
+        nm_mtx.(core_name) := nz(nm_mtx.(core_name)) + nz(bike_mtx.(core_name))
+    end
+    // Aggregate to TAZ level
+    agg_mtx = nm_mtx.Aggregate({
+        Method: "Sum",
+        Rows: {
+            Data: maz_file,
+            MatrixID: "ID",
+            AggregationID: "TAZ_ID"
+        },
+        Cols: {
+            Data: maz_file,
+            MatrixID: "ID",
+            AggregationID: "TAZ_ID"
+        }
+    })
+    core_names = agg_mtx.GetCoreNames()
+    for core_name in core_names do
+        new_names = new_names + {Substitute(core_name, "Sum of ", "", )}
+    end
+    agg_mtx.RenameCores({CurrentNames: core_names, NewNames: new_names})
+    // Create new matrix with correct dimensions (including external tazs)
+    node_tbl = CreateObject("Table", {FileName: links_dbd, LayerType: "Node"})
+    node_tbl.SelectByQuery({
+        SetName: "tazs",
+        Query: "Select * where TAZ <> null"
+    })
+    specs = node_tbl.GetFieldSpecs({NamedArray: true})
+    vw = node_tbl.GetView()
+    mh = CreateMatrix(
+        {vw + "|tazs", specs.ID, "TAZ"},
+        {vw + "|tazs", specs.ID, "TAZ"},
+        {
+            "File Name": nm_dir + "/nm_gravity.mtx", 
+            Label: "Combined Bike-Walk Matrix",
+            Tables: new_names
+        }
+    )
+    // Create sub index
+    mz_tbl = CreateObject("Table", maz_file)
+    agg_tbl = mz_tbl.Aggregate({
+        GroupBy: "TAZ_ID",
+        FieldStats: {TAZ_ID: "Count"}
+    })
+    final_mtx = CreateObject("Matrix", mh)
+    final_mtx.AddIndex({
+        ViewName: agg_tbl.GetView(),
+        Dimension: "Both",
+        OriginalID: "TAZ_ID",
+        NewID: "TAZ_ID",
+        IndexName: "with_trips"
+    })
+    final_mtx.SetIndex({
+        RowIndex: "with_trips",
+        ColIndex: "with_trips"
+    })
+    for core_name in new_names do
+        final_mtx.(core_name) := agg_mtx.(core_name)
+    end    
 endmacro
 
 /*

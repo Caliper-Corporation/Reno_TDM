@@ -132,27 +132,26 @@ Macro "Airport Distribution" (Args)
     centroid_ids = GetDataVector(nlyr + "|centroids", "ID", {{"Sort Order", {{"ID", "Ascending"}}}})
     
     obj = CreateObject("Matrix", {Empty: True})
-    obj.SetMatrixOptions({
-        FileName: airport_matrix,
-        MatrixLabel: "Airport Trips",
-        Compressed: 1,
-        DataType: "Float"})
+    NewInfo = {
+            FileName: airport_matrix,
+            MatrixLabel: "Airport Trips",
+            Compressed: 1,
+            DataType: "Float"}
     opts.RowIds = V2A(centroid_ids)
     opts.ColIds = V2A(centroid_ids)
     opts.MatrixNames = {"Trips"}
     opts.RowIndexName = "TAZ"
     opts.ColIndexName = "TAZ"
+    opts.NewMatrixInfo = NewInfo
     mat = obj.CreateFromArrays(opts)
     
-    mc = CreateMatrixCurrency(mat, "Trips", , , )
     rows = V2A(centroid_ids)
     cols = {airport_zone}
     for i = 1 to centroid_ids.length do
         pa_trips = pa_trips + {{airport_productions[i]}}
     end
-    SetMatrixValues(mc, rows, cols, {"Copy", pa_trips}, )
+    SetMatrixValues(mat.Trips, rows, cols, {"Copy", pa_trips}, )
     
-    mc = null
     mat = null
     CloseView(se_vw)
     CloseMap(map)

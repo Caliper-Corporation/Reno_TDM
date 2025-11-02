@@ -1,0 +1,25 @@
+model label=TLBES version=1.5
+  field name=Time
+  field name=Fare
+  source name=Matrix1 type=Matrix primary=True origins=True destinations=True file=C:\Users\mtambellini\RTC_Washoe\avg_skim_MD_All_All_hov.mtx filelabel="Roadway skim MD HOV" rowindex=Origin colindex=Destination
+  source name=Matrix2 type=Matrix file=C:\Users\mtambellini\RTC_Washoe\skim_MD_w_all.mtx filelabel="Transit skim MD_w_all" rowindex=RCIndex colindex=RCIndex
+  source name=Matrix3 type=Matrix file=C:\Users\mtambellini\RTC_Washoe\walk_skim.mtx filelabel="Walk Skim" rowindex=Origin colindex=Destination
+  source name=WalkAvail label=WalkAvail type=Expression expression="Matrix3.[Length (Skim)] <= 1.5"
+  segment name=*
+    term name=Time coefficient=-0.012921
+    term name=Fare coefficient=-0.090493
+    alternative name=Auto theta=0.576486
+      alternative name=SOV parent=Auto asc=-2.5
+        data source=Matrix1 spec=CongTime term=Time type=Matrix
+      alternative name=HOV parent=Auto asc=0.15
+        data source=Matrix1 spec=CongTime term=Time type=Matrix
+    alternative name=TNC asc=-2.5
+      data source=Matrix1 spec=CongTime term=Time type=Matrix
+      data source=Matrix1 spec=TaxiFare term=Fare type=Matrix
+    alternative name=BUS asc=-1.5
+      data source=Matrix2 spec=Fare term=Fare type=Matrix
+      data source=Matrix2 spec=WTT term=Time type=Matrix
+    alternative name=WLK asc=5.5
+      available source=WalkAvail
+      data source=Matrix3 spec=WalkTime term=Time type=Matrix
+

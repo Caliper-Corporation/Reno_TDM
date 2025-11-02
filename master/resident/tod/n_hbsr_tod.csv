@@ -1,0 +1,17 @@
+Alternative,Expression,Coefficient,Description
+AM,person.is_senior,0.9748,Age >= 65
+AM,person.Gender = 2,0.3716,Female
+MD,Constant,1.6385,Constant
+MD,person.is_senior,0.6255,Senior (Age >= 65)
+MD,person.Employed = 0 and person.Age >= 18 and person.Age <= 65,0.5167,Non Worker (Age 18-65)
+PM,Constant,-3.453,Constant
+PM,person.g_access,0.4186,SOV Accessibility to nearby attractions at home TAZ
+PM,person.veh_per_adult > 0.0 and person.veh_per_adult < 1.0,-0.2583,Vehicle Insufficient HH
+PM,person.is_child,0.2388,Kid (Age < 18)
+NT,Constant,-0.454,Constant
+NT,person.g_access,0.2089,General Accessibility to nearby attractions at home TAZ
+NT,person.HHKids > 0,0.523,HH with kids
+NT,person.veh_per_adult > 0.0 and person.veh_per_adult < 1.0,-0.3928,Vehicle Insufficient HH
+MD,Constant,-0.4621,ASC Adjustment
+PM,Constant,-0.193,ASC Adjustment
+NT,Constant,-0.3327,ASC Adjustment

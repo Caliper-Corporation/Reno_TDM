@@ -1,0 +1,17 @@
+Alternative,Expression,Coefficient,Description
+AM,person.GSIndex,5.9457,Gini Simpson Diversity Index at Home TAZ
+MD,Constant,2.633,Constant
+MD,person.n_access,0.2675,SOV Accessibility to nearby attractions at home TAZ
+MD,person.is_senior,0.6109,Senior (Age >= 65)
+MD,person.Employed = 0 and person.Age >= 18 and person.Age <= 65,0.0561,Non Worker (Age 18-65)
+PM,Constant,2.462,Constant
+PM,person.n_access,0.2043,SOV Accessibility to nearby attractions at home TAZ
+PM,person.HHKids > 0,0.3331,HH with kids
+PM,person.single_parent,0.4069,Single Parent
+NT,Constant,3.5747,Constant
+NT,person.HHKids > 0,0.4384,HH with kids
+NT,person.Employed,0.6816,Employed person
+NT,person.veh_per_adult > 0.0 and person.veh_per_adult < 1.0,0.2388,Vehicle Insufficient HH
+MD,Constant,-0.2693,ASC Adjustment
+PM,Constant,-0.0825,ASC Adjustment
+NT,Constant,-0.0681,ASC Adjustment

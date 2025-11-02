@@ -80,6 +80,7 @@ Macro "Create Folder Structure" (Args)
     "/external",
     "/cv",
     "/university",
+    "/visitors",
     "/resident/disagg_model",
     "/resident/population_synthesis",
     "/resident/dc",
