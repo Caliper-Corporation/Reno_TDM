@@ -1,7 +1,14 @@
 Field,CV,SUT,MUT,CVa,SUTa,MUTa,Description
-Industry,0.87,0.226,0.1,0.87,0.226,0.1,The attraction rates are the same as production rates
-Retail,0.774,0.22,0.048,0.774,0.22,0.048,NA
-Office,0.383,0.059,0.007,0.383,0.059,0.007,NA
-Service_RateLow,0.383,0.059,0.007,0.383,0.059,0.007,NA
-Service_RateHigh,0.383,0.059,0.007,0.383,0.059,0.007,NA
-HH,0.218,0.086,0.028,0.218,0.086,0.028,NA
+Industry,0.87,0,0,0.87,0,0,The attraction rates are the same as production rates
+Retail,0.774,0,0,0.774,0,0,NA
+Office,0.383,0,0,0.383,0,0,NA
+Service_RateLow,0.383,0,0,0.383,0,0,NA
+Service_RateHigh,0.383,0,0,0.383,0,0,NA
+HH,0.218,0.019,0.007,0.218,0.019,0.007,NA
+IndManWar_Acres,0,6.693,2.962,0,6.693,2.962,NA
+IndOther_Acres,0,1.241,0.547,0,1.241,0.547,NA
+Retail_Acres,0,19.503,4.256,0,19.503,4.256,NA
+Office_Acres,0,2.185,0.259,0,2.185,0.259,NA
+Service_Acres,0,3.047,0.362,0,3.047,0.362,NA
+SUT_SpecGen,0,0.5,0.5,0,0.5,0.5,0
+MUT_SpecGen,0,0.5,0.5,0,0.5,0.5,0
