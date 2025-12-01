@@ -27,6 +27,19 @@ Macro "CV Productions/Attractions" (Args)
     se_file = Args.SE
     rate_file = Args.[CV Trip Rates]
 
+    se = CreateObject("Table", {FileName: se_file})
+    fields = {
+        {FieldName: "IndManWar_Acres", Type: "Real", Description: "Industrial Manufacturing Warehousing in Acres"},
+        {FieldName: "IndOther_Acres", Type: "Real", Description: "Industrial Other in Acres"}
+        }
+    se.AddFields({Fields: fields})
+    IndManWar_Acres = if (se.NAICS11+se.NAICS21+se.NAICS22+se.NAICS23+se.NAICS31+se.NAICS32+se.NAICS33+se.NAICS42+se.NAICS48+se.NAICS49)=0 then 0 else 
+	(se.NAICS31+se.NAICS32+se.NAICS33+se.NAICS48+se.NAICS49)/(se.NAICS11+se.NAICS21+se.NAICS22+se.NAICS23+se.NAICS31+se.NAICS32+se.NAICS33+se.NAICS42+se.NAICS48+se.NAICS49)*se.Industry_Acres
+    se.SetDataVectors({FieldData: {{"IndManWar_Acres", IndManWar_Acres}}})
+    IndOther_Acres = if (se.NAICS11+se.NAICS21+se.NAICS22+se.NAICS23+se.NAICS31+se.NAICS32+se.NAICS33+se.NAICS42+se.NAICS48+se.NAICS49)=0 then se.Industry_Acres else 
+	(se.NAICS11+se.NAICS21+se.NAICS22+se.NAICS23+se.NAICS42)/(se.NAICS11+se.NAICS21+se.NAICS22+se.NAICS23+se.NAICS31+se.NAICS32+se.NAICS33+se.NAICS42+se.NAICS48+se.NAICS49)*se.Industry_Acres
+    se.SetDataVectors({FieldData: {{"IndOther_Acres", IndOther_Acres}}})
+
     se_vw = OpenTable("se", "FFB", {se_file})
     {drive, folder, name, ext} = SplitPath(rate_file)
     RunMacro("Create Sum Product Fields", {
