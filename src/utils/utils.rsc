@@ -2327,7 +2327,8 @@ Macro "Create Intra Cluster Matrix"(Args)
   outMtx = Args.[Output Folder] + "/skims/IntraCluster.mtx"
   // Create empty matrix
   obj = CreateObject("Matrix", {Empty: True}) 
-  obj.SetMatrixOptions({Compressed: 1, DataType: "Short", FileName: outMtx, MatrixLabel: "IntraCluster"})
+  newMatOpts = {Compressed: 1, DataType: "Short", FileName: outMtx, MatrixLabel: "IntraCluster"}
+  opts.NewMatrixInfo = newMatOpts
   opts.RowIds = v2a(vTAZ) 
   opts.ColIds = v2a(vTAZ)
   opts.MatrixNames = {"IC", "IZ"}
@@ -2337,11 +2338,11 @@ Macro "Create Intra Cluster Matrix"(Args)
   obj = null
   
   // Intialize IC and IZ cores
-  mtx = CreateObject("Matrix", mat)
-  mc = mtx.GetCore("IC")
+  // mtx = CreateObject("Matrix", mat)
+  mc = mat.GetCore("IC")
   mc := 0
   
-  mc = mtx.GetCore("IZ")
+  mc = mat.GetCore("IZ")
   mc := 0
   v = Vector(nTAZ, "Short", {{"Constant", 1}})
   SetMatrixVector(mc, v, {{"Diagonal"}})
@@ -2356,8 +2357,8 @@ Macro "Create Intra Cluster Matrix"(Args)
       cluster_id = v_cluster_ids[i]
       cluster_name = v_cluster_names[i]
 
-      mtx.AddIndex({
-          Matrix: mtx.GetMatrixHandle(),
+      mat.AddIndex({
+          Matrix: mat.GetMatrixHandle(),
           IndexName: cluster_name,
           Filter: "Cluster = " + String(cluster_id),
           Dimension: "Both",
@@ -2366,9 +2367,9 @@ Macro "Create Intra Cluster Matrix"(Args)
           NewID: "TAZ"
       })
       
-      mtx.SetRowIndex(cluster_name)
-      mtx.SetColIndex(cluster_name)
-      mc = mtx.GetCore("IC")
+      mat.SetRowIndex(cluster_name)
+      mat.SetColIndex(cluster_name)
+      mc = mat.GetCore("IC")
       mc := 1
   end
   mc = null
