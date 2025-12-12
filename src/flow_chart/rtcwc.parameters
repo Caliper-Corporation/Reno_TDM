@@ -179,6 +179,11 @@
             "Description":"Turn prohibition table",
             "Value":"%Input Folder%\\networks\\turn_prohibitions.bin"
         }
+        Args.TurnPenalties = {
+            "Type":"File",
+            "Description":"Turn penalty lookup table.",
+            "Value":"%Input Folder%\\networks\\turn_penalties.bin"
+        }
         Args.TransponderRatioAuto = {
             "Type":"double",
             "Description":"Ratio of autos with a toll transponder (0-1)",

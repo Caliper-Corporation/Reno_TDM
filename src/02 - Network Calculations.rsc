@@ -960,6 +960,7 @@ Creates the various link-based (non-transit) networks. Driving, walking, etc.
 Macro "Create Link Networks" (Args)
 
     link_dbd = Args.Links
+    turn_penalties = Args.TurnPenalties
     turn_prohibtions = Args.TurnProhibitions
     output_dir = Args.[Output Folder] + "/networks"
     periods = RunMacro("Get Unconverged Periods", Args)
@@ -1004,7 +1005,13 @@ Macro "Create Link Networks" (Args)
             netSetObj.LoadNetwork(net_file)
             netSetObj.CentroidFilter = "Centroid = 1"
             if n > 0 then netSetObj.LinkTollFilter = "TollType = 'Toll'"
-            netSetObj.SetPenalties({UTurn: -1})
+            set_pen_opts = {UTurn: -1}
+            if GetFileInfo(turn_penalties) <> null then do
+                netSetObj.UseTurnPenalties = true
+                set_pen_opts = set_pen_opts + {LinkPenaltyTable: turn_penalties, PenaltyField: "Penalty1"}
+            end
+            netSetObj.SetPenalties(set_pen_opts)
+            if GetFileInfo(turn_prohibtions) <> null then netSetObj.UseTurnProhibitions = true
             netSetObj.Run()
         end
     end
