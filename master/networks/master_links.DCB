@@ -1,6 +1,6 @@
-RTC Master Network
-634,codepage=1252
-"ID",I,1,4,0,4,0,,"","",,"Sum",
+RTC Master Network augmented with June24 Overture Maps
+737,codepage=65001
+"ID",I,1,4,0,10,0,,"","",,"Sum",
 "RoadName",C,5,50,0,50,0,,"","Name of street/roadway represented by the polyline.",,"Copy",
 "AltName",C,55,50,0,50,0,,"","",,"Copy",
 "HCMType",C,105,16,0,16,0,,"","Highway Capacity Manual Type|This classification describes the operational characteristics|of the link and is used to determine capacity and freeflow|speed.||Freeway|MLHighway|TLHighway|Superstreet|MajorArterial|Arterial|MajorCollector|Collector|Local|Ramp|CC|TransitOnly",,"Copy",
@@ -83,5 +83,19 @@ RTC Master Network
 "Urban",S,619,2,0,1,0,,"","If the link is in the urban boundary. 1=yes; 0= no. For AQ Analysis.",,"Copy",
 "RoadType",S,621,2,0,1,0,,"","MOVES road type. 1:Off-Network, 2=Rural Restricted Access, 3=Rural Unrestricted Access, 4=Urban Restricted Access, 5=Urban Unrestricted Access, 7=local, 8=ramp",,"Copy",
 "NewProject",C,623,7,0,7,0,,"","",,"Copy",
-"Pvm",I,630,4,0,1,0,,"","",,"Sum",
-"RRIFType",C,634,1,0,1,0,,"","",,"Copy",
+"Pvm",S,630,2,0,1,0,,"","",,"Copy",
+"RRIFType",C,632,1,0,1,0,,"","",,"Copy",
+"GERS",C,633,36,0,36,0,,"","",,"Copy",
+"Class",C,669,13,0,13,0,,"","",,"Copy",
+"Subclass",C,682,14,0,14,0,,"","",,"Copy",
+"bicycle",C,696,1,0,1,0,,"","",,"Copy",
+"foot",C,697,1,0,1,0,,"","",,"Copy",
+"Planning_Network",I,698,4,0,8,0,,"","",,"Copy",
+"NewID",I,702,4,0,8,0,,"","",,"Copy",
+"Original_Link_ID",I,706,4,0,8,0,,"","",,"Copy",
+"Existing",I,710,4,0,8,0,,"","",,"Copy",
+"Complete",I,714,4,0,8,0,,"","",,"Copy",
+"AB_Bike",I,718,4,0,8,0,,"","",,"Copy",
+"BA_Bike",I,722,4,0,8,0,,"","",,"Copy",
+"BikeTheme",I,726,4,0,8,0,,"","",,"Copy",
+"Grade",R,730,8,0,10,2,,"","",,"Copy",
