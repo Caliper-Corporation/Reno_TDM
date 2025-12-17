@@ -1,8 +1,10 @@
-RTC Master Network
-24,codepage=1252
-"ID",I,1,4,0,4,0,,"","",,"Sum",
-"TAZ",I,5,4,0,10,0,,"","",,"Blank",
-"Centroid",I,9,4,0,10,0,,"","",,"Blank",
-"FeeDist",I,13,4,0,10,0,,"","This is the district used to determine the average trip length for the VMT-based, impact-fee assessment.  0: None/Excluded  1: South  2: North",,"Blank",
-"External",I,17,4,0,10,0,,"","",,"Sum",
-"PNR",I,21,4,0,10,0,,"","",,"Sum",
+RTC Master Network augmented with June24 Overture Maps
+64,codepage=65001
+"newid2",I,1,4,0,8,0,,"","",,"Sum",
+"ID",I,5,4,0,10,0,,"","",,"Sum",
+"TAZ",I,9,4,0,10,0,,"","",,"Sum",
+"Centroid",I,13,4,0,10,0,,"","",,"Sum",
+"FeeDist",I,17,4,0,10,0,,"","",,"Sum",
+"External",I,21,4,0,10,0,,"","",,"Sum",
+"PNR",I,25,4,0,10,0,,"","",,"Sum",
+"GERS",C,29,36,0,36,0,,"","",,"Copy",
