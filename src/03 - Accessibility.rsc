@@ -360,6 +360,18 @@ Macro "Create Accessibility Skims" (Args)
     ok = obj.Run()
     obj.SetMatrix({MatrixFile: out_files.bike, Matrix: "Length (Skim)"})
     ok = obj.Run()
+
+    // For walk and bike mz skims, there can be a lot of ij pairs without paths
+    // (disconnected by freeways for example). Set those to a high value.
+    modes = {"walk", "bike"}
+    for mode in modes do
+        file = out_files.(mode + "_mz")
+        mtx = null
+        mtx = CreateObject("Matrix", file)
+        mtx.BikeTime := if mtx.BikeTime = null then 9999 else mtx.BikeTime
+        mtx.("Length (Skim)") := if mtx.("Length (Skim)") = null then 9999 else mtx.("Length (Skim)")
+    end
+    mtx = null
 endmacro
 
 /*
