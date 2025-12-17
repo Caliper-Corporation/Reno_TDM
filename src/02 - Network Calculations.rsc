@@ -1053,12 +1053,13 @@ Macro "Create Link Networks" (Args)
         o.LayerDB = link_dbd
         o.Filter =  filter
         o.AddLinkField({Name: time_field, Field: {time_field, time_field}, IsTimeField : true})
+        if name = "bike_mz" 
+            then o.AddLinkField({Name: "BikeCost", Field: {"AB_BikeCost", "BA_BikeCost"}, IsTimeField : false})
         o.NetworkName = net_file
         o.Run()
         netSetObj = null
         netSetObj = CreateObject("Network.Settings")
         if name = "bike_mz" then do
-            o.AddLinkField({Name: "BikeCost", Field: {"AB_BikeCost", "BA_BikeCost"}, IsTimeField : false})
             netSetObj.SetPenalties({
                 Right: 5/5280 * .858,
                 Through: 10/5280 * .858,
