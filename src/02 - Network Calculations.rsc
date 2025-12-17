@@ -1286,6 +1286,7 @@ endmacro
 
 /*
 This macro adds centroid connectors from each MAZ to the nearest valid node.
+Used by the bike models.
 */
 
 Macro "Add MAZ Connectors" (Args)
@@ -1315,7 +1316,7 @@ Macro "Add MAZ Connectors" (Args)
     // Create set of links that new centroids can connect to
     link_tbl.SelectByQuery({
         SetName: "ValidLinks",
-        Query: "DTWB contains 'D' and HCMType <> 'Freeway' and HCMType <> 'Ramp'"
+        Query: "DTWB contains 'B' and HCMType <> 'Freeway' and HCMType <> 'Ramp'"
     })
 
     SetLayer(llyr)
