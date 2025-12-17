@@ -1044,7 +1044,7 @@ Macro "Create Link Networks" (Args)
     for i = 1 to nm_nets.length do
         name = nm_nets[i][1]
         
-        filter = nm_nets.(name).filter
+        filter = nm_nets.(name).filter + " and Length > 2/5280"
         time_field = nm_nets.(name).time_field
         centroid_filter = nm_nets.(name).centroid_filter
         net_file = output_dir + "/net_" + name + ".net"
@@ -1141,7 +1141,7 @@ Macro "Create Route Networks" (Args)
                 o.StopToNodeTagField = "Node_ID"
                 o.RouteFilter = period + "Headway > 0"
                 o.IncludeWalkLinks = true
-                o.WalkLinkFilter = "W = 1"
+                o.WalkLinkFilter = "W = 1 and Length > 2/5280"
                 o.AddRouteField({Name: period + "Headway", Field: period + "Headway"})
                 o.AddRouteField({Name: "Fare", Field: "Fare"})
                 // Add IVTT fields for all modes regardless of which net is being built.
