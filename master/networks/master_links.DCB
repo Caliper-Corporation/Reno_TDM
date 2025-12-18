@@ -1,6 +1,6 @@
 RTC Master Network augmented with June24 Overture Maps
-488,codepage=65001
-"ID",I,1,4,0,4,0,,"","",,"Sum",
+500,codepage=65001
+"ID",I,1,4,0,10,0,,"","",,"Sum",
 "RoadName",C,5,50,0,50,0,,"","Name of street/roadway represented by the polyline.",,"Copy",
 "AltName",C,55,50,0,50,0,,"","",,"Copy",
 "HCMType",C,105,16,0,16,0,,"","Highway Capacity Manual Type|This classification describes the operational characteristics|of the link and is used to determine capacity and freeflow|speed.||Freeway|MLHighway|TLHighway|Superstreet|MajorArterial|Arterial|MajorCollector|Collector|Local|Ramp|CC|TransitOnly",,"Copy",
@@ -48,3 +48,6 @@ RTC Master Network augmented with June24 Overture Maps
 "p2DTWB",C,441,16,0,16,0,,"","",,"Copy",
 "p2HOV",C,457,16,0,16,0,,"","",,"Copy",
 "p2TollType",C,473,16,0,16,0,,"","",,"Copy",
+"Dup_Count",I,489,4,0,8,0,,"","",,"Sum",
+"Count_Link",I,493,4,0,8,0,,"","",,"Sum",
+"Count_Link 2",I,497,4,0,8,0,,"","",,"Sum",

@@ -1,7 +1,7 @@
 RTC Master Network augmented with June24 Overture Maps
 64,codepage=65001
-"newid2",I,1,4,0,8,0,,"","",,"Sum",
-"ID",I,5,4,0,10,0,,"","",,"Sum",
+"ID",I,1,4,0,10,0,,"","",,"Sum",
+"ID:1",I,5,4,0,10,0,,"","",,"Sum",
 "TAZ",I,9,4,0,10,0,,"","",,"Sum",
 "Centroid",I,13,4,0,10,0,,"","",,"Sum",
 "FeeDist",I,17,4,0,10,0,,"","",,"Sum",
