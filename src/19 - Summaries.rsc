@@ -425,7 +425,7 @@ Macro "VOC Maps" (Args)
 
         // Hide centroid connectors
         SetLayer(llyr)
-        ccquery = "Select * where HCMType = 'CC'"
+        ccquery = "Select * where HCMType = 'CC' or HCMType = 'MAZLinks'"
         n1 = SelectByQuery ("CCs", "Several", ccquery,)
         if n1 > 0 then SetDisplayStatus(llyr + "|CCs", "Invisible")
 
@@ -552,7 +552,7 @@ Macro "Speed Maps" (Args)
 
     // Hide centroid connectors
     SetLayer(llyr)
-    ccquery = "Select * where HCMType = 'CC'"
+    ccquery = "Select * where HCMType = 'CC' or HCMType = 'MAZLinks'"
     n1 = SelectByQuery ("CCs", "Several", ccquery,)
     if n1 > 0 then SetDisplayStatus(llyr + "|CCs", "Invisible")
 

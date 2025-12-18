@@ -1657,6 +1657,12 @@ Macro "Count Difference Map" (macro_opts)
     ") > 0 and ExceedMDD" + field_suffix + " = 0"
   )
   SetLineColor(vw + "|" + setname, ColorRGB(11308, 41634, 24415))
+  
+  // Hide centroid connectors
+  SetLayer(vw)
+  ccquery = "Select * where HCMType = 'CC' or HCMType = 'MAZLinks'"
+  n1 = SelectByQuery ("CCs", "Several", ccquery,)
+  if n1 > 0 then SetDisplayStatus(llyr + "|CCs", "Invisible")
 
   // Configure Legend
   RunMacro("G30 create legend", "Theme")
