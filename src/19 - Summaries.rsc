@@ -38,6 +38,7 @@ Macro "Other Reports" (Args)
     RunMacro("Congestion Cost Summary", Args)
     RunMacro("Create PA Vehicle Trip Matrices", Args)
     RunMacro("Summarize HH Strata", Args)
+    RunMacro("Create Daily Matrix", Args)
     //RunMacro("Aggregate Transit Flow by Route", Args)
     return(1)
 endmacro
@@ -1911,3 +1912,27 @@ Macro "Aggregate Transit Flow by Route" (Args)
   end
 
 endmacro
+
+/*
+The daily matrix isn't used by the model, but is helpful for post run analysis
+*/
+
+Macro "Create Daily Matrix" (Args)
+  assn_dir = Args.[Output Folder] + "/assignment/roadway"
+  periods = Args.periods
+
+  for period in periods do
+    filename = assn_dir + "/od_veh_trips_" + period + ".mtx"
+    if period = "AM" then do
+      daily_file = assn_dir + "/od_veh_trips_daily.mtx"
+      CopyFile(filename, daily_file)
+      daily_mtx = CreateObject("Matrix", daily_file)
+      core_names = daily_mtx.GetCoreNames()
+    end else do
+      mtx = CreateObject("Matrix", filename)
+      for core_name in core_names do
+        daily_mtx.(core_name) := nz(daily_mtx.(core_name)) + nz(mtx.(core_name))
+      end
+    end
+  end
+EndMacro
