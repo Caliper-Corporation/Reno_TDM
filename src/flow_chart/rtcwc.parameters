@@ -1,4 +1,4 @@
-    Section = "Define Scenario"
+    Section = "Main Parameters"
         
         Args.[Scenario Folder] = {
             "Type":"Folder",

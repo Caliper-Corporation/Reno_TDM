@@ -348,7 +348,7 @@ Macro "Create TAZ to MZ Matrix"(Args)
     NewInfo = {FileName: outputFolder + "TAZ_MZ_Avail.mtx", 
                 MatrixLabel: "TAZ_MZ_HHs", 
                 Compressed: 1, 
-                DataType: "Long"}
+                DataType: "Float"}
     opts.RowIds = arrTAZ
     opts.ColIds = v2a(vMZ)
     opts.MatrixNames = {"HH"}
