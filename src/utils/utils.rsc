@@ -1662,7 +1662,7 @@ Macro "Count Difference Map" (macro_opts)
   SetLayer(vw)
   ccquery = "Select * where HCMType = 'CC' or HCMType = 'MAZLinks'"
   n1 = SelectByQuery ("CCs", "Several", ccquery,)
-  if n1 > 0 then SetDisplayStatus(llyr + "|CCs", "Invisible")
+  if n1 > 0 then SetDisplayStatus(vw + "|CCs", "Invisible")
 
   // Configure Legend
   RunMacro("G30 create legend", "Theme")
