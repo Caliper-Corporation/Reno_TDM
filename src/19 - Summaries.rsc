@@ -270,29 +270,23 @@ Macro "Create Count Difference Map" (Args)
   opts.vol_field = "Total_Flow_Daily"
   opts.field_suffix = "All"
   RunMacro("Count Difference Map", opts)
-/*
-  // Create SUT count diff map
-  opts = null
-  opts.output_file = output_dir +
-    "/_summaries/maps/Count Difference - SUT.map"
-  opts.hwy_dbd = hwy_dbd
-  opts.count_id_field = "CountID"
-  opts.count_field = "DailyCountSUT"
-  opts.vol_field = "Total_SUT_Flow_Daily"
-  opts.field_suffix = "SUT"
-  RunMacro("Count Difference Map", opts)
 
-  // Create MUT count diff map
+
+  // Create truck count diff map
+  tbl = CreateObject("Table", {FileName: hwy_dbd, LayerType: "line"})
+  tbl.AddField("Truck_Flow_Daily")
+  tbl.Truck_Flow_Daily = nz(tbl.Total_CV_Flow_Daily) + 
+    nz(tbl.Total_SUT_Flow_Daily) + nz(tbl.Total_MUT_Flow_Daily)
   opts = null
   opts.output_file = output_dir +
-    "/_summaries/maps/Count Difference - MUT.map"
+    "/_summaries/maps/Count Difference - Truck.map"
   opts.hwy_dbd = hwy_dbd
   opts.count_id_field = "CountID"
-  opts.count_field = "DailyCountMUT"
-  opts.vol_field = "Total_MUT_Flow_Daily"
-  opts.field_suffix = "MUT"
+  opts.count_field = "TruckCount"
+  opts.vol_field = "Truck_Flow_Daily"
+  opts.field_suffix = "Truck"
   RunMacro("Count Difference Map", opts)
-  */
+  
 EndMacro
 
 /*
