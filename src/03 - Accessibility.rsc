@@ -281,17 +281,31 @@ Macro "Create Accessibility Skims" (Args)
     out_files.sov = output_dir + "/skims/roadway/accessibility_sov_AM.mtx"
     obj.OutputMatrix({MatrixFile: out_files.sov, Matrix: "SOV Skim"})
     ret_value = obj.Run()
-    // Walk Skim
+    // Walk Skim TAZ
     obj.Network = output_dir + "/networks/net_walk.net"
     obj.Minimize = "WalkTime"
     out_files.walk = output_dir + "/skims/nonmotorized/walk_skim.mtx"
     obj.OutputMatrix({MatrixFile: out_files.walk, Matrix: "Walk Skim"})
     ret_value = obj.Run()
-    // Bike Skim
+    // Bike Skim TAZ
     obj.Network = output_dir + "/networks/net_bike.net"
     obj.Minimize = "BikeTime"
     out_files.bike = output_dir + "/skims/nonmotorized/bike_skim.mtx"
     obj.OutputMatrix({MatrixFile: out_files.bike, Matrix: "Bike Skim"})
+    ret_value = obj.Run()
+    // Walk Skim MZ
+    obj.Origins = "MAZID <> null" 
+    obj.Destinations = "MAZID <> null"    
+    obj.Network = output_dir + "/networks/net_walk_mz.net"
+    obj.Minimize = "WalkTime"
+    out_files.walk_mz = output_dir + "/skims/nonmotorized/walk_skim_mz.mtx"
+    obj.OutputMatrix({MatrixFile: out_files.walk_mz, Matrix: "Walk Skim"})
+    ret_value = obj.Run()
+    // Bike Skim MZ
+    obj.Network = output_dir + "/networks/net_bike_mz.net"
+    obj.Minimize = "BikeTime"
+    out_files.bike_mz = output_dir + "/skims/nonmotorized/bike_skim_mz.mtx"
+    obj.OutputMatrix({MatrixFile: out_files.bike_mz, Matrix: "Bike Skim"})
     ret_value = obj.Run()
     // Transit Skim
     overrides = {
@@ -300,6 +314,24 @@ Macro "Create Accessibility Skims" (Args)
         transit_modes: {"all"}
     }
     RunMacro("Create Transit Skims", Args, overrides)
+
+    // Walk and bike mz skims need indices that match the MAZ ids
+    node_tbl = CreateObject("Table", {FileName: link_dbd, LayerType: "Node"})
+    modes = {"walk", "bike"}
+    for mode in modes do
+        file = out_files.(mode + "_mz")
+        mtx = null
+        mtx = CreateObject("Matrix", file)
+        mtx.AddIndex({
+            ViewName: node_tbl.GetView(),
+            Dimension: "Both",
+            OriginalID: "ID",
+            NewID: "MAZID",
+            IndexName: "MZ"
+        })
+    end
+    node_tbl = null
+    mtx = null
 
     // intrazonals
     obj = null
@@ -317,6 +349,14 @@ Macro "Create Accessibility Skims" (Args)
     obj.SetMatrix({MatrixFile: out_files.walk, Matrix: "Length (Skim)"})
     ok = obj.Run()
     obj.SetMatrix({MatrixFile: out_files.bike, Matrix: "BikeTime"})
+    ok = obj.Run()
+    obj.SetMatrix({MatrixFile: out_files.bike, Matrix: "Length (Skim)"})
+    ok = obj.Run()
+    obj.SetMatrix({MatrixFile: out_files.walk_mz, Matrix: "WalkTime"})
+    ok = obj.Run()
+    obj.SetMatrix({MatrixFile: out_files.walk_mz, Matrix: "Length (Skim)"})
+    ok = obj.Run()
+    obj.SetMatrix({MatrixFile: out_files.bike_mz, Matrix: "BikeTime"})
     ok = obj.Run()
     obj.SetMatrix({MatrixFile: out_files.bike, Matrix: "Length (Skim)"})
     ok = obj.Run()

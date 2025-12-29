@@ -1,0 +1,14 @@
+Alternative,Expression,Coefficient,Description
+AM,person.veh_per_adult = 0.0,-0.6652,Zero Vehicle HH
+AM,person.HHKids > 0,-0.4858,HH with kids
+AM,person.HHIncCat > 4,0.4328,High Income > 100k
+AM ,person.t_access,0.0793,Transit Accessibility at home TAZ
+MD,Constant,-4.0708,Constant
+MD,person.e_access,0.3493,SOV Accessibility to employment at home TAZ
+PM,Constant,0.1283,Constant
+NT,Constant,-0.3362,Constant
+NT,person.HHKids > 0,0.4527,HH with kids
+NT,person.HHIncCat < 4,0.521,Low Income < 75k
+MD,Constant,-0.2099,ASC Adjustment
+PM,Constant,0.0618,ASC Adjustment
+NT,Constant,0.0525,ASC Adjustment

@@ -1,21 +1,26 @@
-    Section = "Define Scenario"
-        
+	Section = "Main Parameters"
+	
         Args.[Scenario Folder] = {
             "Type":"Folder",
             "Description":"Scenario folder",
-            "Value":"%Scenarios Folder%\\base_2020"
+            "Value":"%Scenarios Folder%\\base_2022"
         }
         Args.[Master SE] = {
             "Type":"File",
             "Description":"Master SE data bin file",
-            "Value":"%Master Folder%\\sedata\\se_2020.bin"
+            "Value":"%Master Folder%\\sedata\\se_2022.bin"
+        }
+        Args.[Master MZ] = {
+            "Type":"File",
+            "Description":"Master Microzones data bin file",
+            "Value":"%Master Folder%\\mzdata\\mz_2022.bin"
         }
         Args.AQYear = {
             "Type":"int",
             "Description":"Year to use when creating MOVES input files",
             "Value":2022
         }
-
+	
 	Section = "Master Files"
 	
         Args.[Base Folder] = {
@@ -43,7 +48,6 @@
             "Description":"Master TAZs",
             "Value":"%Master Folder%\\tazs\\master_tazs.dbd"
         }
-
 	
 	Section = "Main Scenario Inputs"
 	
@@ -76,6 +80,11 @@
             "Type":"File",
             "Description":"Scenario input se data. Created during scenario creation.",
             "Value":"%Input Folder%\\sedata\\scenario_se.bin"
+        }
+        Args.[Input MZ] = {
+            "Type":"File",
+            "Description":"Scenario input microzones data. Created during scenario creation.",
+            "Value":"%Input Folder%\\mzdata\\scenario_mz.bin"
         }
 	
 	Section = "Main Scenario Outputs"
@@ -251,6 +260,11 @@
             "Type":"File",
             "Description":"Table of output marginals from the disagg model.",
             "Value":"%Output Folder%\\resident\\disagg_model\\SEDMarginals.bin"
+        }
+        Args.MZMarginals = {
+            "Type":"File",
+            "Description":"Table of output marginals from the disagg model.",
+            "Value":"%Output Folder%\\resident\\disagg_model\\MZMarginals.bin"
         }
         Args.Households = {
             "Type":"File",
@@ -458,4 +472,85 @@
             "Type":"int",
             "Caption":"If want to save turns for AM/PM assignment, value = 1. Default value = 0.",
             "Value":0
+        }
+	
+	Section = "Visitor Model"
+	
+        Args.VisitorPartySeed = {
+            "Type":"File",
+            "Caption":"Party Seed Table for Visitor Synthesis",
+            "Description":"Party Seed Table for Visitor Synthesis",
+            "Value":"%Master Folder%\\visitors\\vhh.bin"
+        }
+        Args.VisitorPersonSeed = {
+            "Type":"File",
+            "Caption":"Person Seed Table for Visitor Synthesis",
+            "Description":"Person Seed Table for Visitor Synthesis",
+            "Value":"%Master Folder%\\visitors\\vperson.bin"
+        }
+        Args.OccRateDwntwn = {
+            "Type":"double",
+            "Caption":"Hotel Occupancy - Downtown",
+            "Description":"Hotel Occupancy - Downtown",
+            "Value":0.683
+        }
+        Args.OccRateOther = {
+            "Type":"double",
+            "Caption":"Hotel Occupancy - Other",
+            "Description":"Hotel Occupancy - Other",
+            "Value":0.583
+        }
+        Args.VisitorProdRates = {
+            "Type":"File",
+            "Caption":"Visitor Trip Production Rates",
+            "Description":"Visitor Trip Production Rates",
+            "Value":"%Master Folder%\\visitors\\vis_prod_rates.csv"
+        }
+        Args.VisitorAttrRates = {
+            "Type":"File",
+            "Caption":"Visitor Trip Attraction Rates",
+            "Description":"Visitor Trip Attraction Rates",
+            "Value":"%Master Folder%\\visitors\\vis_attr_rates.csv"
+        }
+        Args.VisitorNLBRates = {
+            "Type":"File",
+            "Caption":"Visitor Non-lodging-based Trip Production Rates",
+            "Description":"Visitor Trip Non-lodging-based Trip Production Rates",
+            "Value":"%Master Folder%\\visitors\\vis_nlb_rates.csv"
+        }
+        Args.VisitorNLBboost = {
+            "Type":"File",
+            "Caption":"Visitor NLB Accessibility Boosting Rates",
+            "Description":"Visitor  NLB Accessibility Boosting Rates",
+            "Value":"%Master Folder%\\visitors\\vis_boost_rates.csv"
+        }
+        Args.VisitorNLBgrav = {
+            "Type":"File",
+            "Caption":"Visitor NLB Gravity Parameters",
+            "Description":"Visitor  NLB Gravity Parameters",
+            "Value":"%Master Folder%\\visitors\\vis_nlb_grav.csv"
+        }
+        Args.AvgRoadwaySkimMDhov = {
+            "Type":"File",
+            "Caption":"AvgRoadwaySkimMDhov",
+            "Description":"AvgRoadwaySkimMDhov",
+            "Value":"%Output Folder%\\skims\\roadway\\avg_skim_MD_All_All_hov.mtx"
+        }
+        Args.WalkSkim = {
+            "Type":"File",
+            "Caption":"WalkSkim",
+            "Description":"WalkSkim",
+            "Value":"%Output Folder%\\skims\\nonmotorized\\walk_skim.mtx"
+        }
+        Args.TransitSkimMDall = {
+            "Type":"File",
+            "Caption":"TransitSkimMDall",
+            "Description":"TransitSkimMDall",
+            "Value":"%Output Folder%\\skims\\transit\\skim_MD_w_all.mtx"
+        }
+        Args.NHBGenerationAccessibilities = {
+            "Type":"File",
+            "Caption":"NHBGenerationAccessibilities",
+            "Description":"NHBGenerationAccessibilities",
+            "Value":"%Output Folder%\\resident\\nhb\\generation\\generation.bin"
         }

@@ -11,7 +11,7 @@ Macro "Maps" (Args)
     RunMacro("VOC Maps", Args)
     RunMacro("Speed Maps", Args)
     //RunMacro("Isochrones", Args)
-      RunMacro("Accessibility Maps", Args)
+    RunMacro("Accessibility Maps", Args)
     
     return(1)
 endmacro
@@ -38,6 +38,7 @@ Macro "Other Reports" (Args)
     RunMacro("Congestion Cost Summary", Args)
     RunMacro("Create PA Vehicle Trip Matrices", Args)
     RunMacro("Summarize HH Strata", Args)
+    RunMacro("Create Daily Matrix", Args)
     //RunMacro("Aggregate Transit Flow by Route", Args)
     return(1)
 endmacro
@@ -269,29 +270,23 @@ Macro "Create Count Difference Map" (Args)
   opts.vol_field = "Total_Flow_Daily"
   opts.field_suffix = "All"
   RunMacro("Count Difference Map", opts)
-/*
-  // Create SUT count diff map
-  opts = null
-  opts.output_file = output_dir +
-    "/_summaries/maps/Count Difference - SUT.map"
-  opts.hwy_dbd = hwy_dbd
-  opts.count_id_field = "CountID"
-  opts.count_field = "DailyCountSUT"
-  opts.vol_field = "Total_SUT_Flow_Daily"
-  opts.field_suffix = "SUT"
-  RunMacro("Count Difference Map", opts)
 
-  // Create MUT count diff map
+
+  // Create truck count diff map
+  tbl = CreateObject("Table", {FileName: hwy_dbd, LayerType: "line"})
+  tbl.AddField("Truck_Flow_Daily")
+  tbl.Truck_Flow_Daily = nz(tbl.Total_CV_Flow_Daily) + 
+    nz(tbl.Total_SUT_Flow_Daily) + nz(tbl.Total_MUT_Flow_Daily)
   opts = null
   opts.output_file = output_dir +
-    "/_summaries/maps/Count Difference - MUT.map"
+    "/_summaries/maps/Count Difference - Truck.map"
   opts.hwy_dbd = hwy_dbd
   opts.count_id_field = "CountID"
-  opts.count_field = "DailyCountMUT"
-  opts.vol_field = "Total_MUT_Flow_Daily"
-  opts.field_suffix = "MUT"
+  opts.count_field = "TruckCount"
+  opts.vol_field = "Truck_Flow_Daily"
+  opts.field_suffix = "Truck"
   RunMacro("Count Difference Map", opts)
-  */
+  
 EndMacro
 
 /*
@@ -425,7 +420,7 @@ Macro "VOC Maps" (Args)
 
         // Hide centroid connectors
         SetLayer(llyr)
-        ccquery = "Select * where HCMType = 'CC'"
+        ccquery = "Select * where HCMType = 'CC' or HCMType = 'MAZLinks'"
         n1 = SelectByQuery ("CCs", "Several", ccquery,)
         if n1 > 0 then SetDisplayStatus(llyr + "|CCs", "Invisible")
 
@@ -552,7 +547,7 @@ Macro "Speed Maps" (Args)
 
     // Hide centroid connectors
     SetLayer(llyr)
-    ccquery = "Select * where HCMType = 'CC'"
+    ccquery = "Select * where HCMType = 'CC' or HCMType = 'MAZLinks'"
     n1 = SelectByQuery ("CCs", "Several", ccquery,)
     if n1 > 0 then SetDisplayStatus(llyr + "|CCs", "Invisible")
 
@@ -1054,17 +1049,20 @@ Macro "Summarize NM" (Args, trip_types)
 
   summary_file = out_dir + "/_summaries/resident_hb/hb_nm_summary.csv"
   f = OpenFile(summary_file, "w")
-  WriteLine(f, "trip_type,moto_total,moto_share,nm_total,nm_share")
+  WriteLine(f, "trip_type,moto_total,moto_share,bike_total,bike_share,walk_total,walk_share")
 
   if trip_types = null then trip_types = Args.HBTripTypes
   for trip_type in trip_types do
-    moto_v = GetDataVector(per_vw + "|", trip_type, )
+    moto_v = GetDataVector(per_vw + "|", trip_type + "_m", )
     moto_total = VectorStatistic(moto_v, "Sum", )
-    nm_v = GetDataVector(nm_vw + "|", trip_type, )
-    nm_total = VectorStatistic(nm_v, "Sum", )
-    moto_share = round(moto_total / (moto_total + nm_total) * 100, 2)
-    nm_share = round(nm_total / (moto_total + nm_total) * 100, 2)
-    WriteLine(f, trip_type + "," + String(moto_total) + "," + String(moto_share) + "," + String(nm_total) + "," + String(nm_share))
+    v_bike = GetDataVector(nm_vw + "|", trip_type + "_bike", )
+    v_walk = GetDataVector(nm_vw + "|", trip_type + "_walk", )
+    bike_total = VectorStatistic(v_bike, "Sum", )
+    walk_total = VectorStatistic(v_walk, "Sum", )
+    moto_share = round(moto_total / (moto_total + bike_total + walk_total) * 100, 2)
+    bike_share = round(bike_total / (moto_total + bike_total + walk_total) * 100, 2)
+    walk_share = round(walk_total / (moto_total + bike_total + walk_total) * 100, 2)
+    WriteLine(f, trip_type + "," + String(moto_total) + "," + String(moto_share) + "," + String(bike_total) + "," + String(bike_share) + "," + String(walk_total) + "," + String(walk_share))
   end
 
   CloseView(per_vw)
@@ -1087,7 +1085,7 @@ Macro "Summarize Total Mode Shares" (Args)
 
   v_auto = RunMacro("Summarize Matrix RowSums", {trip_dir: out_dir + "/assignment/roadway"})
   v_transit = RunMacro("Summarize Matrix RowSums", {trip_dir: out_dir + "/assignment/transit"})
-  v_nm = RunMacro("Summarize Matrix RowSums", {trip_dir: out_dir + "/resident/nonmotorized"})
+  v_nm = RunMacro("Summarize Matrix RowSums", {mtx_files: {out_dir + "/resident/nonmotorized/nm_gravity.mtx"}})
   
   // Get a vector of IDs from one of the matrices
   mtx_files = RunMacro("Catalog Files", {dir: out_dir + "/assignment/roadway", ext: "mtx"})
@@ -1158,7 +1156,10 @@ and returns a vector.
 Inputs
   * trip_dir
     * String
-    * The directory holding the matrices to summarize
+    * The directory holding the matrices to summarize. All matrices will be summarized.
+  * mtx_files
+    * String or array of strings
+    * use to specify specific matrix files to summarize instead of all in a directory.
   * result
     * Vector of summed row totals
 */
@@ -1168,8 +1169,10 @@ Macro "Summarize Matrix RowSums" (MacroOpts)
   equiv = MacroOpts.equiv
   trip_dir = MacroOpts.trip_dir
   result = MacroOpts.result
+  mtx_files = MacroOpts.mtx_files
+  if mtx_files = null 
+    then mtx_files = RunMacro("Catalog Files", {dir: trip_dir, ext: "mtx"})
 
-  mtx_files = RunMacro("Catalog Files", {dir: trip_dir, ext: "mtx"})
   counter = 1
   for mtx_file in mtx_files do
     mtx = CreateObject("Matrix", mtx_file)
@@ -1903,3 +1906,27 @@ Macro "Aggregate Transit Flow by Route" (Args)
   end
 
 endmacro
+
+/*
+The daily matrix isn't used by the model, but is helpful for post run analysis
+*/
+
+Macro "Create Daily Matrix" (Args)
+  assn_dir = Args.[Output Folder] + "/assignment/roadway"
+  periods = Args.periods
+
+  for period in periods do
+    filename = assn_dir + "/od_veh_trips_" + period + ".mtx"
+    if period = "AM" then do
+      daily_file = assn_dir + "/od_veh_trips_daily.mtx"
+      CopyFile(filename, daily_file)
+      daily_mtx = CreateObject("Matrix", daily_file)
+      core_names = daily_mtx.GetCoreNames()
+    end else do
+      mtx = CreateObject("Matrix", filename)
+      for core_name in core_names do
+        daily_mtx.(core_name) := nz(daily_mtx.(core_name)) + nz(mtx.(core_name))
+      end
+    end
+  end
+EndMacro

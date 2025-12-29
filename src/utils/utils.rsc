@@ -1657,6 +1657,12 @@ Macro "Count Difference Map" (macro_opts)
     ") > 0 and ExceedMDD" + field_suffix + " = 0"
   )
   SetLineColor(vw + "|" + setname, ColorRGB(11308, 41634, 24415))
+  
+  // Hide centroid connectors
+  SetLayer(vw)
+  ccquery = "Select * where HCMType = 'CC' or HCMType = 'MAZLinks'"
+  n1 = SelectByQuery ("CCs", "Several", ccquery,)
+  if n1 > 0 then SetDisplayStatus(vw + "|CCs", "Invisible")
 
   // Configure Legend
   RunMacro("G30 create legend", "Theme")
@@ -2125,6 +2131,8 @@ Macro "Gravity" (MacroOpts)
 
   se_file = MacroOpts.se_file
   skim_file = MacroOpts.skim_file
+  row_index = MacroOpts.row_index
+  col_index = MacroOpts.col_index
   param_file = MacroOpts.param_file
   output_matrix = MacroOpts.output_matrix
 
@@ -2155,9 +2163,9 @@ Macro "Gravity" (MacroOpts)
       Attraction: param_vw.a_field,
       ImpedanceMatrix: {
         MatrixFile: skim_file,
-        Matrix: param_vw.imp_core
-        // RowIndex: ri,
-        // ColIndex: ci
+        Matrix: param_vw.imp_core,
+        RowIndex: row_index,
+        ColIndex: col_index
       },
       Gamma: {param_vw.a, param_vw.b, param_vw.c},
       ConstraintType: param_vw.constraint
@@ -2327,21 +2335,23 @@ Macro "Create Intra Cluster Matrix"(Args)
   outMtx = Args.[Output Folder] + "/skims/IntraCluster.mtx"
   // Create empty matrix
   obj = CreateObject("Matrix", {Empty: True}) 
-  obj.SetMatrixOptions({Compressed: 1, DataType: "Short", FileName: outMtx, MatrixLabel: "IntraCluster"})
+  NewInfo = {FileName: outMtx, 
+                MatrixLabel: "IntraCluster", 
+                Compressed: 1, 
+                DataType: "Short"}
   opts.RowIds = v2a(vTAZ) 
   opts.ColIds = v2a(vTAZ)
   opts.MatrixNames = {"IC", "IZ"}
   opts.RowIndexName = "All Zones"
   opts.ColIndexName = "All Zones"
-  mat = obj.CreateFromArrays(opts)
-  obj = null
+  opts.NewMatrixInfo = NewInfo
+  mtx = obj.CreateFromArrays(opts)
   
   // Intialize IC and IZ cores
-  mtx = CreateObject("Matrix", mat)
-  mc = mtx.GetCore("IC")
+  mc = mtx.IC
   mc := 0
   
-  mc = mtx.GetCore("IZ")
+  mc = mtx.IZ
   mc := 0
   v = Vector(nTAZ, "Short", {{"Constant", 1}})
   SetMatrixVector(mc, v, {{"Diagonal"}})
@@ -2368,11 +2378,10 @@ Macro "Create Intra Cluster Matrix"(Args)
       
       mtx.SetRowIndex(cluster_name)
       mtx.SetColIndex(cluster_name)
-      mc = mtx.GetCore("IC")
+      mc = mtx.IC
       mc := 1
   end
   mc = null
-  mat = null
 endMacro
 /*
 Used by the convergence macro to write out the %RMSE in each iteration

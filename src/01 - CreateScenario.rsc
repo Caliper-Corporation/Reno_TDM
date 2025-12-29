@@ -25,6 +25,7 @@ Macro "Create Scenario" (Args)
     RunMacro("Create Folder Structure", Args)
     RunMacro("Copy TAZ", Args)
     RunMacro("Create Scenario SE", Args)
+    RunMacro("Create Scenario MZ", Args)
     RunMacro("Create Scenario Roadway", Args)
     RunMacro("Create Scenario Transit", Args)
   end
@@ -79,6 +80,7 @@ Macro "Create Folder Structure" (Args)
     "/external",
     "/cv",
     "/university",
+    "/visitors",
     "/resident/disagg_model",
     "/resident/population_synthesis",
     "/resident/dc",
@@ -156,6 +158,40 @@ Macro "Create Scenario SE" (Args)
 
   RunMacro("Close All")
 EndMacro
+
+
+/*
+- creates the scenario MicroZones (MZ) data
+- standardizes name
+*/
+
+Macro "Create Scenario MZ" (Args)
+
+  // Remove any bin or dcb files in the directory
+  dir = Args.[Input Folder] + "/mzdata"
+  a_dbds = RunMacro("Catalog Files", {dir: dir, ext: {"bin", "dcb", "bxl"}})
+  for i = 1 to a_dbds.length do
+    DeleteFile(a_dbds[i])
+  end
+
+  // Make sure folder exists before exporting
+  dir = Args.[Input Folder] + "/mzdata"
+  RunMacro("Create Directory", dir)
+
+  // Export mz data into the scenario folder
+  master_mz = OpenTable("master_mz", "FFB", {Args.[Master MZ]})
+  scen_mz = Args.[Input MZ]
+  if GetFileInfo(scen_mz) <> null then DeleteTableFiles("FFB", scen_mz, )
+  ExportView(
+    master_mz + "|",
+    "FFB",
+    scen_mz,,
+  )
+  CloseView(master_mz)
+
+  RunMacro("Close All")
+EndMacro
+
 
 /*
 - copies the master network into the scenario directory

@@ -32,6 +32,13 @@ Macro "DisaggregateSED"(Args)
     //     goto quit
     // end
 
+    // Open MicroZones Data and export relevant fields to MZ marginals
+    obj = CreateObject("Table", Args.[Input MZ])
+    flds = {"ID", "TAZ_ID", "HH", "HHPop", "TotJobs"}
+    objE = obj.Export({FileName: Args.MZMarginals, FieldNames: flds})
+    obj = null
+    objE = null
+
     // Open SED Data and check table for missing fields
     obj = CreateObject("AddTables", {TableName: Args.SE})
     vwSED = obj.TableView
@@ -284,6 +291,9 @@ endMacro
 */
 Macro "PopSynth Post Process"(Args)
 
+    // Allocate the MZ zone for each HH
+    RunMacro("Allocate HH MZ", Args)
+    
     // Generate tabulations from the synthesis output
     RunMacro("Generate Tabulations", Args)
 
@@ -299,6 +309,99 @@ Macro "PopSynth Post Process"(Args)
     BuildInternalIndex(GetFieldFullSpec(vw_hh, "ZoneID"))
     BuildInternalIndex(GetFieldFullSpec(vw_per, "PersonID"))
     BuildInternalIndex(GetFieldFullSpec(vw_per, "HouseholdID"))
+endMacro
+
+
+/*
+    Macro that allocates MZ zone to synthesized HH data.
+    The HH Data contains the TAZ and this routine picks a MZ within the TAZ and respects the MZ HH totals
+*/
+Macro "Allocate HH MZ"(Args)
+    // Add MZ field to HH Data
+    objHH = CreateObject("Table", Args.Households)
+    fields = {{FieldName: "MZ", Type: "integer"}}
+    objHH.AddFields({Fields: fields})
+
+    // Create TAZ-MZ matrix
+    RunMacro("Create TAZ to MZ Matrix", Args)
+
+    // Allocate MZ
+    RunMacro("Allocate MZ", Args)
+endMacro
+
+
+Macro "Create TAZ to MZ Matrix"(Args)
+    marginals_file = Args.SEDMarginals
+    nested_marginals_file = Args.MZMarginals
+    outputFolder = Args.[Output Folder] + "\\resident\\population_synthesis\\"
+
+    objMZ = CreateObject("Table", nested_marginals_file)
+    order = {{"ID", "Ascending"}}
+    objMZ.Sort({FieldArray: order})
+    vecs = objMZ.GetDataVectors({FieldNames: {"ID", "TAZ_ID", "HH"}})
+    vMZ = vecs.ID
+    vTAZ = vecs.TAZ_ID
+    vHH = vecs.HH
+    arrTAZ = SortArray(v2a(vTAZ), {"Unique" : "True"})
+    
+    obj = CreateObject("Matrix", {Empty: True})
+    NewInfo = {FileName: outputFolder + "TAZ_MZ_Avail.mtx", 
+                MatrixLabel: "TAZ_MZ_HHs", 
+                Compressed: 1, 
+                DataType: "Float"}
+    opts.RowIds = arrTAZ
+    opts.ColIds = v2a(vMZ)
+    opts.MatrixNames = {"HH"}
+    opts.RowIndexName = "TAZ"
+    opts.ColIndexName = "MZ"
+    opts.NewMatrixInfo = NewInfo
+    mat = obj.CreateFromArrays(opts)
+
+    // Fill matrix
+    objTZ = CreateObject("Table", marginals_file)
+    n = objTZ.SelectByQuery({Query: "HH > 0", SetName: "temp"})
+    pbar = CreateObject("G30 Progress Bar", "Creating TAZ-MZ matrix", true, n)
+    vTAZID = objTZ.TAZ
+    for tazid in vTAZID do
+        vOut = if (vTAZ = tazid) and (vHH > 0) then vHH else null
+        mat.SetVector({Core: 1, Vector: vOut, Row: tazid})
+        pbar.Step()
+    end
+    pbar.Destroy()
+    mat = null
+    objTZ = null
+    objMZ = null
+endMacro
+
+
+Macro "Allocate MZ"(Args)
+    outputFolder = Args.[Output Folder] + "\\resident\\population_synthesis\\"
+    hhFile = Args.Households
+    mtxFile = outputFolder + "TAZ_MZ_Avail.mtx"
+
+    // Define utility
+    util = null
+    util.Description = {"HHs in MAZ"}
+    util.Expression = {"log(TAZ_MZ.HH)"}
+    util.Coefficient = {1.0}
+
+    utilSpec = null
+    utilSpec.UtilityFunction = util
+    
+    // Find Work Location
+    obj = CreateObject("PMEChoiceModel", {ModelName: "MZ Allocation"})
+    obj.OutputModelFile = outputFolder + "\\TAZ_MZ_Allocation.dcm"
+    obj.AddTableSource({SourceName: "HH", File: hhFile, IDField: "HouseholdID"})
+    obj.AddMatrixSource({SourceName: "TAZ_MZ", File: mtxFile})
+    obj.AddPrimarySpec({Name: "HH", OField: "ZoneID"})
+    obj.AddUtility(utilSpec)
+    obj.AddDestinations({DestinationsSource: "TAZ_MZ", DestinationsIndex: "MZ"})
+    obj.AddOutputSpec({ChoicesField: "MZ"})
+    obj.RandomSeed = 899981
+    ret = obj.Evaluate()
+    if !ret then
+        Throw("Running 'MZ Allocation' model failed.")
+    obj = null
 endMacro
 
 

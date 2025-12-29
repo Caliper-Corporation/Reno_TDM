@@ -15,6 +15,7 @@ Scenario "2025"
     [Master SE] = "%Master Folder%\\sedata\\se_2025.bin"
     [Scenario Folder] = "%Scenarios Folder%\\2025"
     AQYear = 2025
+    [Master MZ] = "%Master Folder%\\mzdata\\mz_2025.bin"
 EndScenario
     
     
@@ -23,6 +24,7 @@ Scenario "2030"
     [Master SE] = "%Master Folder%\\sedata\\se_2030.bin"
     [Scenario Folder] = "%Scenarios Folder%\\2030"
     AQYear = 2030
+    [Master MZ] = "%Master Folder%\\mzdata\\mz_2030.bin"
 EndScenario
     
     
@@ -31,6 +33,7 @@ Scenario "2035"
     [Master SE] = "%Master Folder%\\sedata\\se_2035.bin"
     [Scenario Folder] = "%Scenarios Folder%\\2035"
     AQYear = 2035
+    [Master MZ] = "%Master Folder%\\mzdata\\mz_2035.bin"
 EndScenario
     
     
@@ -39,6 +42,7 @@ Scenario "2040"
     [Master SE] = "%Master Folder%\\sedata\\se_2040.bin"
     [Scenario Folder] = "%Scenarios Folder%\\2040"
     AQYear = 2040
+    [Master MZ] = "%Master Folder%\\mzdata\\mz_2040.bin"
 EndScenario
     
     
@@ -47,5 +51,6 @@ Scenario "2050"
     [Master SE] = "%Master Folder%\\sedata\\se_2050.bin"
     [Scenario Folder] = "%Scenarios Folder%\\2050"
     AQYear = 2050
+    [Master MZ] = "%Master Folder%\\mzdata\\mz_2050.bin"
 EndScenario
     

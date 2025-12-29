@@ -1,0 +1,22 @@
+model label=TLBOTH version=1.5
+  field name=Beta1
+  field name=Beta2
+  field name=Beta3
+  field name=Beta4
+  source name=Data1 type=Zonal primary=True origins=True destinations=True view=scenario_se idfield=TAZ
+  source name=Matrix1 type=Matrix file=C:\Users\mtambellini\RTC_Washoe\avg_skim_MD_All_All_hov.mtx filelabel="Roadway skim MD HOV" rowindex=Origin colindex=Destination
+  source name=Matrix2 type=Matrix file=C:\RTC_Washoe_TDM_Visitor\scenarios\base_2022\output\visitors\BLB_Logs.mtx filelabel=Logsum:3 rowindex=Origins colindex=Destinations
+  source name=Data2 type=Zonal view=generation idfield=TAZ
+  segment name=*
+    term name=Beta1 coefficient=1
+    term name=Beta2 coefficient=1
+    term name=Beta3 coefficient=0.392097
+    term name=Beta4 coefficient=0.14
+    totals source=Data1 spec=TLBOTHP
+    alternative name=Destinations destsource=Matrix1 destindex=Destination
+      available source=Data1 spec=TLBOTHAv
+      data source=Matrix2 spec=ROOT term=Beta2 type=Matrix
+      data source=Data2 spec=access_nearby_sov term=Beta3 type=Destination
+      data source=Data1 spec=TLBOTHS term=Beta1 type=Destination
+      data source=Matrix1 spec=CongTime term=Beta4 type=Matrix
+

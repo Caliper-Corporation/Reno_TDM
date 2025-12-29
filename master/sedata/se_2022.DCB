@@ -1,5 +1,5 @@
 
-500,codepage=65001
+548,codepage=65001
 "TAZ",I,1,4,0,8,0,,"","",,"Sum",
 "Type",C,5,16,0,16,0,,"","",,"Copy",
 "HH",R,21,8,0,16,2,,"","Households||Census defined as occupied housing units",,"Sum",
@@ -62,3 +62,9 @@
 "K12",R,481,8,0,10,2,,"","K12 Enrollment (Elem + High)",,"Sum",
 "PctHighPay",R,489,8,0,10,2,,"","Percent of employment that is high-paying",,"Sum",
 "Enplanements",I,497,4,0,8,0,,"","Enplanements at the airport",,"Sum",
+"Industry_Acres",R,501,8,0,10,2,,"","",,"Sum",
+"Office_Acres",R,509,8,0,10,2,,"","",,"Sum",
+"Service_Acres",R,517,8,0,10,2,,"","",,"Sum",
+"Retail_Acres",R,525,8,0,10,2,,"","",,"Sum",
+"SUT_SpecGen",R,533,8,0,10,2,,"","SUT Special Generator Daily Trucks",,"Sum",
+"MUT_SpecGen",R,541,8,0,10,2,,"","MUT Special Generator Daily Trucks",,"Sum",
