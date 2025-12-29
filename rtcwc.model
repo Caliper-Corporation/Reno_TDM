@@ -939,6 +939,7 @@ Macro "NM Assignment" (Args,Result)
     }
 EndMacro
 
+
 Macro "Visitor Trips" (Args,Result)
     Attributes = {
         {"Class", {"GISDK"}},
@@ -946,3 +947,4 @@ Macro "Visitor Trips" (Args,Result)
         {"Picture", "bmp\\planwork_v3.bmp"}
     }
 EndMacro
+

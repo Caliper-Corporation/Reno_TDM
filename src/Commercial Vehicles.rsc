@@ -47,6 +47,14 @@ Macro "CV Productions/Attractions" (Args)
         field_desc: "CV Productions and Attractions|See " + name + ext + " for details."
     })
 
+    // Calibration
+    calib_factor = .35
+    se.CV = se.CV * calib_factor
+    se.CVa = se.CVa * calib_factor
+    se.SUT = se.SUT * calib_factor
+    se.SUTa = se.SUTa * calib_factor
+    se.MUT = se.MUT * calib_factor
+    se.MUTa = se.MUTa * calib_factor
     CloseView(se_vw)
 EndMacro
 

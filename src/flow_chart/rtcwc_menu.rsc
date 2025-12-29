@@ -103,7 +103,6 @@ menu "RTCWC Utilities"
         menu "Performance Measures"
     
 endMenu
-
 menu "Highway Analysis"
     init do
     enditem
@@ -120,7 +119,6 @@ menu "Highway Analysis"
         mr.RunCode("Open Fixed OD Dbox", Args)
     enditem
 endMenu
-
 menu "Delete Files"
     init do
     enditem
@@ -132,7 +130,6 @@ menu "Delete Files"
     enditem
 
 endMenu
-
 menu "Scenario Comparison"
     init do
     enditem
@@ -142,7 +139,6 @@ menu "Scenario Comparison"
         mr.RunCodeEx("Open Scenario Comp Tool")
     enditem
 endMenu
-
 menu "Input Data Processing"
     init do
     enditem
@@ -158,7 +154,6 @@ menu "Input Data Processing"
         mr.RunCodeEx("Open Merge Dbox", Args)
     enditem
 endMenu
-
 menu "Performance Measures"
     init do
     enditem
@@ -170,7 +165,6 @@ menu "Performance Measures"
     enditem
 
 endMenu
-
 menu "RTCWC Calibrators"
     init do
     enditem

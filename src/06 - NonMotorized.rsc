@@ -467,7 +467,7 @@ Macro "Assign Bike Trips" (Args)
     
     hwy_dbd = Args.Links
     net_dir = Args.[Output Folder] + "\\networks\\"
-    net_file = net_dir + "net_bike.net"
+    net_file = net_dir + "net_bike_mz.net"
     assn_dir = Args.[Output Folder] + "\\assignment\\nonmotorized"
     if GetDirectoryInfo(assn_dir, "All") = null then CreateDirectory(assn_dir)
     od_dir = Args.[Output Folder] + "/resident/nonmotorized"
@@ -493,7 +493,7 @@ Macro "Assign Bike Trips" (Args)
     o.Method = "AON"
     o.DemandMatrix({MatrixFile: od_mtx, RowIndex: "NodeID", ColIndex: "NodeID"})
     o.AddClass({Demand: "bike"})
-    o.Minimize = "BikeTime"
+    o.Minimize = "BikeCost"
     o.FlowTable = assn_dir + "\\bike_flow.bin"
     ret_value = o.Run()
     results = o.GetResults()

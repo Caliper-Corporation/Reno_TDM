@@ -1,14 +1,14 @@
-    Section = "Define Scenario"
-        
+	Section = "Main Parameters"
+	
         Args.[Scenario Folder] = {
             "Type":"Folder",
             "Description":"Scenario folder",
-            "Value":"%Scenarios Folder%\\base_2020"
+            "Value":"%Scenarios Folder%\\base_2022"
         }
         Args.[Master SE] = {
             "Type":"File",
             "Description":"Master SE data bin file",
-            "Value":"%Master Folder%\\sedata\\se_2020.bin"
+            "Value":"%Master Folder%\\sedata\\se_2022.bin"
         }
         Args.[Master MZ] = {
             "Type":"File",
@@ -20,7 +20,7 @@
             "Description":"Year to use when creating MOVES input files",
             "Value":2022
         }
-
+	
 	Section = "Master Files"
 	
         Args.[Base Folder] = {
@@ -48,7 +48,6 @@
             "Description":"Master TAZs",
             "Value":"%Master Folder%\\tazs\\master_tazs.dbd"
         }
-
 	
 	Section = "Main Scenario Inputs"
 	
@@ -474,8 +473,8 @@
             "Caption":"If want to save turns for AM/PM assignment, value = 1. Default value = 0.",
             "Value":0
         }
-
-Section = "Visitor Model"
+	
+	Section = "Visitor Model"
 	
         Args.VisitorPartySeed = {
             "Type":"File",
@@ -555,4 +554,3 @@ Section = "Visitor Model"
             "Description":"NHBGenerationAccessibilities",
             "Value":"%Output Folder%\\resident\\nhb\\generation\\generation.bin"
         }
-
