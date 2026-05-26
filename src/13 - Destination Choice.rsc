@@ -203,6 +203,12 @@ Macro "Calculate Destination Choice" (Args, trip_types)
     opts = null
     opts.output_dir = output_dir
     opts.primary_spec = {Name: "sov_skim"}
+    //For loading TB-Resnets data
+    if Args.UseTBResnets then do
+        resnet_table = CreateObject("Table", {{'FileName', Args.TBResnetsTable}})
+        resnet_data = resnet_table.GetDataVectors()
+        opts.resnet_data = resnet_data
+    end
     for trip_type in trip_types do
         if Lower(trip_type) = "w_hbw"
             then segments = {"v0", "ilvi", "ihvi", "ilvs", "ihvs"}
@@ -240,7 +246,6 @@ Macro "Calculate Destination Choice" (Args, trip_types)
                     sov_skim: {File: sov_skim},
                     mc_logsums: {File: scen_dir + "/output/resident/mode/logsums/" + "logsum_" + trip_type + "_" + segment + "_" + period + ".mtx"}
                 }
-                
                 // RunMacro("Parallel.SetMaxEngines", 3)
                 // task = CreateObject("Parallel.Task", "DC Runner", GetInterface())
                 // task.Run(opts)
@@ -249,11 +254,80 @@ Macro "Calculate Destination Choice" (Args, trip_types)
                 // To run this code in series (and not in parallel), comment out the "task"
                 // and "monitor" lines of code. Uncomment the two lines below. This can be
                 // helpful for debugging.
+                
                 obj = CreateObject("NestedDC", opts)
                 obj.Run()
-            end
-        end
-    end
+
+                //This is for TB-ResNets
+                // opts.UseTBResnets = Args.UseTBResnets
+                // opts.se_file = se_file
+                // opts.skim_file = sov_skim
+                // opts.[Model Folder] = Args.[Model Folder]
+                // opts.[Input Folder] = Args.[Input Folder]
+                // opts.Python = Args.[TBResnetsPythonExecutable]
+
+                if Args.UseTBResnets then do
+                    record_num = resnet_data.purpose.position(trip_type)
+                    tag = trip_type
+                    if segment <> null then tag = tag + "_" + segment
+                    if period <> null then tag = tag + "_" + period
+                    if record_num > 0 then do
+                        // 1. Rename MLE files
+                        if GetFileInfo(opts.prob_dir + "\\probability_" + tag + "_zone_mle.mtx") <> null then DeleteFile(opts.prob_dir + "\\probability_" + tag + "_zone_mle.mtx")
+                        if GetFileInfo(opts.util_dir + "\\utilityold_" + tag + "_zone_mle.mtx") <> null then DeleteFile(opts.util_dir + "\\utilityold_" + tag + "_zone_mle.mtx")
+                        RenameFile(opts.prob_dir + "\\probability_" + tag + "_zone.mtx", opts.prob_dir + "\\probability_" + tag + "_zone_mle.mtx")
+                        RenameFile(opts.util_dir + "\\utility_" + tag + "_zone.mtx", opts.util_dir + "\\utilityold_" + tag + "_zone_mle.mtx")
+
+                        // 2. Build the utilities back from the probabilities
+                        o = CreateObject("Matrix", {Empty: True})
+                        out_mtx = opts.util_dir + "\\utility_" + tag + "_zone_mle.mtx"
+                        source_mtx = opts.prob_dir + "\\probability_" + tag + "_zone_mle.mtx"
+                        mOut = o.CloneMatrixStructure({MatrixLabel: "DCTrips", CloneSource: {source_mtx}, MatrixFile: out_mtx, Matrices: {"final_prob", "Total"}})
+                        dc_mle_mtx = CreateObject("Matrix", mOut)
+                        
+                        mCopy = CreateObject("Matrix", source_mtx)
+                        dc_mle_mtx.Total := log(mCopy.final_prob)
+                        
+
+                        // X. Run GAN
+                        py_data = {
+                            {'model_file', resnet_data.model_file[record_num]},
+                            {'parameter_file', resnet_data.parameter_file[record_num]},
+                            {'se_file', se_file},
+                            {'skim_file', sov_skim},
+                            {'Skim table', 'CongTime'},
+                            {'output_folder', opts.util_dir},
+                            {'Input Folder', Args.[Input Folder]},
+                            {'Input Utilities File', out_mtx},
+                            {'Input Utilities Matrix', 'Total'},
+                            {'tag', tag}
+                        }
+                        script = CreateObject("Python",Args.[Model Folder]+"src/utils/gan_loader.py")
+                        result = script.main(py_data)
+                        
+                        
+                        
+
+                        // call Python process to apply model
+                        // Check output, call error if it fails
+                        // Rename probability and utilitiy matrices
+                        // Build updated utility matrix (using delta value)
+                        // Build updated probability matrix
+                    end // valid TB-ResNets purpose
+                
+                
+                end // Using TB-ResNets
+                // TB-Resnets!
+                // IF N_HBSHP, N_HBSR, or N_HBO
+                //1. Get util_dir + "\\utility_" + tag + "_zone.mtx", save a copy to the same folder, diff file name
+                //2. Rename prob_dir + "\\probability_" + tag + "_cluster.mtx" to a diff file name
+                //3. Get gan utility matrix >> Call Python! <<
+                //4. Get delta
+                //5. Combine and output to util_dir + "\\utility_" + tag + "_zone.mtx"
+
+            end // segment in segments
+        end // period in periods
+    end // trip_type in trip_types
 
     // monitor = CreateObject("Parallel.TaskMonitor", tasks)
     // monitor.DisplayStatus()

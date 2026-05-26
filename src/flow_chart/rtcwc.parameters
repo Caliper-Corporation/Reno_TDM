@@ -1,5 +1,5 @@
-    Section = "Define Scenario"
-        
+	Section = "Define Scenario"
+	
         Args.[Scenario Folder] = {
             "Type":"Folder",
             "Description":"Scenario folder",
@@ -20,7 +20,7 @@
             "Description":"Year to use when creating MOVES input files",
             "Value":2022
         }
-
+	
 	Section = "Master Files"
 	
         Args.[Base Folder] = {
@@ -48,7 +48,6 @@
             "Description":"Master TAZs",
             "Value":"%Master Folder%\\tazs\\master_tazs.dbd"
         }
-
 	
 	Section = "Main Scenario Inputs"
 	
@@ -392,7 +391,24 @@
             "Caption":"Resident DC shadow prices (for work double constraint)",
             "Value":"%Input Folder%\\resident\\dc\\shadow_prices.bin"
         }
-	
+        Args.UseTBResnets = {
+            "Type":"boolean",
+            "Caption":"Globally turn on/off TB-ResNets",
+            "Value":False 
+        }
+
+        Args.TBResnetsTable = {
+            "Type": "File",
+            "Caption": "TB Resnets Control File",
+            "Value":"%Input Folder%\\resident\\dc\\tb_resnets.bin"
+        }
+
+        Args.TBResnetsPythonExecutable = {
+            "Type": "File",
+            "Caption": "Location of Python executable",
+            "Value": "C:\\ProgramData\\anaconda3\\envs\\fhwa_ai2\\python.exe"
+        }
+
 	Section = "Parking Model|Coefficients"
 	
         Args.ParkMCCoeffs = {
@@ -474,8 +490,8 @@
             "Caption":"If want to save turns for AM/PM assignment, value = 1. Default value = 0.",
             "Value":0
         }
-
-Section = "Visitor Model"
+	
+	Section = "Visitor Model"
 	
         Args.VisitorPartySeed = {
             "Type":"File",
@@ -555,4 +571,3 @@ Section = "Visitor Model"
             "Description":"NHBGenerationAccessibilities",
             "Value":"%Output Folder%\\resident\\nhb\\generation\\generation.bin"
         }
-
