@@ -7,6 +7,17 @@ Scenario "base_2022"
     InitCongTimes = "%Input Folder%\\networks\\init_cong_time_2022.bin"
     FeedbackIterations = 5
     FeedbackConvergence = 1
+    UseTBResnets = 0
+EndScenario
+    
+    
+Scenario "base_2022_control"
+    
+    [Scenario Folder] = "%Scenarios Folder%\\base_2022_control"
+    [Master SE] = "%Master Folder%\\sedata\\se_2022.bin"
+    InitCongTimes = "%Input Folder%\\networks\\init_cong_time_2022.bin"
+    FeedbackIterations = 5
+    FeedbackConvergence = 1
 EndScenario
     
     
