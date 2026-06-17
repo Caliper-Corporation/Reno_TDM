@@ -38,6 +38,7 @@ Macro "Other Reports" (Args)
     RunMacro("Congestion Cost Summary", Args)
     RunMacro("Create PA Vehicle Trip Matrices", Args)
     RunMacro("Summarize HH Strata", Args)
+    RunMacro("Create Daily Matrix", Args)
     //RunMacro("Aggregate Transit Flow by Route", Args)
     return(1)
 endmacro
@@ -269,29 +270,23 @@ Macro "Create Count Difference Map" (Args)
   opts.vol_field = "Total_Flow_Daily"
   opts.field_suffix = "All"
   RunMacro("Count Difference Map", opts)
-/*
-  // Create SUT count diff map
-  opts = null
-  opts.output_file = output_dir +
-    "/_summaries/maps/Count Difference - SUT.map"
-  opts.hwy_dbd = hwy_dbd
-  opts.count_id_field = "CountID"
-  opts.count_field = "DailyCountSUT"
-  opts.vol_field = "Total_SUT_Flow_Daily"
-  opts.field_suffix = "SUT"
-  RunMacro("Count Difference Map", opts)
 
-  // Create MUT count diff map
+
+  // Create truck count diff map
+  tbl = CreateObject("Table", {FileName: hwy_dbd, LayerType: "line"})
+  tbl.AddField("Truck_Flow_Daily")
+  tbl.Truck_Flow_Daily = nz(tbl.Total_CV_Flow_Daily) + 
+    nz(tbl.Total_SUT_Flow_Daily) + nz(tbl.Total_MUT_Flow_Daily)
   opts = null
   opts.output_file = output_dir +
-    "/_summaries/maps/Count Difference - MUT.map"
+    "/_summaries/maps/Count Difference - Truck.map"
   opts.hwy_dbd = hwy_dbd
   opts.count_id_field = "CountID"
-  opts.count_field = "DailyCountMUT"
-  opts.vol_field = "Total_MUT_Flow_Daily"
-  opts.field_suffix = "MUT"
+  opts.count_field = "TruckCount"
+  opts.vol_field = "Truck_Flow_Daily"
+  opts.field_suffix = "Truck"
   RunMacro("Count Difference Map", opts)
-  */
+  
 EndMacro
 
 /*
@@ -425,7 +420,7 @@ Macro "VOC Maps" (Args)
 
         // Hide centroid connectors
         SetLayer(llyr)
-        ccquery = "Select * where HCMType = 'CC'"
+        ccquery = "Select * where HCMType = 'CC' or HCMType = 'MAZLinks'"
         n1 = SelectByQuery ("CCs", "Several", ccquery,)
         if n1 > 0 then SetDisplayStatus(llyr + "|CCs", "Invisible")
 
@@ -552,7 +547,7 @@ Macro "Speed Maps" (Args)
 
     // Hide centroid connectors
     SetLayer(llyr)
-    ccquery = "Select * where HCMType = 'CC'"
+    ccquery = "Select * where HCMType = 'CC' or HCMType = 'MAZLinks'"
     n1 = SelectByQuery ("CCs", "Several", ccquery,)
     if n1 > 0 then SetDisplayStatus(llyr + "|CCs", "Invisible")
 
@@ -1911,3 +1906,27 @@ Macro "Aggregate Transit Flow by Route" (Args)
   end
 
 endmacro
+
+/*
+The daily matrix isn't used by the model, but is helpful for post run analysis
+*/
+
+Macro "Create Daily Matrix" (Args)
+  assn_dir = Args.[Output Folder] + "/assignment/roadway"
+  periods = Args.periods
+
+  for period in periods do
+    filename = assn_dir + "/od_veh_trips_" + period + ".mtx"
+    if period = "AM" then do
+      daily_file = assn_dir + "/od_veh_trips_daily.mtx"
+      CopyFile(filename, daily_file)
+      daily_mtx = CreateObject("Matrix", daily_file)
+      core_names = daily_mtx.GetCoreNames()
+    end else do
+      mtx = CreateObject("Matrix", filename)
+      for core_name in core_names do
+        daily_mtx.(core_name) := nz(daily_mtx.(core_name)) + nz(mtx.(core_name))
+      end
+    end
+  end
+EndMacro

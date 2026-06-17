@@ -735,6 +735,10 @@ Macro "Other Attributes" (Args)
         {"Beta", "Real", 10, 2, , , , "VDF beta value"},
         {"WalkTime", "Real", 10, 2, , , , "Length / 3 mph|Unless overriden by WalkSpeed field"},
         {"BikeTime", "Real", 10, 2, , , , "Length / 15 mph|Unless overriden by BikeSpeed field"},
+        {"AB_ElevGain", "Real", 10, 2, , , , "Elevation gain in the AB direction"},
+        {"BA_ElevGain", "Real", 10, 2, , , , "Elevation gain in the BA direction"},
+        {"AB_BikeCost", "Real", 10, 2, , , , "Bike general cost"},
+        {"BA_BikeCost", "Real", 10, 2, , , , "Bike general cost"},
         {"Mode", "Integer", 10, , , , , "Marks all links with a 1 (nontransit mode)"},
         {"FFSpeed", "Integer", 10, , , , , "Free flow travel speed"},
         {"FFTime", "Real", 10, 2, , , , "Free flow travel time"}
@@ -760,7 +764,9 @@ Macro "Other Attributes" (Args)
     )
 
     // Perform calculations
-    {v_dir, v_type, v_len, v_ps, v_walkspeed, v_bikespeed, v_tolltype, v_tollcost_t, v_tollcost_nt, v_mod, v_alpha, v_beta} = GetDataVectors(
+    {v_dir, v_type, v_len, v_ps, v_walkspeed, v_bikespeed, 
+    v_ab_grade, v_ba_grade,
+    v_tolltype, v_tollcost_t, v_tollcost_nt, v_mod, v_alpha, v_beta} = GetDataVectors(
         jv + "|", {
             llyr + ".Dir",
             llyr + ".HCMType",
@@ -768,6 +774,8 @@ Macro "Other Attributes" (Args)
             llyr + ".PostedSpeed",
             llyr + ".WalkSpeed",
             llyr + ".BikeSpeed",
+            llyr + ".ABGrade",
+            llyr + ".BAGrade",
             llyr + ".TollType",
             llyr + ".TollCostT",
             llyr + ".TollCostNT",
@@ -782,6 +790,11 @@ Macro "Other Attributes" (Args)
     v_wt = v_len / v_walkspeed * 60
     v_bikespeed = if v_bikespeed = null then 15 else v_bikespeed
     v_bt = v_len / v_bikespeed * 60
+    // Elevation gain calculations (feet)  length in feet * grade %
+    v_ab_elevgain = if v_ab_grade > 0 then v_len * 5280 * v_ab_grade / 100 else 0
+    v_ba_elevgain = if v_ba_grade > 0 then v_len * 5280 * v_ba_grade / 100 else 0
+    v_ab_bike_cost = v_len * .858 * v_ab_elevgain * .01
+    v_ba_bike_cost = v_len * .858 * v_ba_elevgain * .01
     v_mode = Vector(v_wt.length, "Integer", {Constant: 1})
     // Determine weighted average toll cost based on transponder usage
     v_tollcost_auto = v_tollcost_t * trans_ratio_auto + v_tollcost_nt * (1 - trans_ratio_auto)
@@ -799,6 +812,10 @@ Macro "Other Attributes" (Args)
     SetDataVector(jv + "|", llyr + ".Beta", v_beta, )
     SetDataVector(jv + "|", llyr + ".WalkTime", v_wt, )
     SetDataVector(jv + "|", llyr + ".BikeTime", v_bt, )
+    SetDataVector(jv + "|", llyr + ".AB_ElevGain", v_ab_elevgain, )
+    SetDataVector(jv + "|", llyr + ".BA_ElevGain", v_ba_elevgain, )
+    SetDataVector(jv + "|", llyr + ".AB_BikeCost", v_ab_bike_cost, )
+    SetDataVector(jv + "|", llyr + ".BA_BikeCost", v_ba_bike_cost, )
     SetDataVector(jv + "|", llyr + ".Mode", v_mode, )
     SetDataVector(jv + "|", llyr + ".TollCostSOV", v_tollcost_auto, )
     SetDataVector(jv + "|", llyr + ".TollCostHOV", v_tollcost_hov, )
@@ -1027,7 +1044,7 @@ Macro "Create Link Networks" (Args)
     for i = 1 to nm_nets.length do
         name = nm_nets[i][1]
         
-        filter = nm_nets.(name).filter
+        filter = nm_nets.(name).filter + " and Length > 2/5280"
         time_field = nm_nets.(name).time_field
         centroid_filter = nm_nets.(name).centroid_filter
         net_file = output_dir + "/net_" + name + ".net"
@@ -1036,10 +1053,20 @@ Macro "Create Link Networks" (Args)
         o.LayerDB = link_dbd
         o.Filter =  filter
         o.AddLinkField({Name: time_field, Field: {time_field, time_field}, IsTimeField : true})
+        if name = "bike_mz" 
+            then o.AddLinkField({Name: "BikeCost", Field: {"AB_BikeCost", "BA_BikeCost"}, IsTimeField : false})
         o.NetworkName = net_file
         o.Run()
         netSetObj = null
         netSetObj = CreateObject("Network.Settings")
+        if name = "bike_mz" then do
+            netSetObj.SetPenalties({
+                Right: 5/5280 * .858,
+                Through: 10/5280 * .858,
+                Left: 15/5280 * .858,
+                UTurn: -1
+            })
+        end
         netSetObj.LayerDB = link_dbd
         netSetObj.LoadNetwork(net_file)
         netSetObj.CentroidFilter = centroid_filter
@@ -1115,7 +1142,7 @@ Macro "Create Route Networks" (Args)
                 o.StopToNodeTagField = "Node_ID"
                 o.RouteFilter = period + "Headway > 0"
                 o.IncludeWalkLinks = true
-                o.WalkLinkFilter = "W = 1"
+                o.WalkLinkFilter = "W = 1 and Length > 2/5280"
                 o.AddRouteField({Name: period + "Headway", Field: period + "Headway"})
                 o.AddRouteField({Name: "Fare", Field: "Fare"})
                 // Add IVTT fields for all modes regardless of which net is being built.
@@ -1260,6 +1287,7 @@ endmacro
 
 /*
 This macro adds centroid connectors from each MAZ to the nearest valid node.
+Used by the bike models.
 */
 
 Macro "Add MAZ Connectors" (Args)
@@ -1289,7 +1317,7 @@ Macro "Add MAZ Connectors" (Args)
     // Create set of links that new centroids can connect to
     link_tbl.SelectByQuery({
         SetName: "ValidLinks",
-        Query: "DTWB contains 'D' and HCMType <> 'Freeway' and HCMType <> 'Ramp'"
+        Query: "DTWB contains 'B' and HCMType <> 'Freeway' and HCMType <> 'Ramp'"
     })
 
     SetLayer(llyr)
