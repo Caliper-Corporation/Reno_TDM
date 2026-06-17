@@ -265,14 +265,23 @@ Macro "Calculate Destination Choice" (Args, trip_types)
                     if segment <> null then tag = tag + "_" + segment
                     if period <> null then tag = tag + "_" + period
                     if record_num > 0 then do
+                        CopyFile(opts.util_dir + "\\utility_" + tag + "_zone.mtx", opts.util_dir + "\\utility_" + tag + "_zone_" + string(Args.FeedbackIteration) + ".mtx")
                         // 1. Rename MLE files
                         if GetFileInfo(opts.prob_dir + "\\probability_" + tag + "_zone_mle.mtx") <> null then DeleteFile(opts.prob_dir + "\\probability_" + tag + "_zone_mle.mtx")
                         if GetFileInfo(opts.util_dir + "\\utilityold_" + tag + "_zone_mle.mtx") <> null then DeleteFile(opts.util_dir + "\\utilityold_" + tag + "_zone_mle.mtx")
                         RenameFile(opts.prob_dir + "\\probability_" + tag + "_zone.mtx", opts.prob_dir + "\\probability_" + tag + "_zone_mle.mtx")
                         RenameFile(opts.util_dir + "\\utility_" + tag + "_zone.mtx", opts.util_dir + "\\utilityold_" + tag + "_zone_mle.mtx")
-
+                        parts = SplitPath(sov_skim)
+                        sov_omx_skim = parts[1] + parts[2] + parts[3] + ".omx"
+                        m = OpenMatrix(sov_skim,)
+                        mc = CreateMatrixCurrency(m, "CongTime",,,)
+                        omx_matrix = CopyMatrix(mc, {{"File Name", sov_omx_skim}, {"OMX", "True"}})
+                        m = null
+                        mc = null
+                        omx_matrix = null
+                        
                         // 1.5. Remove the old gan outputs
-                        // if GetFileInfo(opts.util_dir + "\\gen_" + tag + ".mtx") <> null then DeleteFile(opts.util_dir + "\\gen_" + tag + ".mtx")
+                        //if GetFileInfo(opts.util_dir + "\\gen_" + tag + ".mtx") <> null then DeleteFile(opts.util_dir + "\\gen_" + tag + ".mtx")
 
                         // 2. Build the utilities back from the probabilities
                         o = CreateObject("Matrix", {Empty: True})
@@ -291,7 +300,7 @@ Macro "Calculate Destination Choice" (Args, trip_types)
                             {'period', period},
                             {'se_file', se_file},
                             {'taz file', input_dir + "\\tazs\\scenario_tazs.bin"},
-                            {'skim_file', sov_skim},
+                            {'skim_file', sov_omx_skim},
                             {'Skim table', 'CongTime'},
                             {'output_folder', opts.util_dir},
                             {'Input Folder', Args.[Input Folder]},
@@ -303,7 +312,7 @@ Macro "Calculate Destination Choice" (Args, trip_types)
                         result = script.main(py_data)
 
                         // 4. Combine utilities and softmax the result, rewrite probability matrix
-                        gan_util = CreateObject("Matrix", opts.util_dir + "\\gen_" + tag + ".mtx")
+                        gan_util = CreateObject("Matrix", opts.util_dir + "\\gen_" + tag + ".omx")
                         gan_util.SetRowIndex("Rows")
                         gan_util.SetColIndex("Columns")
 
@@ -311,20 +320,29 @@ Macro "Calculate Destination Choice" (Args, trip_types)
                         new_util = CreateObject("Matrix", {Empty: True})
                         mtx_newutil = new_util.CloneMatrixStructure({MatrixLabel: tag + "_util", CloneSource: {source_mtx}, MatrixFile: opts.util_dir + "\\utility_" + tag + "_zone.mtx", Matrices: {"util", "exputil"}})
                         mtx_newutil = CreateObject("Matrix", opts.util_dir + "\\utility_" + tag + "_zone.mtx")
-                        mtx_newutil.util := delta * dc_mle_mtx.Total + (1-delta) * gan_util.gan_utils
+                        mtx_newutil.util := (1-delta) * dc_mle_mtx.Total + delta * gan_util.gan_utils 
 
                         mtxo_newprob = CreateObject("Matrix", {Empty: True})
                         mtx_newprob = mtxo_newprob.CloneMatrixStructure({MatrixLabel: tag + "_prob", CloneSource: {source_mtx}, MatrixFile: opts.prob_dir + "\\probability_" + tag + "_zone.mtx", Matrices: {"final_prob"}})
                         mtx_newprob = CreateObject("Matrix", opts.prob_dir + "\\probability_" + tag + "_zone.mtx")
                         mtx_newutil.exputil := exp(mtx_newutil.util)
                         mtx_newprob.final_prob := mtx_newutil.exputil / mtx_newutil.GetVector({Core: "exputil", Marginal: "Row Sum"})
-                        
-                    end // valid TB-ResNets purpose
-                
+                        mtxo_newprob = null
+                        mtx_newutil = null
+                        new_util = null
+                        gan_util = null
+                        mCopy = null
+                        dc_mle_mtx = null
+                        o = null
+                        script = null
+                        mtx_newprob = null
+                        // RenameFile(opts.util_dir + "\\gen_" + tag + ".mtx", opts.util_dir + "\\gen_" + tag + "_" + string(Args.FeedbackIteration) + ".mtx")
+                    end // valid TB-ResNets purpose - recno
                 end // Using TB-ResNets
             end // segment in segments
         end // period in periods
     end // trip_type in trip_types
+    
 
     // monitor = CreateObject("Parallel.TaskMonitor", tasks)
     // monitor.DisplayStatus()
@@ -336,6 +354,7 @@ endmacro
 Macro "DC Runner" (opts)
     obj = CreateObject("NestedDC", opts)
     obj.Run()
+    // obj = null
 endmacro
 
 // /*

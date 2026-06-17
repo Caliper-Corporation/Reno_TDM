@@ -48,16 +48,16 @@ overwriting your already-run scenario.
 Macro "Is Scenario Created" (Args)
 
     scen_dir = Args.[Scenario Folder]
-    if GetFileInfo(Args.SE) <> null then do
-        yesno = MessageBox(
-            "This scenario already has output data\n" + 
-            "Scenario folder:\n" +
-            scen_dir + "\n" + 
-            "Do you want to overwrite?",
-            {Buttons: "YesNo", Caption: "Overwrite scenario?"}
-        )
-        if yesno = "No" then return("false")
-    end
+    // if GetFileInfo(Args.SE) <> null then do
+    //     yesno = MessageBox(
+    //         "This scenario already has output data\n" + 
+    //         "Scenario folder:\n" +
+    //         scen_dir + "\n" + 
+    //         "Do you want to overwrite?",
+    //         {Buttons: "YesNo", Caption: "Overwrite scenario?"}
+    //     )
+    //     if yesno = "No" then return("false")
+    // end
 
     input_files_to_check = {
         Args.[Input Links],
@@ -462,7 +462,7 @@ Macro "Tag Highway with Area Type" (Args, map, views)
             // Select links within the buffer that haven't been updated already
             SetLayer(llyr)
             n2 = SelectByVicinity(
-                "links", "several", taz_lyr + "|selection", 0, 
+                "links", "several", bLyr + "|", 0, 
                 {"Source And": "primary"}
             )
             query = "Select * where AreaType <> null"

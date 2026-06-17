@@ -102,7 +102,7 @@ def main(**kwargs):
     # Constants
     PERIODS = {0: 'EA', 1: 'AM', 2: 'MD', 3: 'PM', 4: 'NT'}
     period_id2N = {v:k for k, v in PERIODS.items()}
-    device = torch.device("cuda" if torch.cuda.is_available() and not args['cpu'] else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Setup logger    
     
@@ -126,10 +126,11 @@ def main(**kwargs):
         sedata = dk.GetDataFrameFromBin(kwargs['se_file']).sort_values('TAZ') 
         sedata['taz_idx'] = np.arange(0, sedata.shape[0])
         sedata['taz'] = sedata['TAZ']
-        view_for_index = sedata[['taz_idx', 'TAZ']].copy()
-        view_for_index['taz_idx'] = view_for_index['taz_idx'] + 1
-        # view_for_index.reset_index(inplace = True)
-        dk.WriteBinFromDataFrame(view_for_index, os.path.join(kwargs['output_folder'], 'tempvw.bin'))
+        taz_idx_labels = np.array(sedata['TAZ'])
+        # view_for_index = sedata[['taz_idx', 'TAZ']].copy()
+        # view_for_index['taz_idx'] = view_for_index['taz_idx'] + 1
+        # # view_for_index.reset_index(inplace = True)
+        # dk.WriteBinFromDataFrame(view_for_index, os.path.join(kwargs['output_folder'], 'tempvw.bin'))
         taz = dk.GetDataFrameFromBin(kwargs['taz file']).sort_values('TAZ')
         sedata = sedata[sedata['Type'] == 'Internal'].copy()
         sedata = sedata.merge(taz[['TAZ', 'DISTRICT']], how = 'left', on = 'TAZ')
@@ -141,6 +142,8 @@ def main(**kwargs):
         sedata['hotelrms'] = np.log1p(sedata['HotelRms'].fillna(0)) / np.log1p(sedata['HotelRms'].fillna(0)).max()
         sedata['district'] = sedata['DISTRICT'].fillna(0)
         sedata = sedata[['taz', 'taz_idx', 'district', 'hh', 'emp_retail', 'emp_office', 'emp_service', 'hotelrms']].copy()
+        if logger.level == logging.DEBUG:
+            sedata.to_csv(os.path.join(kwargs['output_folder'], "sedata_debug.csv"), index = False)
         for d in sedata['district'].unique():
             sedata[f'district_{d}'] = 0
             sedata.loc[sedata['district'] == d, f'district_{d}'] = 1
@@ -154,11 +157,29 @@ def main(**kwargs):
 
     # 2. Get, sort, and index, and normalize skim data
     try:
-        skim_matrix = dk.OpenMatrix(kwargs['skim_file'], "True")
-        skim_currency = dk.CreateMatrixCurrency(skim_matrix, kwargs['Skim table'], None, None, None)
-        skim = np.array(dk.GetMatrixValues(skim_currency, None, None), dtype = np.float32)
-        np.nan_to_num(skim, copy=False)
+        # skim_matrix = dk.OpenMatrix(kwargs['skim_file'], "True")
+        # skim_currency = dk.CreateMatrixCurrency(skim_matrix, kwargs['Skim table'], None, None, None)
+        # logger.info(f"skim currency: {skim_currency}")
+        # skim = np.array(dk.GetMatrixValues(skim_currency, None, None), dtype = np.float32)
+        logger.debug(f"Opening skim: {kwargs['skim_file']}")
+        skim_file = omx.open_file(kwargs['skim_file'], 'r')
+        logger.debug(f"Skim file contents: {skim_file.list_matrices()}")
+        skim_in = np.array(skim_file['CongTime'], dtype = np.float32)
+        logger.debug(f"Skim 1-> 2 = {skim_in[1, 2]}")
+        logger.debug(f"Skim 1-> 738 = {skim_in[1, 738]}")
+        skim_file.close()
+        logger.info(f"Skim shape: {skim_in.shape}")
+        skim = np.nan_to_num(skim_in)
+        skim[:] = np.maximum(np.minimum(skim, 100),0)
         skim[:] = np.log1p(skim) / np.log1p(skim).max()
+        if logger.level == logging.DEBUG:
+            skim_debug_output_omx = omx.open_file(os.path.join(kwargs['output_folder'], "skim_debug.omx"), 'w')
+            skim_debug_output_omx['skim_in'] = skim_in
+            skim_debug_output_omx['norm_skim'] = skim
+            skim_debug_output_omx['log1p_skim'] = np.log1p(skim_in)
+            skim_debug_output_omx['skim_nan_rm'] = np.nan_to_num(skim_in)
+            skim_debug_output_omx.close()
+        logger.debug(f"Skim normalized 1-> 2 = {skim[1, 2]}")
         skim_o_shape = skim.shape
         skim = skim[0:sedata.shape[0], 0:sedata.shape[0]]
         # transform 
@@ -251,22 +272,31 @@ def main(**kwargs):
         return False
     
     try:
-        gan_output_file = os.path.join(kwargs['output_folder'], f"gen_{kwargs['tag']}.mtx")
-        mtx_specs = {
-            'File Name': gan_output_file,
-            'Label': "testing",
-            'Tables': ['gan_utils']
-        }
-        logger.debug(f"skim_o_shape={skim_o_shape}")
-        t_mtx = dk.CreateSimpleMatrix(kwargs['tag'], skim_o_shape[0], skim_o_shape[1], mtx_specs)
-        logger.debug("mtx created")
-        vw = dk.OpenTable('view', 'FFB', [os.path.join(kwargs['output_folder'], 'tempvw.bin'), None])
-        logger.debug("vw opened")
-        mc = dk.CreateMatrixCurrency(t_mtx, 'gan_utils', "Row Index", "Column Index", None)
-        logger.debug("currency created")
-        dk.SetMatrixValues(mc, np.arange(1, gen_util_out.shape[0] + 1), np.arange(1, gen_util_out.shape[1] + 1), ['Copy', gen_util_out], None)
-        dk.CreateMatrixIndex("Rows", t_mtx, "Rows", vw + "|", 'taz_idx', 'TAZ')
-        dk.CreateMatrixIndex("Columns", t_mtx, "Columns", vw + "|", 'taz_idx', 'TAZ')
+        #TODO: this needs to output as OMX so the file can close. TransCAD will then have to open the OMX
+        gan_output_file = os.path.join(kwargs['output_folder'], f"gen_{kwargs['tag']}.omx")
+        out_file = omx.open_file(gan_output_file, 'w') # 'r' = read, 'w' is write
+        out_mtx = np.pad(gen_util_out, ((0, taz_idx_labels.shape[0] - gen_util_out.shape[0]), (0, taz_idx_labels.shape[0] - gen_util_out.shape[1])), mode='constant', constant_values=0)
+        logger.info(f"(line 279) out_mtx shape = {out_mtx.shape}")
+        out_file['gan_utils'] = out_mtx
+        out_file.create_mapping('Rows', taz_idx_labels)
+        out_file.create_mapping('Columns', taz_idx_labels)
+        
+        # gan_output_file = os.path.join(kwargs['output_folder'], f"gen_{kwargs['tag']}.mtx")
+        # mtx_specs = {
+        #     'File Name': gan_output_file,
+        #     'Label': "testing",
+        #     'Tables': ['gan_utils']
+        # }
+        # logger.debug(f"skim_o_shape={skim_o_shape}")
+        # t_mtx = dk.CreateSimpleMatrix(kwargs['tag'], skim_o_shape[0], skim_o_shape[1], mtx_specs)
+        # logger.debug("mtx created")
+        # vw = dk.OpenTable('view', 'FFB', [os.path.join(kwargs['output_folder'], 'tempvw.bin'), None])
+        # logger.debug("vw opened")
+        # mc = dk.CreateMatrixCurrency(t_mtx, 'gan_utils', "Row Index", "Column Index", None)
+        # logger.debug("currency created")
+        # dk.SetMatrixValues(mc, np.arange(1, gen_util_out.shape[0] + 1), np.arange(1, gen_util_out.shape[1] + 1), ['Copy', gen_util_out], None)
+        # dk.CreateMatrixIndex("Rows", t_mtx, "Rows", vw + "|", 'taz_idx', 'TAZ')
+        # dk.CreateMatrixIndex("Columns", t_mtx, "Columns", vw + "|", 'taz_idx', 'TAZ')
         logger.debug(f"Generated output to be written to {gan_output_file}")
     except Exception as e:
         logger.error("Error in matrix write")
@@ -274,7 +304,8 @@ def main(**kwargs):
         logging.getLogger().handlers.clear()
         return False   
     finally:
-        dk.CloseView(vw)
+        out_file.close()
+        # dk.CloseView(vw)
     logging.getLogger().handlers.clear()
     return True
 
