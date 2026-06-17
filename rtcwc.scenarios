@@ -11,16 +11,6 @@ Scenario "base_2022"
 EndScenario
     
     
-Scenario "base_2022_control"
-    
-    [Scenario Folder] = "%Scenarios Folder%\\base_2022_control"
-    [Master SE] = "%Master Folder%\\sedata\\se_2022.bin"
-    InitCongTimes = "%Input Folder%\\networks\\init_cong_time_2022.bin"
-    FeedbackIterations = 5
-    FeedbackConvergence = 1
-EndScenario
-    
-    
 Scenario "2025"
     
     [Master SE] = "%Master Folder%\\sedata\\se_2025.bin"
@@ -63,5 +53,71 @@ Scenario "2050"
     [Scenario Folder] = "%Scenarios Folder%\\2050"
     AQYear = 2050
     [Master MZ] = "%Master Folder%\\mzdata\\mz_2050.bin"
+EndScenario
+    
+    
+Scenario "base_2022_with_resnets"
+    
+    [Scenario Folder] = "%Scenarios Folder%\\base_2022_with_resnets"
+    UseTBResnets = True
+EndScenario
+    
+    
+Scenario "base_2022_resnets_dl_s"
+    
+    [Scenario Folder] = "%Scenarios Folder%\\base_2022_resnets_dl_s"
+    UseTBResnets = True
+EndScenario
+    
+    
+Scenario "base_2022_resnets_dl_f"
+    
+    [Scenario Folder] = "%Scenarios Folder%\\base_2022_resnets_dl_f"
+    UseTBResnets = True
+EndScenario
+    
+    
+Scenario "base_2022_gan"
+    
+    [Scenario Folder] = "%Scenarios Folder%\\base_2022_gan"
+    UseTBResnets = True
+    [Master SE] = "%Master Folder%\\sedata\\scenario_se.bin"
+EndScenario
+    
+    
+Scenario "base_2022_dl0"
+    
+    [Scenario Folder] = "%Scenarios Folder%\\base_2022_dl0"
+    UseTBResnets = True
+    [Master SE] = "%Master Folder%\\sedata\\scenario_se.bin"
+EndScenario
+    
+    
+Scenario "base_2022_no_changes"
+    
+    [Scenario Folder] = "%Scenarios Folder%\\base_2022_no_changes"
+    [Master SE] = "%Master Folder%\\sedata\\se_2022.bin"
+    [Input SE] = "%Input Folder%\\sedata\\se_2022.bin"
+EndScenario
+    
+    
+Scenario "base_2022_old_se_new_dc"
+    
+    [Scenario Folder] = "%Scenarios Folder%\\base_2022_old_se_new_dc"
+    [Master SE] = "%Master Folder%\\sedata\\se_2022bin"
+EndScenario
+    
+    
+Scenario "base_2022_new_se_old_dc"
+    
+    [Scenario Folder] = "%Scenarios Folder%\\base_2022_new_se_old_dc"
+    [Master SE] = "%Master Folder%\\sedata\\scenario_se.bin"
+EndScenario
+    
+    
+Scenario "base_2022_gan_dl0"
+    
+    [Scenario Folder] = "%Scenarios Folder%\\base_2022_gan_dl0"
+    UseTBResnets = True
 EndScenario
     

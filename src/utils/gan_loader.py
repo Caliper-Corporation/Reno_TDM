@@ -261,6 +261,7 @@ def main(**kwargs):
         )
         generator.eval()
         with torch.inference_mode():
+        with torch.no_grad():
             gen_util = generator(dv) #.detach().numpy()
         gen_util_out = gen_util.detach().numpy()
         logger.debug("Generator loaded.")

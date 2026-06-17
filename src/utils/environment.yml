@@ -1,0 +1,34 @@
+name: fhwa_ai
+channels:
+  - defaults
+  - https://repo.anaconda.com/pkgs/main
+  - https://repo.anaconda.com/pkgs/r
+  - https://repo.anaconda.com/pkgs/msys2
+  - conda-forge
+dependencies:
+  - python=3.11
+  - geopandas
+  - matplotlib
+  - numpy==1.26
+  - pandas
+  - hdf5
+  - ipykernel
+  - openpyxl
+  - pot
+  - seaborn
+  # - python-dotenv
+  # - wandb
+  # - xarray
+  # - tables
+  # - pyarrow
+  - pip
+  # - pip:
+  #   - larch==6.0.44
+  - pip:
+    - --index-url https://download.pytorch.org/whl/cpu
+    - torch==2.8.0
+    - torchvision==0.23.0
+    - torchaudio==2.8.0
+  - pip:
+    - "C:/Program Files/TransCAD 10.0/GISDK/API/Python"
+prefix: C:\Users\andrew\AppData\Local\anaconda3\envs\fhwa_ai
