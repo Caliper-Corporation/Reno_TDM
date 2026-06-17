@@ -259,7 +259,9 @@ def main(**kwargs):
             Generator,
             param_array
         )
-        gen_util = generator(dv) #.detach().numpy()
+        generator.eval()
+        with torch.no_grad():
+            gen_util = generator(dv) #.detach().numpy()
         gen_util_out = gen_util.detach().numpy()
         logger.debug("Generator loaded.")
         logger.debug(f"gen_util shape: {gen_util.shape} - type = {gen_util.dtype}")
@@ -272,10 +274,10 @@ def main(**kwargs):
         return False
     
     try:
-        #TODO: this needs to output as OMX so the file can close. TransCAD will then have to open the OMX
         gan_output_file = os.path.join(kwargs['output_folder'], f"gen_{kwargs['tag']}.omx")
         out_file = omx.open_file(gan_output_file, 'w') # 'r' = read, 'w' is write
-        out_mtx = np.pad(gen_util_out, ((0, taz_idx_labels.shape[0] - gen_util_out.shape[0]), (0, taz_idx_labels.shape[0] - gen_util_out.shape[1])), mode='constant', constant_values=0)
+        out_mtx = np.pad(gen_util_out, ((0, taz_idx_labels.shape[0] - gen_util_out.shape[0]), (0, taz_idx_labels.shape[0] - gen_util_out.shape[1])), mode='constant', constant_values=0) 
+        #TODO: test above line with NA instead of 0... the NA values may be polluting the output due to exp (check TransCAD to see what I am doing there)
         logger.info(f"(line 279) out_mtx shape = {out_mtx.shape}")
         out_file['gan_utils'] = out_mtx
         out_file.create_mapping('Rows', taz_idx_labels)
