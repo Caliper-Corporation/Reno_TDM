@@ -114,16 +114,21 @@ Macro "CalcAQMovesInputs" (Args)
 		v_newrt = if v_roadtype = 8 and v_urban = 1 then 9 else v_roadtype
 		table.roadtype = v_newrt
 		table = null
+		// Rampinput maps each model road type on a restricted-access facility
+		// (freeway 2/4, ramp 8/9) to the MOVES restricted road type (2 rural,
+		// 4 urban). MOVES wants ramp VHT as a share of freeway + ramp VHT for
+		// each of those two road types. Unrestricted roads are left out.
+		// The .DCC is gitignored, so delete any stale copy and let TransCAD
+		// rebuild it from the CSV header.
+		rampdcc = Substitute(rampfile, ".csv", ".DCC", )
+		if GetFileInfo(rampdcc) <> null then DeleteFile(rampdcc)
 		ramp = OpenTable("ramp", "CSV", {rampfile, })
-		rampjn = JoinViewsMulti("rampjn", {ramp+".roadTypeID", ramp+".Ramp"}, {jnvw_AQ+".Roadtype",jnvw_AQ+".IsRamp"}, {{"A",}}) 
-		CreateExpression(rampjn, "Ur", "if roadTypeID =4 or roadTypeID =5 then '1' else '0'",)
-		//ExportView(rampjn+"|", "CSV", output_location+"Rampjn_"+HAstr+".csv",,{{"CSV Header", "True"}})
-		rampagg =  SelfAggregate("rampagg", rampjn+".Ur", {"Fields", {"adj_Daily_VHT", {{"Sum"}}}}) //Aggregate by Urban(0/1) but failed.
-		//ExportView(rampagg+"|", "CSV", output_location+"Rampagg_"+HAstr+".csv",,{{"CSV Header", "True"}})
-		rampout = JoinViews("rampout", rampjn+".Ur", rampagg+".GroupedBy(Ur)", {{"L",}})
+		rampjn = JoinViewsMulti("rampjn", {ramp+".modelRoadType", ramp+".Ramp"}, {jnvw_AQ+".Roadtype",jnvw_AQ+".IsRamp"}, {{"A",}})
+		rampagg =  SelfAggregate("rampagg", rampjn+".roadTypeID", {"Fields", {"adj_Daily_VHT", {{"Sum"}}}})
+		rampout = JoinViews("rampout", rampjn+".roadTypeID", rampagg+".GroupedBy(roadTypeID)", {{"L",}})
 		CreateExpression(rampout, "rampFraction", "adj_Daily_VHT/[Sum(adj_Daily_VHT)]",)
 		SetView(rampout)
-		SelectByQuery("ramp", "several", "Select * where (roadTypeID=8 or roadTypeID=9)") //newadded
+		SelectByQuery("ramp", "several", "Select * where Ramp = 'Ramp'")
 		ExportView(rampout+"|ramp", "CSV", output_location+"Ramp_"+HAstr+".csv", {"roadTypeID","rampFraction"}, {{"CSV Header", "True"}})
 		CloseView(ramp)
 		CloseView(rampjn)

@@ -1,7 +1,5 @@
-roadTypeID,Ramp,Urban
-2,NonRamp,0
-3,NonRamp,0
-4,NonRamp,1
-5,NonRamp,1
-8,Ramp,0
-9,Ramp,1
+modelRoadType,Ramp,roadTypeID
+2,NonRamp,2
+4,NonRamp,4
+8,Ramp,2
+9,Ramp,4
